@@ -1,0 +1,26 @@
+placeholders:
+  - name: "p"
+    value: "<#8aff30><bold>Unity<reset>"
+root:
+  description: "The base faction command."
+  description-force: "The base faction force command."
+help:
+  description: "Shows the commands for unity factions."
+  description-query: "Command to get help for"
+
+faction:
+  defaults-description: "Welcome to %faction%! We are welcoming to new players!"
+  defaults-join-info:  "Do you want to join us? Message us!"
+
+create:
+  description: "Allows a player to create a new faction."
+  description-name: "Name of the faction"
+
+  message-too-long: "%p% The faction name you are trying to create is too long."
+  message-too-short: "%p% The faction name you are trying to create is too short."
+  message-already-exists: "%p% The faction name you are trying to create already exists."
+  message-banned: "%p% The faction name you are trying to create is banned."
+
+
+  message-created-faction: "%p% <green>Successfully created faction <white>%name%<green>."
+  broadcast-created-faction: "%p% <white>%player% <green>has created faction <white>%name%<green>."
