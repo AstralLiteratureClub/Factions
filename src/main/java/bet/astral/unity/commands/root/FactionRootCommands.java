@@ -12,7 +12,7 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
-public class FactionRootCommands extends CloudPPCommand<Factions> {
+public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender> {
 	public final Command.Builder<CommandSender> root;
 	public final Command.Builder<CommandSender> rootForceFaction;
 
