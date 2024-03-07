@@ -11,7 +11,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class TooltipSuggestion implements org.incendo.cloud.brigadier.suggestion.TooltipSuggestion {
 	private final String suggestion;
-	private final net.minecraft.network.chat.Component tooltip;
+	private final Message tooltip;
+	private TooltipSuggestion(String suggestion, Message message){
+		this.suggestion = suggestion;
+		this.tooltip = message;
+	}
 	public TooltipSuggestion(String suggestion, Component tooltip){
 		if (tooltip != null) {
 			this.tooltip = new AdventureComponent(tooltip);
@@ -52,6 +56,12 @@ public class TooltipSuggestion implements org.incendo.cloud.brigadier.suggestion
 	public @Nullable Message tooltip() {
 		return tooltip;
 	}
+
+	@Override
+	public org.incendo.cloud.brigadier.suggestion.@NonNull TooltipSuggestion withSuggestion(@NonNull String suggestion) {
+		return new TooltipSuggestion(suggestion, this.tooltip);
+	}
+
 
 	@Override
 	public @NonNull String suggestion() {

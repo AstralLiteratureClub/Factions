@@ -23,8 +23,12 @@ public final class TranslationKey {
 	public final static String DESCRIPTION_INVITE = "invite.description";
 	public final static String DESCRIPTION_INVITE_WHO = "invite.description-who";
 	public final static String DESCRIPTION_INVITE_ACCEPT = "invite.description-accept";
+	public final static String DESCRIPTION_INVITE_ACCEPT_FACTION = "invite.description-accept-faction";
 	public final static String DESCRIPTION_INVITE_DENY = "invite.description-deny";
+	public final static String DESCRIPTION_INVITE_DENY_FACTION = "invite.description-deny-faction";
 	public final static String DESCRIPTION_INVITE_CANCEL = "invite.description-cancel";
+	public final static String DESCRIPTION_INVITE_CANCEL_PLAYER = "invite.description-cancel-player";
+	public final static String DESCRIPTION_INVITE_CANCEL_REASON = "invite.description-cancel-reason";
 	public final static String BROADCAST_INVITE_FACTION = "invite.broadcast-faction-of-invite";
 	public final static String MESSAGE_INVITE_RECEIVER = "invite.message-receive-invite";
 
@@ -34,6 +38,10 @@ public final class TranslationKey {
 	public final static String BROADCAST_INVITE_ACCEPT = "invite.broadcast-accept";
 	public final static String MESSAGE_INVITE_DENY = "invite.message-deny";
 	public final static String BROADCAST_INVITE_DENY = "invite.broadcast-deny";
+	public final static String MESSAGE_INVITE_CANCEL = "invite.message-cancel";
+	public final static String BROADCAST_INVITE_CANCEL = "invite.broadcast-cancel";
+
+
 	@IsCaption(true)
 	public final static Caption CAPTION_INVITE_ALREADY_HAS_FACTION = Caption.of("invite.");
 	@IsCaption(true)

@@ -1,5 +1,6 @@
 package bet.astral.unity.commands.basic;
 
+import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.permission.PredicatePermission;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+@Cloud
 public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 	private final Consumer<CommandSender> acceptConsumer;
 	private final Consumer<CommandSender> timeRanOutConsumer;

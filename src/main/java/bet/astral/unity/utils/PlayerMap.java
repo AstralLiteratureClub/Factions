@@ -1,5 +1,7 @@
 package bet.astral.unity.utils;
 
+import bet.astral.unity.utils.refrence.OfflinePlayerReference;
+import bet.astral.unity.utils.refrence.PlayerReferenceImpl;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Bukkit;
@@ -99,7 +101,9 @@ public class PlayerMap<V> extends HashMap<UUID, V> implements ForwardingAudience
 	public Set<OfflinePlayer> keySetPlayer(){
 		return keySet().stream().map(Bukkit::getOfflinePlayer).collect(Collectors.toSet());
 	}
-
+	public Set<OfflinePlayerReference> keySetPlayerReference(){
+		return keySet().stream().map(PlayerReferenceImpl::new).collect(Collectors.toSet());
+	}
 	public Set<Entry<OfflinePlayer, V>> entrySetPlayer() {
 		return super.entrySet().stream().map(entry->new Entry<OfflinePlayer, V>() {
 			@Override

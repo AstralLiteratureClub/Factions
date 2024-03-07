@@ -242,14 +242,19 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		}
 	}
 
-	public void cancelInvite(@NotNull Player from, @NotNull Player to, @Nullable String reason){
+	public void cancelInvite(@NotNull Player from, @NotNull OfflinePlayer to, @Nullable String reason){
 		FInvite invite  = invites.get(to);
 		if (invite == null){
 			return;
 		}
 
 		ASyncPlayerCancelInviteEvent event = new ASyncPlayerCancelInviteEvent(this, to, from, reason);
+		event.callEvent();
 
+		invites.remove(to);
+		if (!invite.getTask().isCancelled()) {
+			invite.getTask().cancel();
+		}
 	}
 
 

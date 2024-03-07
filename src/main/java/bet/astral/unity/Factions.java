@@ -4,7 +4,7 @@ import bet.astral.cloudplusplus.CommandRegisterer;
 import bet.astral.messenger.Message;
 import bet.astral.messenger.Messenger;
 import bet.astral.messenger.placeholder.PlaceholderList;
-import bet.astral.unity.commands.root.FactionCommand;
+import bet.astral.unity.commands.root.FactionRootCommands;
 import bet.astral.unity.managers.FactionManager;
 import bet.astral.unity.managers.PlayerManager;
 import bet.astral.unity.utils.TranslationKey;
@@ -70,7 +70,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         factionManager = new FactionManager(this);
 
         commandManager = new PaperCommandManager<>(this, ExecutionCoordinator.asyncCoordinator(), SenderMapper.identity());
-        FactionCommand rootCommand = new FactionCommand(this, commandManager);
+        FactionRootCommands rootCommand = new FactionRootCommands(this, commandManager);
         rootFactionCommand = rootCommand.root;
         rootForceFactionCommand = rootCommand.rootForceFaction;
 

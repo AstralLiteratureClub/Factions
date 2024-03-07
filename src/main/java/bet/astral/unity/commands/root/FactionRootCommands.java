@@ -12,11 +12,11 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
-public class FactionCommand extends CloudPPCommand<Factions> {
+public class FactionRootCommands extends CloudPPCommand<Factions> {
 	public final Command.Builder<CommandSender> root;
 	public final Command.Builder<CommandSender> rootForceFaction;
 
-	public FactionCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+	public FactionRootCommands(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		MinecraftHelp<CommandSender> help = MinecraftHelp.<CommandSender>builder().commandManager(commandManager)
 				.audienceProvider(AudienceProvider.nativeAudience())

@@ -1,5 +1,6 @@
 package bet.astral.unity.commands.invite;
 
+import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
@@ -13,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.paper.PaperCommandManager;
 
+@Cloud
 public class InviteSubCommand extends FactionCloudCommand {
 	public InviteSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
@@ -26,7 +28,8 @@ public class InviteSubCommand extends FactionCloudCommand {
 						.permission(PermissionUtils.of("invite", FPermission.INVITE))
 						.senderType(Player.class)
 						.required(
-								InvitableParser.invitableComponent().name("who to invite")
+								InvitableParser.invitableComponent()
+										.name("who to invite")
 										.description(loadDescription(TranslationKey.DESCRIPTION_INVITE_WHO, "/factions invite <player>"))
 						)
 						.handler(context->{

@@ -1,5 +1,6 @@
 package bet.astral.unity.commands.invite;
 
+import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
@@ -15,6 +16,7 @@ import org.incendo.cloud.permission.PredicatePermission;
 
 import java.util.function.Predicate;
 
+@Cloud
 public class AcceptInviteSubCommand extends FactionCloudCommand {
 	public AcceptInviteSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
@@ -24,22 +26,19 @@ public class AcceptInviteSubCommand extends FactionCloudCommand {
 								loadDescription(TranslationKey.DESCRIPTION_INVITE_ACCEPT, "/factions accept-invite"),
 								"ainv")
 						.permission(PermissionUtils.of("invite.accept", false)
-								.and(PredicatePermission.of(new Predicate<CommandSender>(){
-
-									@Override
-									public boolean test(CommandSender sender) {
-										if (!(sender instanceof Player player)) {
-											return false;
-										}
-										FPlayer fPlayer = plugin.getPlayerManager().convert(player);
-										return plugin.getFactionManager().created().stream().anyMatch(
-												faction -> faction.isInvited(fPlayer));
+								.and(PredicatePermission.of((Predicate<CommandSender>) sender -> {
+									if (!(sender instanceof Player player)) {
+										return false;
 									}
+									FPlayer fPlayer = plugin.getPlayerManager().convert(player);
+									return plugin.getFactionManager().created().stream().anyMatch(
+											faction -> faction.isInvited(fPlayer));
 								}))
 						)
 						.senderType(Player.class)
 						.required(
 								FactionInviteParser.inviteComponent()
+										.description(loadDescription(TranslationKey.DESCRIPTION_INVITE_ACCEPT_FACTION, "/factions accept-invite <faction>"))
 										.name("faction")
 						)
 						.handler(context -> {
