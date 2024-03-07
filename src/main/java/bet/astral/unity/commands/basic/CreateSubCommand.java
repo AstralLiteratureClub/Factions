@@ -55,7 +55,10 @@ public class CreateSubCommand extends FactionCloudCommand {
 								return;
 							}
 
-							Faction faction = plugin.getFactionManager().create(name);
+							Faction faction = plugin.getFactionManager().create(name, sender);
+							if (faction == null){
+								return;
+							}
 							plugin.getPlayerManager().convert(sender)
 									.setFactionId(faction.getUniqueId());
 

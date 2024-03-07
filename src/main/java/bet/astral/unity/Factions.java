@@ -16,9 +16,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.C;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.caption.Caption;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.minecraft.extras.RichDescription;
 import org.incendo.cloud.paper.PaperCommandManager;
@@ -26,9 +26,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static bet.astral.unity.utils.Resource.loadResourceAsTemp;
 import static bet.astral.unity.utils.Resource.loadResourceToFile;
@@ -52,10 +50,17 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         uploadUploads();
 
         reloadMessengers();
+        Set<Caption> captions = new HashSet<>();
         for (Field field : TranslationKey.class.getFields()){
 	        try {
-		        String fieldValue = (String) field.get(null);
-                messenger.loadMessage(fieldValue);
+                if (field.isAnnotationPresent(TranslationKey.IsCaption.class) && field.getAnnotation(TranslationKey.IsCaption.class).value()){
+                    Caption caption = (Caption) field.get(null);
+                    messenger.loadMessage(caption.key());
+                    captions.add(caption);
+                } else {
+                    String fieldValue = (String) field.get(null);
+                    messenger.loadMessage(fieldValue);
+                }
 	        } catch (IllegalAccessException e) {
 		        throw new RuntimeException(e);
 	        }
@@ -69,9 +74,15 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         rootFactionCommand = rootCommand.root;
         rootForceFactionCommand = rootCommand.rootForceFaction;
 
+        messenger.registerCommandManager(commandManager);
+        for (Caption caption : captions){
+            messenger.loadMessage(caption);
+        }
+
         registerCommands(List.of(
-                "bet.astral.unity.commands.basic"
-        ), commandManager);
+                "bet.astral.unity.commands.basic",
+                "bet.astral.unity.commands.invite"
+                ), commandManager);
 
         getLogger().info("Factions has enabled!");
     }

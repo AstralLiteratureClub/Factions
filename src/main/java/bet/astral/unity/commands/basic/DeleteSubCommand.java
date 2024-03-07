@@ -1,6 +1,5 @@
 package bet.astral.unity.commands.basic;
 
-import bet.astral.cloudplusplus.Confirmable;
 import bet.astral.messenger.permission.PredicatePermission;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
@@ -37,7 +36,7 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 			commandMessenger.broadcast(new PredicatePermission(receiver -> Stream.of(faction.audiences()).noneMatch(member -> member.equals(receiver))), TranslationKey.BROADCAST_DELETE_CONFIRM_FACTION, placeholders);
 			commandMessenger.message(player, TranslationKey.MESSAGE_DELETE_CONFIRM_FACTION, placeholders);
 
-			plugin.getFactionManager().delete(faction);
+			plugin.getFactionManager().delete(faction, (Player) sender);
 		};
 		timeRanOutConsumer = (sender) -> {
 			FPlayer player = plugin.getPlayerManager().convert((Player) sender);

@@ -26,6 +26,14 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+        name "sonatype-snapshots"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
 }
 
 dependencies {
@@ -33,7 +41,7 @@ dependencies {
 
     // Cloud and brigadier for commands
     compileOnly 'com.mojang:brigadier:1.0.18'
-    var cloudVersion = "2.0.0-beta.4";
+    var cloudVersion = "2.0.0-SNAPSHOT";
     implementation 'org.incendo:cloud-core:'+cloudVersion
     implementation 'org.incendo:cloud-paper:'+cloudVersion
     implementation 'org.incendo:cloud-brigadier:'+cloudVersion

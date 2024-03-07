@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PlayerMap<V> extends HashMap<UUID, V> implements ForwardingAudience {
-
 	public static <V> PlayerMap<V> of(Map<OfflinePlayer, V> map){
 		return new PlayerMap<>(convert(map));
 	}
@@ -70,12 +69,19 @@ public class PlayerMap<V> extends HashMap<UUID, V> implements ForwardingAudience
 		}
 		return super.get(key);
 	}
+	public V get(OfflinePlayer key) {
+		return super.get(key.getUniqueId());
+	}
+
 
 	@Override
 	public boolean containsKey(Object key) {
 		if (key instanceof OfflinePlayer player){
 			return super.containsKey(player);
 		}
+		return super.containsKey(key);
+	}
+	public boolean containsKey(OfflinePlayer key) {
 		return super.containsKey(key);
 	}
 
@@ -85,6 +91,9 @@ public class PlayerMap<V> extends HashMap<UUID, V> implements ForwardingAudience
 			return super.remove(player.getUniqueId());
 		}
 		return super.remove(key);
+	}
+	public V remove(OfflinePlayer key) {
+		return super.remove(key.getUniqueId());
 	}
 
 	public Set<OfflinePlayer> keySetPlayer(){
