@@ -52,7 +52,7 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 		FPlayer fPlayer = factions.getPlayerManager().get(player.getUniqueId());
 		if (fPlayer == null){
 			CommandSender sender = commandContext.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
-			if (factions.getFactionConfig().getPerformance().isAllowOfflinePlayerSearch()){
+			if (!factions.getFactionConfig().getPerformance().isAllowOfflinePlayerSearch()){
 				if (!sender.hasPermission(PermissionUtils.of("performance.load-offline").permissionString())){
 					return ArgumentParseResult.failure(new CannotCheckOfflinePlayerException(input, commandContext));
 				}
