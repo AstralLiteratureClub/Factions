@@ -5,7 +5,7 @@ import bet.astral.unity.model.FPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,8 +43,7 @@ public class PlayerManager implements Listener {
 	}
 
 	@EventHandler
-	public void onJoin(PlayerJoinEvent event){
-		byId.put(event.getPlayer().getUniqueId(), new FPlayer(event.getPlayer()));
+	public void onJoin(PlayerLoginEvent event){
+		byId.put(event.getPlayer().getUniqueId(), new FPlayer(factions, event.getPlayer()));
 	}
-
 }

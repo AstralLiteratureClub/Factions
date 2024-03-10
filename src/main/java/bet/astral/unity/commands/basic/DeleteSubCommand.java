@@ -5,6 +5,7 @@ import bet.astral.messenger.permission.PredicatePermission;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudConfirmableCommand;
+import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
@@ -47,10 +48,9 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 
 		Command.Builder<Player> builder = commandBuilder("disband",
 				loadDescription(TranslationKey.DELETE_DESCRIPTION, "/factions disband"),
-				"delete", "remove"
-		)
+				"delete")
 				.senderType(Player.class)
-				.permission(PermissionUtils.of("delete", true))
+				.permission(PermissionUtils.of("delete", FPermission.DELETE))
 				.handler(context -> {
 							Player sender = context.sender();
 							if (!tryConfirm(sender)) {
@@ -64,7 +64,6 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 							}
 						}
 				);
-
 		commandPlayer(builder);
 	}
 }

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class InvitableParser<C> implements ArgumentParser<C, Player>, BlockingSuggestionProvider<C> {
 	private static final Factions factions = Factions.getPlugin(Factions.class);
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy");
+	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy");
 	private InvitableParser() {
 	}
 
@@ -54,16 +54,16 @@ public class InvitableParser<C> implements ArgumentParser<C, Player>, BlockingSu
 
 		FPlayer fPlayer = factions.getPlayerManager().convert((Player) sender);
 		if (fPlayer.getFactionId()==null){
-			return ArgumentParseResult.failure(new FactionlessParser.SelfFactionlessParserException(input, commandContext));
+			return ArgumentParseResult.failure(new FactionlessPlayerParser.SelfFactionlessParserException(input, commandContext));
 		}
 		Faction faction = factions.getFactionManager().get(fPlayer.getFactionId());
 
 		FPlayer inputFPlayer = factions.getPlayerManager().convert(player);
 		if (inputFPlayer.getFactionId() != null){
-			return ArgumentParseResult.failure(new FactionlessParser.FactionlessParserException(input, commandContext));
+			return ArgumentParseResult.failure(new FactionlessPlayerParser.FactionlessParserException(input, commandContext));
 		}
 		if (faction.isBanned(player)){
-			return ArgumentParseResult.failure(new FactionlessParser.BannedFactionlessParserException(input, commandContext));
+			return ArgumentParseResult.failure(new FactionlessPlayerParser.BannedFactionlessParserException(input, commandContext));
 		}
 		if (faction.isInvited(player)){
 			return ArgumentParseResult.failure(new InvitableParserException(input, commandContext));
@@ -87,7 +87,7 @@ public class InvitableParser<C> implements ArgumentParser<C, Player>, BlockingSu
 					.filter(p -> !faction.isBanned(p))
 					.map(p ->
 							new TooltipSuggestion(p, Component.text(
-											player.getName(), NamedTextColor.WHITE)
+											p.getName(), NamedTextColor.WHITE)
 									.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 									.append(Component.text("First Played: ", NamedTextColor.WHITE))
 									.append(Component.text(DATE_FORMAT.format(Instant.ofEpochMilli(p.player().getFirstPlayed())),

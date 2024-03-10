@@ -3,6 +3,7 @@ package bet.astral.unity.utils;
 import bet.astral.unity.Factions;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
+import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,12 +14,20 @@ import org.incendo.cloud.permission.PredicatePermission;
 
 public class PermissionUtils {
 	private static final Factions factions = Factions.getPlugin(Factions.class);
-	public static String of(String permission){
-		return "unity."+permission;
+	public static Permission of(String permission){
+		return Permission.of("unity."+permission);
+	}
+
+	public static Permission forceOf(String permission){
+		return Permission.of("unity.force."+permission);
+	}
+	public static Permission forceOfFactionsExist(String permission){
+		return Permission.of("unity.force."+permission)
+				.and(PredicatePermission.of(player-> !factions.getFactionManager().created().isEmpty()));
 	}
 
 	public static Permission of(String permission, boolean hasFaction){
-		return Permission.of(of(permission)).and(new PredicatePermission<CommandSender>() {
+		return of(permission).and(new PredicatePermission<CommandSender>() {
 			@Override
 			public @NonNull PermissionResult testPermission(@NonNull CommandSender sender) {
 				return PermissionResult.of(sender instanceof Player, this);
@@ -43,12 +52,7 @@ public class PermissionUtils {
 		);
 	}
 	public static Permission of(String permission, FPermission factionPermission){
-		return Permission.of(of(permission)).and(new PredicatePermission<CommandSender>() {
-			@Override
-			public @NonNull PermissionResult testPermission(@NonNull CommandSender sender) {
-				return PermissionResult.of(sender instanceof Player, this);
-			}
-		}).and(
+		return of(permission, true).and(
 				new PredicatePermission<Player>() {
 					@Override
 					public @NonNull PermissionResult testPermission(@NonNull Player sender) {
@@ -60,7 +64,15 @@ public class PermissionUtils {
 						if (faction == null){
 							return PermissionResult.denied(this);
 						}
-						return PermissionResult.of(faction.getRoles().get(sender.getUniqueId()).hasPermission(factionPermission), this);
+
+						FRole role = faction.getRoles().get(sender.getUniqueId());
+						if (role == null) {
+							factions.getLogger().severe("Couldn't find role for player "+ player.getName() + " ("+ player.getUniqueId()+")");
+							factions.getLogger().severe("Couldn't find role for player "+ player.getName() + " ("+ player.getUniqueId()+")");
+							factions.getLogger().severe("Couldn't find role for player "+ player.getName() + " ("+ player.getUniqueId()+")");
+							return PermissionResult.denied(this);
+						}
+						return PermissionResult.of(role.hasPermission(factionPermission), this);
 					}
 				}
 		);

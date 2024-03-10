@@ -9,17 +9,16 @@ import bet.astral.unity.event.player.ASyncPlayerChangeFactionDisplaynameEvent;
 import bet.astral.unity.event.player.ASyncPlayerChangeFactionNameEvent;
 import bet.astral.unity.event.player.ASyncPlayerCreateFactionEvent;
 import bet.astral.unity.event.player.ASyncPlayerDeleteFactionEvent;
+import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
-import org.incendo.cloud.suggestion.Suggestion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FactionManager {
 	private final Field nameField;
@@ -93,20 +92,23 @@ public class FactionManager {
 		while (true){
 			UUID uniqueId = UUID.randomUUID();
 			if (!byId.containsKey(uniqueId)){
-				faction = new Faction(factions, uniqueId, name.toLowerCase(), System.currentTimeMillis());
+				faction = new Faction(factions, uniqueId, name, System.currentTimeMillis());
+				ASyncPlayerCreateFactionEvent event = new ASyncPlayerCreateFactionEvent(faction, player);
+				if (!event.callEvent()){
+					return null;
+				}
+
+				byId.put(faction.getUniqueId(), faction);
+				byName.put(faction.getName().toLowerCase(), faction);
+				byCustomName.put(PlainTextComponentSerializer.plainText().serialize(faction.getDisplayname()).toLowerCase(), faction);
+				requestSave(faction);
+
+				faction.join(player);
+				faction.setRole(player, FRole.OWNER);
 				break;
 			}
 		}
 
-		ASyncPlayerCreateFactionEvent event = new ASyncPlayerCreateFactionEvent(faction, player);
-		if (!event.callEvent()){
-			return null;
-		}
-
-		byId.put(faction.getUniqueId(), faction);
-		byName.put(faction.getName().toLowerCase(), faction);
-		byCustomName.put(faction.getName().toLowerCase(), faction);
-		requestSave(faction);
 		return faction;
 	}
 

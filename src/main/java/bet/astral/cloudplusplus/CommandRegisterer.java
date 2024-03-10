@@ -31,8 +31,10 @@ public interface CommandRegisterer<P extends JavaPlugin> extends MessageReload {
 				ClassInfoList classInfo = scanResult.getClassesWithAnnotation(Cloud.class);
 				List<String> classes = classInfo.getNames();
 				for (String clazzName : classes){
+					plugin().getLogger().info("Registering command: "+ clazzName);
 					Class<?> clazz = Class.forName(clazzName);
 					registerCommand(clazz, commandManager);
+					plugin().getLogger().info("Registered command: "+ clazzName);
 				}
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException(e);

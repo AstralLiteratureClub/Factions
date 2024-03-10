@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class InvitedParser<C> implements ArgumentParser<C, OfflinePlayer>, BlockingSuggestionProvider<C> {
@@ -55,7 +56,7 @@ public class InvitedParser<C> implements ArgumentParser<C, OfflinePlayer>, Block
 
 		FPlayer fPlayer = factions.getPlayerManager().convert((Player) sender);
 		if (fPlayer.getFactionId()==null){
-			return ArgumentParseResult.failure(new FactionlessParser.SelfFactionlessParserException(input, commandContext));
+			return ArgumentParseResult.failure(new FactionlessPlayerParser.SelfFactionlessParserException(input, commandContext));
 		}
 		Faction faction = factions.getFactionManager().get(fPlayer.getFactionId());
 
@@ -76,7 +77,7 @@ public class InvitedParser<C> implements ArgumentParser<C, OfflinePlayer>, Block
 			return faction.getInvites().keySetPlayerReference()
 					.stream().map(
 							reference -> new TooltipSuggestion(reference, Component.text(
-											player.getName(), NamedTextColor.WHITE)
+											Objects.requireNonNull(reference.offlinePlayer().getName()), NamedTextColor.WHITE)
 									.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 									.append(Component.text("First Played: ", NamedTextColor.WHITE))
 									.append(Component.text(DATE_FORMAT.format(Instant.ofEpochMilli(reference.offlinePlayer().getFirstPlayed())),

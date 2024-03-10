@@ -9,8 +9,9 @@ help:
   description-query: "Command to get help for"
 
 faction:
-  defaults-description: "Welcome to %faction%! We are welcoming to new players!"
-  defaults-join-info:  "Do you want to join us? Message us!"
+  default-description: "Welcome to %faction%! We are welcoming to new players!"
+  default-join-info:  "Do you want to join us? Message us!"
+
 
 create:
   description: "Allows a player to create a new faction."

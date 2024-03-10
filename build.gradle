@@ -58,6 +58,14 @@ dependencies {
     paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
 }
 
+
+// Some shit is importing 1.13 bukkit api and not 1.20.1 api
+configurations.compileOnly {
+    exclude group: 'org.spigotmc', module: 'spigot'
+    exclude group: 'org.spigotmc', module: 'spigot-api'
+    exclude group: 'org.bukkit', module: 'bukkit'
+}
+
 def targetJavaVersion = 17
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
@@ -85,8 +93,17 @@ processResources {
     }
 }
 
+tasks.assemble {
+    dependsOn(reobfJar)
+}
+
+jar {
+    enabled = false
+    dependsOn(shadowJar)
+}
+
 shadowJar {
-    archiveClassifier = null
+    archiveClassifier = "main"
 
     relocate 'bet.astral.messenger', 'bet.astral.unity.libs.bet.astral.messenger'
 
@@ -95,8 +112,18 @@ shadowJar {
     relocate 'org.apache.commons', 'bet.astral.unity.libs.org.apache.commons'
 }
 
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+    }
+}
+
 tasks {
     runServer {
         minecraftVersion("1.20.4")
     }
+
 }

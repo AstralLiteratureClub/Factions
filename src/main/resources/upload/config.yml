@@ -1,3 +1,24 @@
+faction:
+  name:
+    regex: "[a-zA-Z0-9_]"
+    max: 10
+    min: 3
 
-factions:
-  max-members:
+  max-owners: 1
+  max-admins: 7
+  max-mods: 7
+  max-members: 25
+  max-allies: 8
+
+chat:
+  handle-toggle-chat: false
+  chat-handler: "GoldenDupe"
+
+performance:
+  # If this is set to false, non-administrator players cannot load offline players to the server.
+  # For example, when a player executes command "/factions info -player <offline-player>"
+  #  it might lag the server for a bit, because the server needs to load the offline player's data
+  #   and load the faction data for the offline player.
+  # The player data in faction should be that large.
+  #  So it would make massive lag to the server, but it's still a possibility if the command is spammed.
+  allow-offline-player-search: true

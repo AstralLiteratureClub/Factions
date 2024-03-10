@@ -13,16 +13,24 @@ public class FRole {
 		@Override
 		public boolean hasPermission(FPermission permission) {
 			return true;
-		}
-	};
+		}};
+	public static final FRole ADMIN = new FRole("admin",
+			FPermission.INVITE, FPermission.INVITES, FPermission.CANCEL_INVITE
+	);
+	public static final FRole MODERATOR = new FRole("moderator"
+
+	);
 	public static final FRole DEFAULT = new FRole("default");
 
 
 	private final String name;
 	private Map<FPermission, Boolean> permissions = new HashMap<>();
 
-	public FRole(String name) {
+	public FRole(String name, FPermission... permissions) {
 		this.name = name;
+		for (FPermission perm : permissions) {
+			this.permissions.put(perm, true);
+		}
 	}
 
 	public boolean hasPermission(FPermission permission){

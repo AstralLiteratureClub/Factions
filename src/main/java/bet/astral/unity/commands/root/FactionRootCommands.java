@@ -15,16 +15,21 @@ import org.incendo.cloud.parser.standard.StringParser;
 public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender> {
 	public final Command.Builder<CommandSender> root;
 	public final Command.Builder<CommandSender> rootForceFaction;
+	public final Command.Builder<CommandSender> rootAlly;
+	public final MinecraftHelp<CommandSender> help;
 
 	public FactionRootCommands(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
-		MinecraftHelp<CommandSender> help = MinecraftHelp.<CommandSender>builder().commandManager(commandManager)
+		help = MinecraftHelp.<CommandSender>builder().commandManager(commandManager)
 				.audienceProvider(AudienceProvider.nativeAudience())
-				.commandPrefix("/faction").build();
+				.commandPrefix("/factions").build();
 
-		root = commandBuilder("faction",
-				plugin.loadDescription(TranslationKey.DESCRIPTION_ROOT, "/faction"),
-				"factions", "clans", "clan", "guilds", "guild")
+		root = commandBuilder("factions",
+				plugin.loadDescription(TranslationKey.DESCRIPTION_ROOT, "/factions"),
+					"faction", "f",
+					"clans", "clan", "c",
+					"guilds", "guild", "g"
+				)
 				.permission(PermissionUtils.of("factions"))
 				.handler(context -> {
 					help.queryCommands("", context.sender());
@@ -45,5 +50,14 @@ public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender>
 				.handler(context -> {
 					help.queryCommands(context.get("query"), context.sender());
 				}));
+
+		rootAlly = commandBuilder("alliance",
+				plugin.loadDescription(TranslationKey.DESCRIPTION_ROOT, "/alliance"),
+				"ally", "allies")
+				.permission(PermissionUtils.of("ally"))
+				.handler(context -> {
+					help.queryCommands("", context.sender());
+				});
+		command(rootAlly);
 	}
 }

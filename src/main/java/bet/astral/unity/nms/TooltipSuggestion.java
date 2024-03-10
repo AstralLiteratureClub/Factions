@@ -1,10 +1,12 @@
 package bet.astral.unity.nms;
 
+import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import com.mojang.brigadier.Message;
 import io.papermc.paper.adventure.AdventureComponent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -43,13 +45,17 @@ public class TooltipSuggestion implements org.incendo.cloud.brigadier.suggestion
 		this.suggestion = suggestion.offlinePlayer().getName();
 	}
 
-	public TooltipSuggestion(Faction faction, boolean id, Component tooltip){
+	public TooltipSuggestion(Faction faction, FactionParser.Mode mode, Component tooltip) {
 		if (tooltip != null) {
 			this.tooltip = new AdventureComponent(tooltip);
-		} else  {
+		} else {
 			this.tooltip = null;
 		}
-		this.suggestion = id ? faction.getUniqueId().toString() : faction.getName();
+		this.suggestion = mode == FactionParser.Mode.UNIQUE_ID
+				? faction.getUniqueId().toString() :
+				mode == FactionParser.Mode.NAME
+						? faction.getName() :
+						PlainTextComponentSerializer.plainText().serialize(faction.getDisplayname());
 	}
 
 	@Override

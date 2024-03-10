@@ -46,7 +46,7 @@ public class FactionInviteParser<C> implements ArgumentParser<C, Faction>, Block
 	}
 
 	private static final Factions factions = Factions.getPlugin(Factions.class);
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy");
+	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy");
 	private FactionInviteParser() {
 	}
 
@@ -74,7 +74,7 @@ public class FactionInviteParser<C> implements ArgumentParser<C, Faction>, Block
 
 		return factions.getFactionManager().created().stream()
 				.filter(faction->faction.isInvited(sender))
-				.map(faction -> new TooltipSuggestion(faction, false,
+				.map(faction -> new TooltipSuggestion(faction, FactionParser.Mode.NAME,
 						Component.text(faction.getName(), NamedTextColor.WHITE)
 								.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 								.append(Component.text("Owner: ", NamedTextColor.WHITE))

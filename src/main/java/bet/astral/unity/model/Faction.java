@@ -1,6 +1,5 @@
 package bet.astral.unity.model;
 
-import bet.astral.messenger.Message;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
@@ -24,6 +23,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.translation.Translatable;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
@@ -75,18 +75,22 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 
 	public Faction(Factions factions, UUID uniqueId, String name, long firstCreated){
 		this.factions = factions;
+		this.name = name.toLowerCase();
+//		this.displayname = Component.text("["+name+"]", NamedTextColor.GOLD);
+		this.displayname = Component.text(name, NamedTextColor.GOLD);
 		this.uniqueId = uniqueId;
 		this.firstCreated = firstCreated;
-		Message defaultDescription = factions.messenger().getMessage(TranslationKey.DEFAULT_FACTION_DESCRIPTION);
-		Message defaultJoin = factions.messenger().getMessage(TranslationKey.DEFAULT_FACTION_JOIN_INFO);
+//		Message defaultDescription = factions.messenger().getMessage(TranslationKey.DEFAULT_FACTION_DESCRIPTION);
+//		Message defaultJoin = factions.messenger().getMessage(TranslationKey.DEFAULT_FACTION_JOIN_INFO);
 		PlaceholderList placeholders = new PlaceholderList();
 		placeholders.add("name", name);
 		placeholders.add("displayname", name);
 		placeholders.add("faction", name);
 		placeholders.add("id", uniqueId.toString());
-		this.description = factions.messenger().parse(defaultDescription, Message.Type.CHAT, placeholders);
-		this.joinInfo = factions.messenger().parse(defaultJoin, Message.Type.CHAT, placeholders);
-		this.displayname = Component.text(name);
+//		this.description = factions.messenger().parse(defaultDescription, Message.Type.CHAT, placeholders);
+//		this.joinInfo = factions.messenger().parse(defaultJoin, Message.Type.CHAT, placeholders);
+		this.description = Component.text("Default description to factions");
+		this.joinInfo = Component.text("Message the owner to join this faction!");
 	}
 
 	public Faction(Factions factions, java.util.UUID uniqueId, long firstCreated, String name, Component displayname, Component description, Component joinInfo, IdentifiedPosition home) {
@@ -132,6 +136,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 			Flag<V> flag = (Flag<V>) flags.get(key);
 			assert newValue != null;
 			flag.setValue(newValue);
+			return;
 		}
 		throw new IllegalStateException("Couldn't edit a flag which is not set!");
 	}
@@ -265,7 +270,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 			return false;
 		}
 		members.add(player);
-		roles.put(player, FRole.DEFAULT);
+		roles.put(player.getUniqueId(), FRole.DEFAULT);
 		requestSave();
 		return true;
 	}
@@ -279,5 +284,27 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	public boolean isBanned(@NotNull UUID uuid) {
 		return false;
 	}
+
+
+	public void setRole(UUID uuid, FRole role){
+		this.roles.put(uuid, role);
+	}
+	public void setRole(OfflinePlayer uuid, FRole role){
+		this.roles.put(uuid, role);
+	}
+	public void setRole(OfflinePlayerReference uuid, FRole role){
+		this.roles.put(uuid.offlinePlayer(), role);
+	}
+
+	public FRole getRole(UUID uuid){
+		return this.roles.get(uuid);
+	}
+	public FRole getRole(OfflinePlayer uuid){
+		return this.roles.get(uuid);
+	}
+	public FRole getRole(OfflinePlayerReference uuid){
+		return this.roles.get(uuid.offlinePlayer());
+	}
+
 
 }

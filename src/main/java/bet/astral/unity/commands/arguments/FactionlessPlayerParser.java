@@ -6,7 +6,7 @@ import org.incendo.cloud.bukkit.parser.PlayerParser;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.exception.parsing.ParserException;
 
-public class FactionlessParser {
+public class FactionlessPlayerParser {
 
 
 
