@@ -8,7 +8,7 @@ public class FPermission {
 	public static final FPermission CANCEL_INVITE = new FPermission("cancel_invite", TriState.FALSE);
 	public static final FPermission INVITES = new FPermission("invites", TriState.FALSE);
 	public static final FPermission DELETE = new FPermission("delete", TriState.FALSE);
-	public static final FPermission INFO = new FPermission("info", TriState.TRUE);
+	public static final FPermission KICK = new FPermission("kick", TriState.FALSE);
 
 	@Getter
 	private final String name;

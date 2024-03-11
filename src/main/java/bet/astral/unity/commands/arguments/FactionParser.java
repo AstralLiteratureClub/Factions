@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class FactionParser<C> implements ArgumentParser<C, Faction>, BlockingSuggestionProvider<C> {
 	private static final Factions factions = Factions.getPlugin(Factions.class);
 	private final Mode mode;
-	private FactionParser(Mode mode) {
+	protected FactionParser(Mode mode) {
 		this.mode = mode;
 	}
 

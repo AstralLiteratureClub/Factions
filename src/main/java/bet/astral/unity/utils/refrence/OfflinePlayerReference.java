@@ -10,4 +10,7 @@ public interface OfflinePlayerReference extends Identity {
 	default OfflinePlayer offlinePlayer() {
 		return Bukkit.getOfflinePlayer(uuid());
 	}
+	default String name() {
+		return offlinePlayer().getName();
+	}
 }

@@ -23,8 +23,10 @@ public class InvitesSubCommand extends FactionCloudCommand {
 		super(plugin, commandManager);
 		commandPlayer(
 				root.literal("invites",
-								loadDescription(TranslationKey.DESCRIPTION_INVITES, "/factions invites")
+								loadDescription(TranslationKey.DESCRIPTION_INVITES, "/factions invites"),
+						"invited"
 						)
+						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INVITES, "/factions invites"))
 						.permission(PermissionUtils.of("invites", FPermission.INVITES))
 						.senderType(Player.class)
 						.handler(context -> {

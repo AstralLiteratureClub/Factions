@@ -17,22 +17,25 @@ public class FInvite {
 	private final long when;
 	private final long expires;
 	private final ScheduledTask task;
+	private final boolean forceInvite;
 
-	public FInvite(Faction faction, Player from, Player to, long length, ScheduledTask task) {
+	public FInvite(Faction faction, Player from, Player to, long length, boolean forceInvite, ScheduledTask task) {
 		this.faction = faction;
 		this.from = PlayerReferenceImpl.of(from);
 		this.to = PlayerReferenceImpl.of(to);
 		this.when = System.currentTimeMillis();
 		this.expires = System.currentTimeMillis()+length;
+		this.forceInvite = forceInvite;
 		this.task = task;
 	}
 
-	public FInvite(Faction faction, PlayerReference from, PlayerReference to, long length, ScheduledTask task) {
+	public FInvite(Faction faction, PlayerReference from, PlayerReference to, long length, boolean forceInvite, ScheduledTask task) {
 		this.faction = faction;
 		this.from = from;
 		this.to = to;
 		this.when = System.currentTimeMillis();
 		this.expires = System.currentTimeMillis()+length;
+		this.forceInvite = forceInvite;
 		this.task = task;
 	}
 }

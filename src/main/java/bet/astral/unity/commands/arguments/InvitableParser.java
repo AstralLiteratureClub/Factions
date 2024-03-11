@@ -28,6 +28,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public class InvitableParser<C> implements ArgumentParser<C, Player>, BlockingSuggestionProvider<C> {
@@ -48,7 +49,7 @@ public class InvitableParser<C> implements ArgumentParser<C, Player>, BlockingSu
 		CommandSender sender = commandContext.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
 		String input = commandInput.readString();
 		Player player = Bukkit.getPlayer(input);
-		if (player == null){
+		if (player == null || sender instanceof Player p && !p.canSee(player)){
 			return ArgumentParseResult.failure(new PlayerParser.PlayerParseException(input, commandContext));
 		}
 
@@ -90,7 +91,7 @@ public class InvitableParser<C> implements ArgumentParser<C, Player>, BlockingSu
 											p.getName(), NamedTextColor.WHITE)
 									.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 									.append(Component.text("First Played: ", NamedTextColor.WHITE))
-									.append(Component.text(DATE_FORMAT.format(Instant.ofEpochMilli(p.player().getFirstPlayed())),
+									.append(Component.text(DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(p.player().getFirstPlayed()))),
 											NamedTextColor.GREEN))
 							))
 					.collect(Collectors.toSet());

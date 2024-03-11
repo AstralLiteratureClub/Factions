@@ -1,5 +1,6 @@
-package bet.astral.unity.event;
+package bet.astral.unity.event.ban;
 
+import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.model.Faction;
 import lombok.Getter;
 import lombok.Setter;

@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,7 @@ public class InvitedParser<C> implements ArgumentParser<C, OfflinePlayer>, Block
 											Objects.requireNonNull(reference.offlinePlayer().getName()), NamedTextColor.WHITE)
 									.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 									.append(Component.text("First Played: ", NamedTextColor.WHITE))
-									.append(Component.text(DATE_FORMAT.format(Instant.ofEpochMilli(reference.offlinePlayer().getFirstPlayed())),
+									.append(Component.text(DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(reference.offlinePlayer().getFirstPlayed()))),
 											NamedTextColor.GREEN)))
 					).collect(Collectors.toList());
 		}

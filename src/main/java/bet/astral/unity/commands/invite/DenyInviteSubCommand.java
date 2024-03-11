@@ -26,6 +26,7 @@ public class DenyInviteSubCommand extends FactionCloudCommand {
 								loadDescription(TranslationKey.DESCRIPTION_INVITE_DENY, "/factions deny-invite")
 								, "dinv"
 						)
+						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INVITE_DENY, "/factions deny-invite"))
 						.permission(PermissionUtils.of("invite.accept", false)
 								.and(PredicatePermission.of((Predicate<CommandSender>) sender -> {
 									if (!(sender instanceof Player player)) {

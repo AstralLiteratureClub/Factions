@@ -46,11 +46,17 @@ dependencies {
     implementation 'org.incendo:cloud-paper:'+cloudVersion
     implementation 'org.incendo:cloud-brigadier:'+cloudVersion
     implementation 'org.incendo:cloud-minecraft-extras:'+cloudVersion
+    /*
+    var cloudOther = "1.0.0-SNAPSHOT";
+    implementation 'org.incendo:cloud-processors-cooldown:'+cloudOther
+    implementation 'org.incendo:cloud-processors-requirements:'+cloudOther
+    implementation 'org.incendo:cloud-processors-confirmation:'+cloudOther
+     */
+
 
     implementation 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-    implementation 'org.apache.commons:commons-math3:3.6.1'
     // Classgraph for reflections of commands
     implementation 'io.github.classgraph:classgraph:4.8.165'
 
@@ -109,7 +115,6 @@ shadowJar {
 
     relocate 'io.github.classgraph', "bet.astral.unity.libs.io.github.classgraph"
     relocate 'org.incendo.cloud', 'bet.astral.unity.libs.org.incendo.cloud'
-    relocate 'org.apache.commons', 'bet.astral.unity.libs.org.apache.commons'
 }
 
 

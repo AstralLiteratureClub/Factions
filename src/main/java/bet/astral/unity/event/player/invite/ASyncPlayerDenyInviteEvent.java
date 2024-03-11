@@ -1,32 +1,27 @@
-package bet.astral.unity.event.player;
+package bet.astral.unity.event.player.invite;
 
 import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.model.Faction;
-import bet.astral.unity.utils.refrence.OfflinePlayerReference;
+import bet.astral.unity.utils.refrence.PlayerReference;
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @Getter
-public class ASyncPlayerCancelInviteEvent extends FactionEvent {
+public class ASyncPlayerDenyInviteEvent extends FactionEvent {
 	@Getter(AccessLevel.NONE)
 	private static final HandlerList HANDLER_LIST = new HandlerList();
-	@Nullable
-	private final String reasoning;
 	@NotNull
-	private final OfflinePlayer to;
+	private final Player player;
 	@NotNull
-	private final Player from;
+	private final PlayerReference from;
 
-	public ASyncPlayerCancelInviteEvent(@NotNull Faction faction, @NotNull OfflinePlayer to, @NotNull Player from, @Nullable String reasoning) {
+	public ASyncPlayerDenyInviteEvent(@NotNull final Faction faction, @NotNull final Player to, @NotNull final PlayerReference from) {
 		super(true, faction);
-		this.reasoning = reasoning;
-		this.to = to;
 		this.from = from;
+		this.player = to;
 	}
 
 	public static HandlerList getHandlerList(){

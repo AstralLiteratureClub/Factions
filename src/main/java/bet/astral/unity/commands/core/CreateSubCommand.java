@@ -1,4 +1,4 @@
-package bet.astral.unity.commands.basic;
+package bet.astral.unity.commands.core;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.permission.Permission;
@@ -27,6 +27,7 @@ public class CreateSubCommand extends FactionCloudCommand {
 								)
 						.senderType(Player.class)
 						.permission(PermissionUtils.of("create", false))
+						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_CREATE, "/factions create"))
 						.required(
 								StringParser.stringComponent(StringParser.StringMode.SINGLE)
 										.name("name")

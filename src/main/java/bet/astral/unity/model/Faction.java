@@ -3,11 +3,16 @@ package bet.astral.unity.model;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
-import bet.astral.unity.event.ASyncInviteExpireEvent;
-import bet.astral.unity.event.player.ASyncPlayerAcceptInviteEvent;
-import bet.astral.unity.event.player.ASyncPlayerCancelInviteEvent;
-import bet.astral.unity.event.player.ASyncPlayerDenyInviteEvent;
+import bet.astral.unity.event.ASyncPlayerKickedFromFactionEvent;
+import bet.astral.unity.event.FactionEvent;
+import bet.astral.unity.event.invite.ASyncInviteExpireEvent;
+import bet.astral.unity.event.player.ASyncPlayerKickedFromFactionByPlayerEvent;
+import bet.astral.unity.event.player.ASyncPlayerLeaveFactionEvent;
 import bet.astral.unity.event.player.ASyncPlayerJoinFactionEvent;
+import bet.astral.unity.event.player.invite.ASyncPlayerAcceptInviteEvent;
+import bet.astral.unity.event.player.invite.ASyncPlayerCancelInviteEvent;
+import bet.astral.unity.event.player.invite.ASyncPlayerDenyInviteEvent;
+import bet.astral.unity.event.player.invite.ASyncPlayerSendInviteEvent;
 import bet.astral.unity.utils.IdentifiedPosition;
 import bet.astral.unity.utils.OfflinePlayerList;
 import bet.astral.unity.utils.PlayerMap;
@@ -63,6 +68,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	private final PlayerMap<FInvite> invites = new PlayerMap<>();
 	private final PlayerMap<FRole> roles = new PlayerMap<>();
 	private final Map<NamespacedKey, Flag<?>> flags = new HashMap<>();
+	private UUID superOwner;
 	private final UUID uniqueId;
 	private final long firstCreated;
 	@Setter(AccessLevel.NONE)
@@ -72,6 +78,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	private Component description;
 	private Component joinInfo;
 	private IdentifiedPosition home = null;
+	private boolean isPublic = false;
 
 	public Faction(Factions factions, UUID uniqueId, String name, long firstCreated){
 		this.factions = factions;
@@ -190,12 +197,13 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		return invites.get(player) != null;
 	}
 
-	public void invite(@NotNull Player from, @NotNull Player to){
+	public boolean invite(@NotNull Player from, @NotNull Player to, boolean forceInvite){
 		FInvite invite = new FInvite(
 				this,
 				from,
 				to,
 				30*1000,
+				forceInvite,
 				factions.getServer().getAsyncScheduler().runDelayed(factions, (task)->{
 					FInvite inv = this.invites.get(to);
 					ASyncInviteExpireEvent event = new ASyncInviteExpireEvent(this, to, inv.getFrom());
@@ -213,7 +221,13 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 						factions.messenger().message(inv.getTo().player(), TranslationKey.MESSAGE_INVITE_EXPIRED, placeholders);
 					}
 				}, 30, TimeUnit.SECONDS));
+		ASyncPlayerSendInviteEvent sendInviteEvent = new ASyncPlayerSendInviteEvent(this, from, to, invite, forceInvite ? FactionEvent.Cause.FORCE : FactionEvent.Cause.PLAYER);
+		if (!sendInviteEvent.callEvent()){
+			invite.getTask().cancel();
+			return false;
+		}
 		invites.put(to.getUniqueId(), invite);
+		return true;
 	}
 
 	public boolean acceptInvite(@NotNull Player to){
@@ -307,4 +321,52 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	}
 
 
+	public void leave(Player sender) {
+		ASyncPlayerLeaveFactionEvent event = new ASyncPlayerLeaveFactionEvent(this, sender);
+		event.callEvent();
+
+		members.remove(sender.getUniqueId());
+		roles.remove(sender.getUniqueId());
+		if (sender.getUniqueId().equals(superOwner)){
+			setSuperOwner(null);
+		}
+	}
+
+	public void kick(OfflinePlayer member, String reason) {
+		ASyncPlayerKickedFromFactionEvent event = new ASyncPlayerKickedFromFactionEvent(this, FactionEvent.Cause.PLUGIN, member, reason);
+		event.callEvent();
+
+		FPlayer player = factions.getPlayerManager().get(member.getUniqueId());
+		if (player == null){
+			player = new FPlayer(factions, member.getUniqueId(), member.getUniqueId().toString());
+		}
+		factions.getPlayerDatabase().delete(player);
+		player.setFactionId(null);
+
+
+		members.remove(member.getUniqueId());
+		roles.remove(member.getUniqueId());
+		if (member.getUniqueId().equals(superOwner)){
+			setSuperOwner(null);
+		}
+	}
+
+	public void kick(Player whoKicked, OfflinePlayer member, String reason, boolean force){
+		ASyncPlayerKickedFromFactionByPlayerEvent event = new ASyncPlayerKickedFromFactionByPlayerEvent(this, force ? FactionEvent.Cause.FORCE : FactionEvent.Cause.PLAYER, member, whoKicked, reason);
+		event.callEvent();
+
+		FPlayer player = factions.getPlayerManager().get(member.getUniqueId());
+		if (player == null){
+			player = new FPlayer(factions, member.getUniqueId(), member.getUniqueId().toString());
+		}
+		factions.getPlayerDatabase().delete(player);
+		player.setFactionId(null);
+
+
+		members.remove(member.getUniqueId());
+		roles.remove(member.getUniqueId());
+		if (member.getUniqueId().equals(superOwner)){
+			setSuperOwner(null);
+		}
+	}
 }

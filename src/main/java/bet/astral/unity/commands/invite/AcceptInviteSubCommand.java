@@ -25,6 +25,7 @@ public class AcceptInviteSubCommand extends FactionCloudCommand {
 						.literal("accept-invite",
 								loadDescription(TranslationKey.DESCRIPTION_INVITE_ACCEPT, "/factions accept-invite"),
 								"ainv")
+						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INVITE_ACCEPT, "/factions accept-invite"))
 						.permission(PermissionUtils.of("invite.accept", false)
 								.and(PredicatePermission.of((Predicate<CommandSender>) sender -> {
 									if (!(sender instanceof Player player)) {

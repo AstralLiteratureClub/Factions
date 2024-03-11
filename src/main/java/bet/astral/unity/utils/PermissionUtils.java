@@ -68,8 +68,6 @@ public class PermissionUtils {
 						FRole role = faction.getRoles().get(sender.getUniqueId());
 						if (role == null) {
 							factions.getLogger().severe("Couldn't find role for player "+ player.getName() + " ("+ player.getUniqueId()+")");
-							factions.getLogger().severe("Couldn't find role for player "+ player.getName() + " ("+ player.getUniqueId()+")");
-							factions.getLogger().severe("Couldn't find role for player "+ player.getName() + " ("+ player.getUniqueId()+")");
 							return PermissionResult.denied(this);
 						}
 						return PermissionResult.of(role.hasPermission(factionPermission), this);

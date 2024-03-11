@@ -1,16 +1,19 @@
-package bet.astral.unity.event;
+package bet.astral.unity.event.change;
 
+import bet.astral.unity.event.FactionChangeEvent;
 import bet.astral.unity.model.Faction;
 import lombok.AccessLevel;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-public class ASyncFactionNameChangeEvent extends FactionChangeEvent<String, String> {
+@Getter
+public class ASyncFactionDisplaynameChangeEvent extends FactionChangeEvent<Component, Component> {
 	@Getter(AccessLevel.NONE)
 	private final static HandlerList HANDLER_LIST = new HandlerList();
 
-	public ASyncFactionNameChangeEvent(@NotNull Faction faction, String from, String to) {
+	public ASyncFactionDisplaynameChangeEvent(@NotNull Faction faction, Component from, Component to) {
 		super(faction, from, to);
 	}
 

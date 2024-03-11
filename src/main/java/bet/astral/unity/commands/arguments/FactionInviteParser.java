@@ -78,7 +78,6 @@ public class FactionInviteParser<C> implements ArgumentParser<C, Faction>, Block
 						Component.text(faction.getName(), NamedTextColor.WHITE)
 								.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 								.append(Component.text("Owner: ", NamedTextColor.WHITE))
-								.append(toString(faction.getMembers().toUnmodifiableReferenceList()))
 				))
 				.collect(Collectors.toList());
 	}

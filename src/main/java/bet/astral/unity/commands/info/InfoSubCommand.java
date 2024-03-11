@@ -1,5 +1,7 @@
-package bet.astral.unity.commands.basic;
+package bet.astral.unity.commands.info;
 
+import bet.astral.cloudplusplus.annotations.Cloud;
+import bet.astral.messenger.permission.Permission;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
@@ -8,17 +10,21 @@ import bet.astral.unity.commands.arguments.FactionPlayerParser;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.TranslationKey;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.paper.PaperCommandManager;
+import org.incendo.cloud.permission.PredicatePermission;
 
+@Cloud
 public class InfoSubCommand extends FactionCloudCommand {
 	public InfoSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		Command.Builder<Player> builder = root
 				.literal("info",
 						loadDescription(TranslationKey.DESCRIPTION_INFO, "/factions info"))
+				.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INFO, "/factions info"))
 				.senderType(Player.class)
 				.handler(context -> {
 					Player sender = context.sender();
@@ -39,6 +45,7 @@ public class InfoSubCommand extends FactionCloudCommand {
 								.name("faction")
 								.description(loadDescription(TranslationKey.DESCRIPTION_INFO_FACTION, "/factions info <faction>"))
 				)
+				.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INFO_FACTION, "/factions info <faction>"))
 				.handler(context -> {
 					Player sender = context.sender();
 					Faction faction = context.get("faction");
@@ -50,6 +57,22 @@ public class InfoSubCommand extends FactionCloudCommand {
 		commandPlayer(builder.literal("-player",
 				loadDescription(TranslationKey.DESCRIPTION_INFO_PLAYER_LITERAL, "/factions info -player"),
 				"-p")
+				.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INFO_PLAYER_LITERAL, "/factions info -player"))
+				.permission(
+						PredicatePermission.of(sender -> {
+							boolean can = Bukkit.getOnlinePlayers().stream()
+									.filter(p->!p.equals(sender))
+									.filter(sender::canSee)
+									.map(p->plugin.getPlayerManager().convert(p))
+									.anyMatch(p->p.getFaction() != null);
+							if (!plugin.getFactionConfig().getPerformance()
+									.isAllowOfflinePlayerSearch() &&
+									!Permission.of("load-offline").checkPermission(sender)){
+								return can;
+							}
+							return true;
+						})
+				)
 				.required(
 						FactionPlayerParser.factionPlayerComponent()
 								.name("player")

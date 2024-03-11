@@ -10,7 +10,7 @@ import org.incendo.cloud.Command;
 import org.incendo.cloud.description.Description;
 import org.incendo.cloud.paper.PaperCommandManager;
 
-public class CloudPPCommand<P extends JavaPlugin, C> implements MessageReload {
+public class CloudPPCommand<P extends JavaPlugin, C extends CommandSender> implements MessageReload {
 	protected final PaperCommandManager<C> commandManager;
 	protected final P plugin;
 	protected final CommandRegisterer<P> registerer;
@@ -41,9 +41,6 @@ public class CloudPPCommand<P extends JavaPlugin, C> implements MessageReload {
 		this.debugMessenger = registerer.debugMessenger();
 	}
 
-	public void command(Command<C> command){
-		commandManager.command(command);
-	}
 	public void command(Command.Builder<C> command){
 		commandManager.command(command);
 	}

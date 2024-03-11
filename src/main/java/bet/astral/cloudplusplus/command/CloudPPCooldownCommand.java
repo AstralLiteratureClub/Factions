@@ -1,6 +1,7 @@
 package bet.astral.cloudplusplus.command;
 
 import bet.astral.cloudplusplus.Cooldown;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -10,7 +11,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CloudPPCooldownCommand<P extends JavaPlugin, C> extends CloudPPCommand<P, C> implements Cooldown<C>, Listener {
+public class CloudPPCooldownCommand<P extends JavaPlugin, C extends CommandSender> extends CloudPPCommand<P, C> implements Cooldown<C>, Listener {
 	private final Map<C, Long> cooldowns = new HashMap<>();
 	private final long cooldown;
 

@@ -4,11 +4,11 @@ faction:
     max: 10
     min: 3
 
-  max-owners: 1
-  max-admins: 7
+  max-owners: 2
+  max-admins: 3
   max-mods: 7
-  max-members: 25
-  max-allies: 8
+  max-members: 9
+  max-allies: 3
 
 chat:
   handle-toggle-chat: false

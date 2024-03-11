@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.bukkit.BukkitCommandContextKeys;
 import org.incendo.cloud.bukkit.parser.OfflinePlayerParser;
@@ -27,6 +28,7 @@ import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 import org.incendo.cloud.suggestion.Suggestion;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>, BlockingSuggestionProvider<C> {
@@ -43,15 +45,15 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 	}
 
 	public @NonNull ArgumentParseResult<OfflinePlayer> parse(final @NonNull CommandContext<C> commandContext, final @NonNull CommandInput commandInput) {
+		CommandSender sender = commandContext.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
 		String input = commandInput.readString();
-		OfflinePlayer player = Bukkit.getPlayer(input);
-		if (player == null){
+		OfflinePlayer player = Bukkit.getOfflinePlayer(input);
+		if (!player.hasPlayedBefore() && !player.isOnline() || sender instanceof Player p && player instanceof Player p2 && p.canSee(p2)){
 			return ArgumentParseResult.failure(new OfflinePlayerParser.OfflinePlayerParseException(input, commandContext));
 		}
 
 		FPlayer fPlayer = factions.getPlayerManager().get(player.getUniqueId());
 		if (fPlayer == null){
-			CommandSender sender = commandContext.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
 			if (!factions.getFactionConfig().getPerformance().isAllowOfflinePlayerSearch()){
 				if (!sender.hasPermission(PermissionUtils.of("performance.load-offline").permissionString())){
 					return ArgumentParseResult.failure(new CannotCheckOfflinePlayerException(input, commandContext));
@@ -77,7 +79,7 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 										reference.player().getName(), NamedTextColor.WHITE)
 								.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 								.append(Component.text("First Played: ", NamedTextColor.WHITE))
-								.append(Component.text(InvitableParser.DATE_FORMAT.format(Instant.ofEpochMilli(reference.offlinePlayer().getFirstPlayed())),
+								.append(Component.text(InvitableParser.DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(reference.offlinePlayer().getFirstPlayed()))),
 										NamedTextColor.GREEN)))
 				).collect(Collectors.toList());
 	}

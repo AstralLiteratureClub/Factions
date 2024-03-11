@@ -3,15 +3,17 @@ package bet.astral.cloudplusplus.command;
 import bet.astral.cloudplusplus.CommandRegisterer;
 import bet.astral.cloudplusplus.Confirmable;
 import org.apache.commons.lang3.tuple.Triple;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.checkerframework.checker.units.qual.C;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class CloudPPConfirmableCommand<P extends JavaPlugin, C> extends CloudPPCommand<P, C> implements Confirmable<C> {
+public class CloudPPConfirmableCommand<P extends JavaPlugin, C extends CommandSender> extends CloudPPCommand<P, C> implements Confirmable<C> {
 	private final Map<C, Triple<BukkitTask, Consumer<C>, Consumer<C>>> confirmable = new HashMap<>();
 
 	public CloudPPConfirmableCommand(P plugin, CommandRegisterer<P> registerer, PaperCommandManager<C> commandManager) {

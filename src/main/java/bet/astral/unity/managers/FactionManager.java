@@ -1,16 +1,18 @@
 package bet.astral.unity.managers;
 
 import bet.astral.unity.Factions;
-import bet.astral.unity.event.ASyncFactionBanEvent;
+import bet.astral.unity.event.ban.ASyncFactionBanEvent;
 import bet.astral.unity.event.ASyncFactionDeleteEvent;
-import bet.astral.unity.event.ASyncFactionDisplaynameChangeEvent;
-import bet.astral.unity.event.ASyncFactionNameChangeEvent;
-import bet.astral.unity.event.player.ASyncPlayerChangeFactionDisplaynameEvent;
-import bet.astral.unity.event.player.ASyncPlayerChangeFactionNameEvent;
+import bet.astral.unity.event.change.ASyncFactionDisplaynameChangeEvent;
+import bet.astral.unity.event.change.ASyncFactionNameChangeEvent;
+import bet.astral.unity.event.player.change.ASyncPlayerChangeFactionDisplaynameEvent;
+import bet.astral.unity.event.player.change.ASyncPlayerChangeFactionNameEvent;
 import bet.astral.unity.event.player.ASyncPlayerCreateFactionEvent;
 import bet.astral.unity.event.player.ASyncPlayerDeleteFactionEvent;
+import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
+import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
@@ -105,6 +107,7 @@ public class FactionManager {
 
 				faction.join(player);
 				faction.setRole(player, FRole.OWNER);
+				faction.setSuperOwner(player.getUniqueId());
 				break;
 			}
 		}
@@ -116,6 +119,18 @@ public class FactionManager {
 		byName.remove(faction.getName().toLowerCase());
 		byCustomName.remove(PlainTextComponentSerializer.plainText().serialize(faction.getDisplayname()));
 		byId.remove(faction.getUniqueId());
+
+		for (OfflinePlayerReference playerReference : faction.getMembers().toUnmodifiableReferenceList()){
+			if (playerReference.offlinePlayer() instanceof Player player){
+				FPlayer fPlayer = factions.getPlayerManager().convert(player);
+				fPlayer.setFactionId(null);
+				factions.getPlayerDatabase().delete(fPlayer);
+			} else {
+				FPlayer player = new FPlayer(factions, playerReference.uuid(), playerReference.uuid().toString());
+				factions.getPlayerDatabase().delete(player);
+			}
+		}
+
 		requestDeletion(faction);
 	}
 	public void delete(@NotNull Faction faction) {
@@ -128,7 +143,6 @@ public class FactionManager {
 		if (!event.callEvent()){
 			return;
 		}
-
 		internalDelete(faction);
 	}
 

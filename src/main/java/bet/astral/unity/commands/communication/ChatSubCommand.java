@@ -1,4 +1,4 @@
-package bet.astral.unity.commands.basic;
+package bet.astral.unity.commands.communication;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
