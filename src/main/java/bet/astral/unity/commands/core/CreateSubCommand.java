@@ -68,7 +68,7 @@ public class CreateSubCommand extends FactionCloudCommand {
 							placeholders.addAll(Faction.factionPlaceholders("", faction));
 							placeholders.addAll(PlaceholderUtils.createPlaceholders("player", (LivingEntity) sender));
 							messenger.message(sender, TranslationKey.MESSAGE_CREATE_FACTION, placeholders);
-							messenger.broadcast(PredicatePermission.of(commandSender -> !commandSender.equals(sender)), TranslationKey.BROADCAST_CREATE_FACTION, placeholders);
+							messenger.broadcast(TranslationKey.BROADCAST_CREATE_FACTION, placeholders);
 						})
 		);
 	}

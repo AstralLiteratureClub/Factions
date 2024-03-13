@@ -63,7 +63,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	public static PlaceholderList factionPlaceholders(@Nullable String prefix, @NotNull Faction faction){
 		PlaceholderList placeholders = new PlaceholderList();
 		if (prefix != null){
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, prefix, faction));
+			placeholders.add(PlaceholderUtils.createPlaceholder(null, prefix, faction));
 		}
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "name", faction.name));
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "displayname", faction.displayname));
