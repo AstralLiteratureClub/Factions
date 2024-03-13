@@ -3,6 +3,23 @@ placeholders:
     value: "<#8aff30><bold>Unity<reset>"
   - name: "prefix_admin"
     value: "<gold><bold>ADMIN <dark_gray>| <#8aff30><bold>Unity<reset>"
+  - name: "prefix_force"
+    value: "<dark_red><bold>FORCE <dark_gray>| <#8aff30><bold>Unity<reset>"
+
+# Commonly known as command exceptions
+captions:
+  unknown-role: "<white>Unknown faction role <red>%input%<white>."
+  private-faction: "<red>%input%<white> is a private faction."
+  unknown-member: "<white>Unknown member for <red>%input%<white>."
+  player-has-not-been-invited: "<red>%input%<white> has not been invited to the faction."
+  player-has-already-been-invited: "<red>%input%<white> has been already invited to the faction."
+  has-a-faction: "<red>%input% <white>already has a faction."
+  has-no-faction: "<red>%input%<white> does not have a faction."
+  cannot-check-offline: "<white>You cannot see offline information of <red>%input%<white>."
+  unknown-faction: "<white>There is no faction named <red>%input%<white>"
+  sender-has-no-faction: "<white>You need a faction to use this."
+  faction-has-not-invited-player: "<red>%input% <white>has not been invited to the faction."
+  faction-has-banned-player: "<red>%input%<white> has been banned from the faction."
 
 root:
   description: "The root of the faction commands."
@@ -25,7 +42,7 @@ create:
   message-name-is-banned: "%prefix% The name you are trying to create is not allowed in this server."
   message-name-already-exists: "%prefix% The name you are trying to create is not allowed in this server."
   message-created-faction: "%prefix% <green>Successfully created faction <white>%faction%<green>!"
-  broadcast-public-of-creation: "<dark_green><bold>NEW FACTION <white>%sender%<green> has created a new faction named <white>%faction%<green>!"
+  broadcast-public-of-creation: "<dark_green><bold>NEW FACTION<!bold> <white>%sender%<green> has created a new faction named <white>%faction%<green>!"
 
 delete:
   description: "Allows the leading owner to disband the faction."
@@ -43,9 +60,9 @@ delete:
   broadcast-public-of-deletion: "%prefix% <dark_red>The faction named <white>%faction% <dark_red>was disbanded by <white>%sender%<dark_red>."
   message-sender-of-deletion: "%prefix% <green><bold>Successfully <reset><red>Disbanded your faction."
 
-  message-inform-about-force-disband: "%prefix% <dark_red><bold>(FORCE) <red>Successfully disbanded <white>%faction% <red>for reason <white>%reason%<red>."
-  broadcast-faction-about-force-disband: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has disbanded your faction <white>(%faction%) <red>for reason <white>%reason%<red>."
-  broadcast-public-about-force-disband: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has disbanded faction <white>%faction% <red>for reason <white>%reason%<red>."
+  message-inform-about-force-disband: "%prefix_force% <red>Successfully disbanded <white>%faction% <red>for reason <white>%reason%<red>."
+  broadcast-faction-about-force-disband: "%prefix_force% <white>%sender% <red>has disbanded your faction <white>(%faction%) <red>for reason <white>%reason%<red>."
+  broadcast-public-about-force-disband: "%prefix_force% <white>%sender% <red>has disbanded faction <white>%faction% <red>for reason <white>%reason%<red>."
   broadcast-admins-about-force-disband: "%prefix_admin% <dark_red><bold>(FORCE) <white>%sender% <red>has disbanded faction <white>%faction% <red>for reason <white>%reason%<red>."
 
 invite:
@@ -63,7 +80,7 @@ invite:
   description-cancel-player-arg: "Selects the given player."
   description-cancel-reason-arg: "The reason to cancel the invite."
   description-force-invite: "<red>Allows admins to forcefully invite anyone to any clan in the server."
-  description-force-invite-faction-arg: "<red>The faction to use this force on."
+  description-force-invite-faction-arg: "<red>The faction selected."
   description-force-invite-player-arg: "<red>The player to invite to the faction."
   description-force-invite--all-arg: "<red>Selects all the players in the server."
 
@@ -73,7 +90,10 @@ invite:
   message-receiver-of-invitation-expiring: "%prefix% <white>Your invitation from <green>%player% <white> to <yellow>%faction% <white>has expired."
 
   message-receiver-accepted: "%prefix% <green>Accepted the invitation to join <white>%faction%<green>."
-  broadcast-faction-of-receiver-accepting: "%prefix% <white>%to% <green>has accepted the invitation to your faction."
+  broadcast-faction-of-receiver-accepting:
+    - ""
+    - "%prefix% <white>%to% <green>has accepted the invitation to your faction."
+    - ""
 
   message-receiver-denied: "%prefix% <green>Denied the invitation of <white>%faction%<green>."
   message-receiver-denied-all: "%prefix% <green>Denied all invitations from factions who had invited you. <gray>(<white>%faction%<gray>)<green>."
@@ -87,14 +107,15 @@ invite:
   message-invites-header: "%prefix% Your faction has <green>%invites%"
   message-invites-value: "<gray> - <yellow>%to%<white> - <red><click:run_command:/factions cancel-invite %to%><hover:show_text:'<gray><!italic>Click here to cancel this invitation.'>CANCEL"
 
-  broadcast-force-faction-of-invite: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has force invited <white>%to% <red>to your faction."
-  message-force-invite-receive: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has force invited you to join <white>%faction%<red>."
-  message-force-invite-sent: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has force invited you to join <white>%faction%<red>."
+  broadcast-force-faction-of-invite: "%prefix_force% <white>%sender% <red>has force invited <white>%to% <red>to your faction."
+  message-force-invite-receive: "%prefix_force% <white>%sender% <red>has force invited you to join <white>%faction%<red>."
+  message-force-invite-sent: "%prefix_force% <white>%sender% <red>has force invited you to join <white>%faction%<red>."
 
 chat:
   description: "Allows a faction member message their own faction."
   description-message-arg: "The message to send to the faction."
   description-force: "<red>Allows an admin to send a message to any of the factions in the server."
+  description-force-faction-arg: "<red>The faction selected."
   description-force-message-arg: "<red>The message to send to the faction."
 
 info:
@@ -113,5 +134,82 @@ leave:
   message-leaving-player: "%prefix% <green>You successfully left <white>%faction%<green>."
   broadcast-leaving-faction-of-leave: "%prefix% <white>%sender% <red>has left the faction."
 
+kick:
+  description: "Allows clan admins to kick clan members."
+  description-member-arg: "The selected member to be kicked."
+  description-reason-arg: "The reason to kicked the member for."
+  description-force: "<red>Allows admins to kick from any clan any member."
+  description-force-faction-arg: "<red>The faction selected."
+  description-force-player-arg: "<red>The faction member to be kicked."
+  description-force-reason-arg: "<red>The reason to kick this member from the faction."
+
+
+  message-cannot-kick: "%prefix% You cannot kick <yellow>%kicked%<white> from the faction."
+  message-kicked-of-kick:
+    title: "<red><bold>Kicked"
+    subtitle: "<red>You were kicked from <white>%faction%<red>."
+    chat: "%prefix% <red>You were kicked from <white>%faction%<red> by <white>%sender%<red>. <gray><italic>(%reason%)"
+  broadcast-faction-of-kick: "%prefix% <white>%sender% <red>has kicked <white>%kicked% <red>from the faction. <gray><italic>(%reason%)"
+  
+  message-force-kick-success: "%prefix_force% <green>Successfully force-kicked <white>%kicked%<green> from <white>%faction%<green>."
+  message-force-kicked-about-kick: "%prefix_force% <red>You have been force-kicked from <white>%faction%<red> by <white>%sender%<red>."
+  broadcast-faction-about-force-kick: "%prefix_force% <white>%kicked%<red> was force-kicked by <white>%sender%<red> from your faction."
+
+join:
+  description: "Allows players to join a faction in the server."
+  description-faction-arg: "The faction to join."
+  description-force: "<red>Allows admins to join any faction in the server."
+  description-force-faction-arg: "<red>The faction selected."
+  description-force-role-arg: "<redThe role to receive when joining."
+
+  message-how-to-join: "%prefix% You're not invited to <yellow>%faction%<white>. You can join by: <gray>%faction_how_to_join%"
+  message-joined-public: "%prefix% <green>You've successfully joined <white>%faction%<green>."
+  broadcast-faction-about-new-member:
+    - ""
+    - "%prefix% <yellow>%player% <white>is your newest member!"
+    - ""
+
+  message-force-joined: "%prefix_force% <yellow>Force joined <yellow>%faction% <white>with role <yellow>%role%<white>."
+  broadcast-faction-of-force-join: "%prefix_force%: <white>%sender%<red> has force joined your faction."
+
+prefix:
+  description: "Allows clan admins to manage the public and private prefixes of members and roles."
+  description-set-arg: "Allows clan admins to set the public and private prefix of members and roles."
+  description-set-public-arg: "Allows clan admins to set the public prefix of roles."
+  description-set-public-role-arg: "The role to change prefix of."
+  description-set-public-prefix-arg: "The new prefix for the role. Allowed pattern regex: %allowed_pattern%"
+  description-set-private-arg: "Allows clan admins to change private prefixes of members and roles."
+
+  description-set-private-role-arg: "Allows clan admins to change private prefix of the roles."
+  description-set-private-role-role-arg: "The role to change the role for."
+  description-set-private-player-arg: "Allows clan admins to change private prefix of a member."
+  description-set-private-player-member-arg: "The member to change prefix for."
+  description-set-private-prefix-arg: "The new prefix for the role. Type in \"Quotation marks\" to add spaces."
+
+  description-reset-arg: "Allows clan admins to reset the public and private prefixes of members and roles."
+
+  message-public-prefix-is-too-short: "%prefix% The prefix you are trying to use is too short!"
+  message-public-prefix-is-too-long: "%prefix% The prefix you are trying to use is too long!"
+  message-public-prefix-is-too-does-not-match: "%prefix% The prefix you are trying to use does not match the allowed prefixes!"
+  message-changed-public-prefix: "%prefix% Changed the public prefix of <yellow>%role%<white> to <yellow>%prefix%<white>."
+
+  message-changed-private-role: "%prefix% Changed the private prefix of <yellow>%role%<white> to <yellow>%prefix%<white>."
+  message-changed-private-member: "%prefix% Changed the private prefix of <yellow>%member%<white> to <yellow>%prefix%<white>."
+
+ban:
+  description-force: "<red>Allows admins to ban factions and sudo factions to ban a player."
+  force-faction:
+    description: "<red>Allows admins to ban factions from the server."
+    description-faction-arg: "<red>The faction name to ban."
+    description-reason-arg: "<red>The reason to ban this faction."
+    description-silent-arg: "<red>Should this action be silent from the public."
+
+    message-already-banned: "%prefix_force% <red>%banned% <white>is already banned from the server."
+    message-banned: "%prefix_force% <dark_green>Banned faction <white>%faction%<dark_green> from the server."
+    broadcast-admins-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server."
+    broadcast-public-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server."
+    broadcast-faction-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server. You will no longer have a faction."
+  force-player:
+    description: "<red>Selects ban type to player."
 
 # description-
