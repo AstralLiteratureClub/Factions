@@ -1,5 +1,9 @@
 package bet.astral.unity.model;
 
+import bet.astral.messenger.placeholder.Placeholder;
+import bet.astral.messenger.placeholder.PlaceholderList;
+import bet.astral.messenger.placeholder.Placeholderable;
+import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.utils.refrence.PlayerReference;
 import bet.astral.unity.utils.refrence.PlayerReferenceImpl;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -7,10 +11,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 
 @Getter
 @Setter
-public class FInvite {
+public class FInvite implements Placeholderable {
 	private final Faction faction;
 	private final PlayerReference from;
 	private final PlayerReference to;
@@ -37,5 +43,13 @@ public class FInvite {
 		this.expires = System.currentTimeMillis()+length;
 		this.forceInvite = forceInvite;
 		this.task = task;
+	}
+
+	@Override
+	public Collection<Placeholder> asPlaceholder(String prefix) {
+		PlaceholderList placeholders = new PlaceholderList();
+		placeholders.addAll(PlaceholderUtils.createPlaceholders(prefix +"from", from.offlinePlayer()));
+		placeholders.addAll(PlaceholderUtils.createPlaceholders(prefix +"to", to.offlinePlayer()));
+		return placeholders;
 	}
 }

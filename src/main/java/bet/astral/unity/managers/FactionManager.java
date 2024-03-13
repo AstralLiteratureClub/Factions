@@ -1,6 +1,7 @@
 package bet.astral.unity.managers;
 
 import bet.astral.unity.Factions;
+import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.event.ban.ASyncFactionBanEvent;
 import bet.astral.unity.event.ASyncFactionDeleteEvent;
 import bet.astral.unity.event.change.ASyncFactionDisplaynameChangeEvent;
@@ -14,6 +15,7 @@ import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +27,8 @@ import java.util.*;
 public class FactionManager {
 	private final Field nameField;
 	private final Field customNameField;
+	private final Field membersField;
+	private final Field rolesField;
 	private final Factions factions;
 	private final Map<UUID, Faction> byId = new HashMap<>();
 	private final Map<String, Faction> byName = new HashMap<>();
@@ -40,10 +44,15 @@ public class FactionManager {
 		bannedNames.add("antweetus");
 
 		try {
-			nameField = Faction.class.getDeclaredField("name");
+			Class<?> faction = Faction.class;
+			nameField = faction.getDeclaredField("name");
 			nameField.setAccessible(true);
-			customNameField = Faction.class.getDeclaredField("displayname");
+			customNameField = faction.getDeclaredField("displayname");
 			customNameField.setAccessible(true);
+			membersField = faction.getDeclaredField("members");
+			membersField.setAccessible(true);
+			rolesField = faction.getDeclaredField("roles");
+			rolesField.setAccessible(true);
 		} catch (NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}
@@ -105,8 +114,17 @@ public class FactionManager {
 				byCustomName.put(PlainTextComponentSerializer.plainText().serialize(faction.getDisplayname()).toLowerCase(), faction);
 				requestSave(faction);
 
-				faction.join(player);
-				faction.setRole(player, FRole.OWNER);
+				// This shouldn't be done by other plugins, but adding a player this way doesn't call the async player join event.
+				try {
+					//noinspection unchecked
+					List<UUID> members = (List<UUID>) membersField.get(faction);
+					members.add(player.getUniqueId());
+					//noinspection unchecked
+					Map<UUID, FRole> roles = (Map<UUID, FRole>) rolesField.get(faction);
+					roles.put(player.getUniqueId(), FRole.OWNER);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
 				faction.setSuperOwner(player.getUniqueId());
 				break;
 			}
@@ -120,7 +138,7 @@ public class FactionManager {
 		byCustomName.remove(PlainTextComponentSerializer.plainText().serialize(faction.getDisplayname()));
 		byId.remove(faction.getUniqueId());
 
-		for (OfflinePlayerReference playerReference : faction.getMembers().toUnmodifiableReferenceList()){
+		for (OfflinePlayerReference playerReference : OfflinePlayerReference.toReferenceList(faction.getMembers())){
 			if (playerReference.offlinePlayer() instanceof Player player){
 				FPlayer fPlayer = factions.getPlayerManager().convert(player);
 				fPlayer.setFactionId(null);
@@ -133,8 +151,8 @@ public class FactionManager {
 
 		requestDeletion(faction);
 	}
-	public void delete(@NotNull Faction faction) {
-		ASyncFactionDeleteEvent event = new ASyncFactionDeleteEvent(faction, ASyncFactionDeleteEvent.Cause.FORCE);
+	public void delete(@NotNull Faction faction, boolean plugin) {
+		ASyncFactionDeleteEvent event = new ASyncFactionDeleteEvent(faction, plugin ? FactionEvent.Cause.PLUGIN : ASyncFactionDeleteEvent.Cause.FORCE);
 		event.callEvent();
 		internalDelete(faction);
 	}
@@ -160,6 +178,10 @@ public class FactionManager {
 	}
 	private void banName(@NotNull Component name){
 		bannedNames.add(PlainTextComponentSerializer.plainText().serialize(name).toLowerCase());
+	}
+	public void ban(String name, Component name2) {
+		banName(name);
+		banName(name2);
 	}
 	public void ban(@NotNull Faction faction, boolean name, boolean displayname, boolean deleteFaction){
 		if (name){
@@ -195,7 +217,7 @@ public class FactionManager {
 
 			ASyncFactionBanEvent factionBanEvent = new ASyncFactionBanEvent(faction, faction.getName(), faction.getDisplayname(), ASyncFactionBanEvent.Type.FACTION);
 			if (factionBanEvent.callEvent()){
-				delete(faction);
+				delete(faction, true);
 			}
 		}
 	}
@@ -266,4 +288,5 @@ public class FactionManager {
 	public Set<Faction> created() {
 		return new HashSet<>(byId.values());
 	}
+
 }

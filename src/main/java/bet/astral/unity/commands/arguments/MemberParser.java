@@ -6,6 +6,7 @@ import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
 import bet.astral.unity.utils.TranslationKey;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
+import bet.astral.unity.utils.refrence.PlayerReferenceImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -115,7 +116,8 @@ public class MemberParser<C> implements ArgumentParser<C, OfflinePlayer>, Blocki
 			}
 		} else {
 			Faction faction = commandContext.get("faction");
-			return faction.getMembers().toUnmodifiableReferenceList().stream()
+			return faction.getMembers().stream()
+					.map(PlayerReferenceImpl::new)
 					.map(OfflinePlayerReference::offlinePlayer)
 					.map(p ->
 							new TooltipSuggestion(p, Component.text(

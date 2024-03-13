@@ -28,7 +28,6 @@ public class InviteSubCommand extends FactionCloudCommand {
 		Command.Builder<Player> builder =
 				root.literal(
 								"invite",
-								loadDescription(TranslationKey.DESCRIPTION_INVITE, "/factions invite"),
 								"add")
 						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INVITE, "/factions invite"))
 						.permission(PermissionUtils.of("invite", FPermission.INVITE))
@@ -138,24 +137,24 @@ public class InviteSubCommand extends FactionCloudCommand {
 
 	private void invite(Player sender, Player other, Faction faction) {
 		PlaceholderList placeholders = new PlaceholderList();
-		placeholders.addAll(commandMessenger.createPlaceholders("from", sender));
-		placeholders.addAll(commandMessenger.createPlaceholders("to", other));
+		placeholders.addAll(messenger.createPlaceholders("sender", sender));
+		placeholders.addAll(messenger.createPlaceholders("to", other));
 		placeholders.addAll(Faction.factionPlaceholders("faction", faction));
 
-		commandMessenger.message(faction, TranslationKey.BROADCAST_INVITE_FACTION, placeholders);
-		commandMessenger.message(other, TranslationKey.MESSAGE_INVITE_RECEIVER, placeholders);
+		messenger.message(faction, TranslationKey.BROADCAST_INVITE_TO_FACTION, placeholders);
+		messenger.message(other, TranslationKey.MESSAGE_INVITE_RECEIVER, placeholders);
 		faction.invite(sender, other, false);
 	}
 
 	private void forceInvite(Player sender, Player other, Faction faction) {
 		PlaceholderList placeholders = new PlaceholderList();
-		placeholders.addAll(commandMessenger.createPlaceholders("from", sender));
-		placeholders.addAll(commandMessenger.createPlaceholders("to", other));
+		placeholders.addAll(messenger.createPlaceholders("sender", sender));
+		placeholders.addAll(messenger.createPlaceholders("to", other));
 		placeholders.addAll(Faction.factionPlaceholders("faction", faction));
 
-		commandMessenger.message(sender, TranslationKey.MESSAGE_FORCE_INVITE_SENDER, placeholders);
-		commandMessenger.message(faction, TranslationKey.BROADCAST_FORCE_INVITE_FACTION, placeholders);
-		commandMessenger.message(other, TranslationKey.MESSAGE_FORCE_INVITE_RECEIVER, placeholders);
+		messenger.message(sender, TranslationKey.MESSAGE_FORCE_INVITE_SENDER, placeholders);
+		messenger.message(faction, TranslationKey.BROADCAST_FORCE_INVITE_FACTION, placeholders);
+		messenger.message(other, TranslationKey.MESSAGE_FORCE_INVITE_RECEIVER, placeholders);
 		faction.invite(sender, other, true);
 	}
 }

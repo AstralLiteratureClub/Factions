@@ -11,12 +11,14 @@ import java.util.regex.Pattern;
 @Getter
 public class FactionConfig {
 	private final Name name;
+	private final Prefix prefix;
 	private final Members members;
 	private final Performance performance;
 	private final int maxAllies;
 
 	public FactionConfig(@NotNull Configuration configuration){
 		this.name = new Name(Objects.requireNonNull(configuration.getConfigurationSection("faction.name")));
+		this.prefix = new Prefix(Objects.requireNonNull(configuration.getConfigurationSection("faction.prefix")));
 		this.members = new Members(Objects.requireNonNull(configuration.getConfigurationSection("faction")));
 		this.performance = new Performance(Objects.requireNonNull(configuration.getConfigurationSection("performance")));
 		this.maxAllies = configuration.getInt("faction.max-allies");
@@ -25,13 +27,26 @@ public class FactionConfig {
 
 	@Getter
 	public static class Name {
-		private final Pattern regexPattern;
+		private final String regexPattern;
 		private final int maxLength;
 		private final int minLength;
 
 		public Name(@NotNull ConfigurationSection configuration){
-			this.regexPattern = Pattern.compile(
-					Objects.requireNonNull(configuration.getString("regex")));
+			this.regexPattern =
+					Objects.requireNonNull(configuration.getString("regex"));
+			this.maxLength = configuration.getInt("max");
+			this.minLength = configuration.getInt("min");
+		}
+	}
+	@Getter
+	public static class Prefix {
+		private final String regexPattern;
+		private final int maxLength;
+		private final int minLength;
+
+		public Prefix(@NotNull ConfigurationSection configuration){
+			this.regexPattern =
+					Objects.requireNonNull(configuration.getString("regex"));
 			this.maxLength = configuration.getInt("max");
 			this.minLength = configuration.getInt("min");
 		}

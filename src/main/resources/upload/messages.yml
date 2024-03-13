@@ -1,27 +1,117 @@
 placeholders:
-  - name: "p"
+  - name: "prefix"
     value: "<#8aff30><bold>Unity<reset>"
+  - name: "prefix_admin"
+    value: "<gold><bold>ADMIN <dark_gray>| <#8aff30><bold>Unity<reset>"
+
 root:
-  description: "The base faction command."
-  description-force: "The base faction force command."
-help:
-  description: "Shows the commands for unity factions."
-  description-query: "Command to get help for"
+  description: "The root of the faction commands."
+  description-force: "<red>The root of the force faction commands."
+  description-ally: "The root of the alliance commands."
+  description-ally-root: "The root of the force alliance commands."
+  description-help: "Shows how to use the faction and alliance commands."
+  description-help-query: "Command to receive information for."
 
-faction:
-  default-description: "Welcome to %faction%! We are welcoming to new players!"
-  default-join-info:  "Do you want to join us? Message us!"
-
+faction-object:
+  default-description: "We only allow the good players in our faction!"
+  default-join-info: "To join our faction you must message the owner!"
 
 create:
-  description: "Allows a player to create a new faction."
-  description-name: "Name of the faction"
+  description: "Allows creation of a new faction."
+  description-name-arg: "The name of the new faction."
 
-  message-too-long: "%p% The faction name you are trying to create is too long."
-  message-too-short: "%p% The faction name you are trying to create is too short."
-  message-already-exists: "%p% The faction name you are trying to create already exists."
-  message-banned: "%p% The faction name you are trying to create is banned."
+  message-name-is-too-long: "%prefix% You're trying to create a faction with too long name. Allowed length: %min_length%-%max_length% current: %length%"
+  message-name-is-too-short: "%prefix% You're trying to create a faction with too short name. Allowed length: %min_length%-%max_length% current: %length%"
+  message-name-is-banned: "%prefix% The name you are trying to create is not allowed in this server."
+  message-name-already-exists: "%prefix% The name you are trying to create is not allowed in this server."
+  message-created-faction: "%prefix% <green>Successfully created faction <white>%faction%<green>!"
+  broadcast-public-of-creation: "<dark_green><bold>NEW FACTION <white>%sender%<green> has created a new faction named <white>%faction%<green>!"
+
+delete:
+  description: "Allows the leading owner to disband the faction."
+  description-force: "<red>Allows admins to disband a faction without confirmation."
+  description-force-arg-faction: "<red>The faction to forcefully disband."
+  description-force-arg-reason: "<red>Reason to disband the faction."
+  description-force-arg-silent: "<red>Should the deletion be silent."
 
 
-  message-created-faction: "%p% <green>Successfully created faction <white>%name%<green>."
-  broadcast-created-faction: "%p% <white>%player% <green>has created faction <white>%name%<green>."
+  message-requested-confirm: "%prefix% <red>Execute the disband command a second time to disband the faction."
+
+  message-time-ran-out: "%prefix% Your time ran out to disband the faction."
+
+  broadcast-faction-of-deletion: "%prefix% <dark_red>Your faction was disbanded by <white>%sender%<red>."
+  broadcast-public-of-deletion: "%prefix% <dark_red>The faction named <white>%faction% <dark_red>was disbanded by <white>%sender%<dark_red>."
+  message-sender-of-deletion: "%prefix% <green><bold>Successfully <reset><red>Disbanded your faction."
+
+  message-inform-about-force-disband: "%prefix% <dark_red><bold>(FORCE) <red>Successfully disbanded <white>%faction% <red>for reason <white>%reason%<red>."
+  broadcast-faction-about-force-disband: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has disbanded your faction <white>(%faction%) <red>for reason <white>%reason%<red>."
+  broadcast-public-about-force-disband: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has disbanded faction <white>%faction% <red>for reason <white>%reason%<red>."
+  broadcast-admins-about-force-disband: "%prefix_admin% <dark_red><bold>(FORCE) <white>%sender% <red>has disbanded faction <white>%faction% <red>for reason <white>%reason%<red>."
+
+invite:
+  description: "Allows faction admins to invite new members."
+  description--all-arg: "Forwards the invite to every player in the server."
+  description-who-arg: "Who to sends the invite to."
+  description-invites: "Allows faction admins to see all the players who are invited to the faction."
+  description-accept: "Allows players with no faction to accept a faction invite."
+  description-accept-faction-arg: "The faction invite to accept."
+  description-deny: "Allows players with no faction to deny a faction invite."
+  description-deny-faction-arg: "The faction invite to deny."
+  description-deny--all-arg: "Selects all of the factions which have invited the player."
+  description-cancel: "Allows faction admins to cancel a sent out invite."
+  description-cancel--all-arg: "Selects all the invited players."
+  description-cancel-player-arg: "Selects the given player."
+  description-cancel-reason-arg: "The reason to cancel the invite."
+  description-force-invite: "<red>Allows admins to forcefully invite anyone to any clan in the server."
+  description-force-invite-faction-arg: "<red>The faction to use this force on."
+  description-force-invite-player-arg: "<red>The player to invite to the faction."
+  description-force-invite--all-arg: "<red>Selects all the players in the server."
+
+  broadcast-faction-of-invitation: "%prefix% <green>%sender% <white>has invited <yellow>%to% <white>to the faction."
+  message-receiver-of-invitation: "%prefix% <green>%sender% <white>has invited you to join <yellow>%faction%<white>."
+  broadcast-faction-of-invitation-expiring: "%prefix% <white>Your invitation from <green>%player% <white> to <yellow>%faction% <white>has expired."
+  message-receiver-of-invitation-expiring: "%prefix% <white>Your invitation from <green>%player% <white> to <yellow>%faction% <white>has expired."
+
+  message-receiver-accepted: "%prefix% <green>Accepted the invitation to join <white>%faction%<green>."
+  broadcast-faction-of-receiver-accepting: "%prefix% <white>%to% <green>has accepted the invitation to your faction."
+
+  message-receiver-denied: "%prefix% <green>Denied the invitation of <white>%faction%<green>."
+  message-receiver-denied-all: "%prefix% <green>Denied all invitations from factions who had invited you. <gray>(<white>%faction%<gray>)<green>."
+  broadcast-faction-of-receiver-denying: "%prefix% <red>Invitation sent to <white>%to% <red>was denied."
+
+
+  message-cancel: "%prefix% <green>Canceled the invite sent to <white>%to%<green>."
+  message-player-of-cancel: "%prefix% <red>Your invitation to <white>%faction%<red> was denied by <white>%sender%<red>."
+  broadcast-faction-of-cancel: "%prefix% <white>Invitation sent to <green>%to% <white>was canceled by <green>%sender%<white>."
+
+  message-invites-header: "%prefix% Your faction has <green>%invites%"
+  message-invites-value: "<gray> - <yellow>%to%<white> - <red><click:run_command:/factions cancel-invite %to%><hover:show_text:'<gray><!italic>Click here to cancel this invitation.'>CANCEL"
+
+  broadcast-force-faction-of-invite: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has force invited <white>%to% <red>to your faction."
+  message-force-invite-receive: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has force invited you to join <white>%faction%<red>."
+  message-force-invite-sent: "%prefix% <dark_red><bold>(FORCE) <white>%sender% <red>has force invited you to join <white>%faction%<red>."
+
+chat:
+  description: "Allows a faction member message their own faction."
+  description-message-arg: "The message to send to the faction."
+  description-force: "<red>Allows an admin to send a message to any of the factions in the server."
+  description-force-message-arg: "<red>The message to send to the faction."
+
+info:
+  description: "Allows checking information of own faction or other factions"
+  description-faction-arg: "The faction to see information of."
+  description-player-subcommand-arg: "Switches the information mode to player lookup."
+  description-player-arg: "The player to see faction information of."
+  message-info:
+    - ""
+    - ""
+    - ""
+  message-no-faction: "%prefix% <red>You do not have an faction! <white>/factions info %faction"
+
+leave:
+  description: "Allows a faction member to leave their current faction"
+  message-leaving-player: "%prefix% <green>You successfully left <white>%faction%<green>."
+  broadcast-leaving-faction-of-leave: "%prefix% <white>%sender% <red>has left the faction."
+
+
+# description-

@@ -9,6 +9,9 @@ public class FPermission {
 	public static final FPermission INVITES = new FPermission("invites", TriState.FALSE);
 	public static final FPermission DELETE = new FPermission("delete", TriState.FALSE);
 	public static final FPermission KICK = new FPermission("kick", TriState.FALSE);
+	public static final FPermission EDIT_ROLE_PREFIX_PUBLIC = new FPermission("meta.prefix.public.role", TriState.FALSE);
+	public static final FPermission EDIT_ROLE_PREFIX_PRIVATE = new FPermission("meta.prefix.private.role,", TriState.FALSE);
+	public static final FPermission EDIT_MEMBER_PREFIX_PRIVATE = new FPermission("meta.prefix.private.member", TriState.FALSE);
 
 	@Getter
 	private final String name;

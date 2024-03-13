@@ -19,7 +19,7 @@ public class ASyncPlayerAcceptInviteEvent extends ASyncPlayerJoinFactionEvent im
 	private boolean cancel = false;
 
 	public ASyncPlayerAcceptInviteEvent(@NotNull final Faction faction, @NotNull final Player to, @NotNull final PlayerReference from) {
-		super(faction, to);
+		super(faction, to, Cause.PLAYER);
 		this.from = from;
 	}
 

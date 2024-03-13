@@ -1,8 +1,7 @@
 package bet.astral.unity.commands.core;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
-import bet.astral.messenger.permission.Permission;
-import bet.astral.messenger.permission.PredicatePermission;
+import bet.astral.messenger.Messenger;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudConfirmableCommand;
@@ -17,8 +16,10 @@ import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.paper.PaperCommandManager;
+import org.incendo.cloud.parser.flag.CommandFlag;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.permission.PermissionResult;
+import org.incendo.cloud.permission.PredicatePermission;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -26,33 +27,35 @@ import java.util.stream.Stream;
 
 @Cloud
 public class DeleteSubCommand extends FactionCloudConfirmableCommand {
+	private static DeleteSubCommand instance;
 	private final Consumer<CommandSender> acceptConsumer;
 	private final Consumer<CommandSender> timeRanOutConsumer;
 
 	public DeleteSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
+		instance = this;
 		acceptConsumer = (sender) -> {
 			FPlayer player = plugin.getPlayerManager().convert((Player) sender);
 			UUID factionId = player.getFactionId();
 			Faction faction = plugin.getFactionManager().get(factionId);
 
 			PlaceholderList placeholders = new PlaceholderList();
-			placeholders.addAll(commandMessenger.createPlaceholders((Player) sender));
-			placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+			placeholders.addAll(messenger.createPlaceholders("sender", (Player) sender));
+			placeholders.add("faction", faction);
+			placeholders.add("faction", faction.getName());
 
-			commandMessenger.message(faction, TranslationKey.BROADCAST_DELETE_CONFIRM_FACTION_INTERNAL, placeholders);
-			commandMessenger.broadcast(new PredicatePermission(receiver -> Stream.of(faction.audiences()).noneMatch(member -> member.equals(receiver))), TranslationKey.BROADCAST_DELETE_CONFIRM_FACTION, placeholders);
-			commandMessenger.message(player, TranslationKey.MESSAGE_DELETE_CONFIRM_FACTION, placeholders);
+			messenger.message(faction, TranslationKey.BROADCAST_DELETE_CONFIRM_FACTION_INTERNAL, placeholders);
+			messenger.broadcast(PredicatePermission.of(receiver -> Stream.of(faction.audiences()).noneMatch(member -> member.equals(receiver))), TranslationKey.BROADCAST_DELETE_CONFIRM_FACTION, placeholders);
+			messenger.message(player, TranslationKey.MESSAGE_DELETE_CONFIRM_FACTION, placeholders);
 
 			plugin.getFactionManager().delete(faction, (Player) sender);
 		};
 		timeRanOutConsumer = (sender) -> {
 			FPlayer player = plugin.getPlayerManager().convert((Player) sender);
-			commandMessenger.message(player, TranslationKey.MESSAGE_DELETE_TIME_RAN_OUT);
+			messenger.message(player, TranslationKey.MESSAGE_DELETE_TIME_RAN_OUT);
 		};
 
 		Command.Builder<Player> builder = root.literal("disband",
-						loadDescription(TranslationKey.DELETE_DESCRIPTION, "/factions disband"),
 						"delete")
 				.senderType(Player.class)
 				.commandDescription(loadDescription(TranslationKey.DELETE_DESCRIPTION, "/factions disband"))
@@ -78,15 +81,15 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 				.handler(context -> {
 							Player sender = context.sender();
 							if (!tryConfirm(sender)) {
-								requestConfirm(sender,
-										600,
-										acceptConsumer,
-										(p) -> {
-										},
-										timeRanOutConsumer
-								);
-							} else {
-								commandMessenger.message(sender, TranslationKey.MESSAGE_DELETE);
+								instance.
+										requestConfirm(sender,
+												600,
+												instance.acceptConsumer,
+												(p) -> {
+												},
+												instance.timeRanOutConsumer
+										);
+								messenger.message(sender, TranslationKey.MESSAGE_DELETE_REQUEST);
 							}
 						}
 				);
@@ -103,23 +106,45 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 						)
 						.required(StringParser.stringComponent(StringParser.StringMode.GREEDY)
 								.name("reason")
-								.description(loadDescription(TranslationKey.DESCRIPTION_FORCE_DELETE_REASON, "/factions force delete <reason>"))
+								.description(loadDescription(TranslationKey.DESCRIPTION_FORCE_DELETE_REASON, "/factions force delete <faction> <reason>"))
 						)
+						.flag(CommandFlag.builder("silent")
+								.withDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_DELETE_SILENT, "/factions force delete <faction> <reason> [--silent]")))
 						.handler(context -> {
 							CommandSender sender = context.sender();
 							Faction faction = context.get("faction");
 							String reason = context.get("reason");
-							PlaceholderList placeholders = new PlaceholderList();
-							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
-							placeholders.add("reason", reason);
-							placeholders.addAll(commandMessenger.createPlaceholders("sender", sender));
-							commandMessenger.message(sender, TranslationKey.MESSAGE_FORCE_DELETE_SENDER, placeholders);
-							commandMessenger.message(faction, TranslationKey.MESSAGE_FORCE_DELETE_SENDER, placeholders);
-							commandMessenger.broadcast(Permission.of((s)->sender instanceof Player player
-									&& !faction.getMembers().contains(player.getUniqueId())), TranslationKey.MESSAGE_FORCE_DELETE_SENDER, placeholders);
-
-							plugin.getFactionManager().delete(faction);
+							boolean isSilent = context.flags().isPresent("silent");
+							handleForce(sender, faction, reason, isSilent, messenger);
 						})
 		);
+	}
+
+	public static void handleForced(Player player){
+		instance.
+				requestConfirm(player,
+				600,
+				instance.acceptConsumer,
+				(p) -> {
+				},
+				instance.timeRanOutConsumer
+		);
+		instance.tryConfirm(player);
+	}
+
+	public static void handleForce(CommandSender sender, Faction faction, String reason, boolean isSilent, Messenger<Factions> commandMessenger) {
+		PlaceholderList placeholders = new PlaceholderList();
+		placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+		placeholders.add("reason", reason);
+		placeholders.addAll(commandMessenger.createPlaceholders("sender", sender));
+		commandMessenger.message(sender, TranslationKey.MESSAGE_FORCE_DELETE_SENDER, placeholders);
+		commandMessenger.broadcast(PermissionUtils.forceOf("disband"), TranslationKey.MESSAGE_FORCE_DELETE_ADMIN, placeholders);
+		if (!isSilent) {
+			commandMessenger.message(faction, TranslationKey.MESSAGE_FORCE_DELETE_FACTION, placeholders);
+			commandMessenger.broadcast(PredicatePermission.of(s -> s instanceof Player player
+					&& !faction.getMembers().contains(player.getUniqueId())
+			), TranslationKey.MESSAGE_FORCE_DELETE_PUBLIC, placeholders);
+		}
+		commandMessenger.plugin().getFactionManager().delete(faction, false);
 	}
 }

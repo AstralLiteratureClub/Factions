@@ -1,8 +1,12 @@
 faction:
   name:
-    regex: "[a-zA-Z0-9_]"
+    regex: "[a-zA-Z0-9_]*"
     max: 10
     min: 3
+  prefix:
+    regex: "[*+-]*"
+    max: 3
+    min: 1
 
   max-owners: 2
   max-admins: 3

@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'bet.astral:Messenger:1.5.1' // Messenger
+    implementation 'bet.astral:Messenger:1.5.2' // Messenger
 
     // Cloud and brigadier for commands
     compileOnly 'com.mojang:brigadier:1.0.18'

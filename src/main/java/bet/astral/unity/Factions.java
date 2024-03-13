@@ -27,6 +27,7 @@ import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.minecraft.extras.RichDescription;
 import org.incendo.cloud.paper.PaperCommandManager;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -70,26 +71,52 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         uploadUploads();
         factionConfig = new FactionConfig(getConfig(new File(getDataFolder(), "config.yml")));
 
+
+	    playerManager = new PlayerManager(this);
+        factionManager = new FactionManager(this);
+
+        commandManager = new PaperCommandManager<>(this, ExecutionCoordinator.asyncCoordinator(), SenderMapper.identity());
+
+        // Reload messengers
         reloadMessengers();
+
+        FileConfiguration messengerConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
+        messenger = new Messenger<>(this, messengerConfig, new HashMap<>());
+        debugMessenger = new Messenger<>(this, messengerConfig, new HashMap<>());
+        messenger.overrideDefaultPlaceholders(messenger.loadPlaceholders("placeholders"));
+        debugMessenger.overrideDefaultPlaceholders(debugMessenger.loadPlaceholders("placeholders"));
+
+        messenger.registerCommandManager(commandManager);
+        debugMessenger.registerCommandManager(commandManager);
+
         for (Field field : TranslationKey.class.getFields()) {
             try {
                 if (field.isAnnotationPresent(TranslationKey.IsCaption.class) && field.getAnnotation(TranslationKey.IsCaption.class).value()) {
                     Caption caption = (Caption) field.get(null);
-                    messenger.loadMessage(caption.key());
+                    Message message = messenger.loadMessage(caption.key());
+                    if (message == null){
+                        messengerConfig.set(caption.key(), caption.key());
+                    }
                 } else {
                     String fieldValue = (String) field.get(null);
                     messenger.loadMessage(fieldValue);
+                    Message message = messenger.loadMessage(fieldValue);
+                    if (message == null){
+                        messengerConfig.set(fieldValue, fieldValue);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
+        try {
+            messengerConfig.save(new File(getDataFolder(), "messages.yml"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        playerManager = new PlayerManager(this);
-        factionManager = new FactionManager(this);
-
-        commandManager = new PaperCommandManager<>(this, ExecutionCoordinator.asyncCoordinator(), SenderMapper.identity());
         FactionRootCommands rootCommand = new FactionRootCommands(this, commandManager);
+
 
         // /faction
         rootFactionCommand = rootCommand.root;
@@ -110,11 +137,8 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
 
         getLogger().info("Loading commands..!");
         registerCommands(List.of(
-                        "bet.astral.unity.commands"
-                ),
+                        "bet.astral.unity.commands"),
                 commandManager);
-        messenger.registerCommandManager(commandManager);
-        reloadMessengers();
         getLogger().info("Loaded commands!");
 
         registerChatHandler((player, faction, receiver, message, type) -> {
@@ -212,15 +236,10 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     }
 
 
+    @ApiStatus.Internal
     @Override
     public void reloadMessengers() {
-        FileConfiguration messengerConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
-        messenger = new Messenger<>(this, messengerConfig, new HashMap<>());
-        debugMessenger = new Messenger<>(this, messengerConfig, new HashMap<>());
-        messenger.overrideDefaultPlaceholders(messenger.loadPlaceholders("placeholders"));
-        debugMessenger.overrideDefaultPlaceholders(debugMessenger.loadPlaceholders("placeholders"));
-
-        CommandRegisterer.super.reloadMessengers();
+//        CommandRegisterer.super.reloadMessengers();
     }
 
     @Override

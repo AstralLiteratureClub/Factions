@@ -28,6 +28,7 @@ public class FactionCloudConfirmableCommand extends FactionCloudCommand implemen
 			Triple<BukkitTask, Consumer<CommandSender>, Consumer<CommandSender>> triple = confirmable.get(sender);
 
 			triple.getMiddle().accept(sender);
+			triple.getLeft().cancel();
 			confirmable.remove(sender);
 			return true;
 		}

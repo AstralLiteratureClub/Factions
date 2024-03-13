@@ -3,9 +3,11 @@ package bet.astral.unity.commands.invite;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
+import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.InvitedParser;
+import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
@@ -63,17 +65,18 @@ public class CancelInviteSubCommand extends FactionCloudCommand {
 					String reason = (String) context.optional("reason").orElse("No reason listed");
 
 					PlaceholderList placeholders = new PlaceholderList(Faction.factionPlaceholders("faction", faction));
-					placeholders.addAll(commandMessenger.createPlaceholders("cancel", sender));
-					placeholders.addAll(commandMessenger.createPlaceholders("to", player));
 					placeholders.add("reason", reason);
+					FInvite invite = faction.getInvite(sender);
+					placeholders.add(null, invite);
+					placeholders.addAll(messenger.createPlaceholders("sender", sender));
 
 					faction.cancelInvite(sender, player, reason);
 
-					commandMessenger.message(sender, TranslationKey.MESSAGE_INVITE_CANCEL, placeholders);
+					messenger.message(sender, TranslationKey.MESSAGE_INVITE_CANCEL, placeholders);
 					if (player instanceof Player) {
-						commandMessenger.message(sender, TranslationKey.MESSAGE_INVITE_CANCEL_PLAYER);
+						messenger.message(sender, TranslationKey.MESSAGE_INVITE_CANCEL_PLAYER);
 					}
-					commandMessenger.message(faction, TranslationKey.BROADCAST_INVITE_CANCEL, placeholders);
+					messenger.message(faction, TranslationKey.BROADCAST_INVITE_CANCEL, placeholders);
 				}));
 		commandPlayer(builder.literal("-all",
 				loadDescription(TranslationKey.DESCRIPTION_INVITE_CANCEL_ALL, "/factions cancel-invite -all"))
@@ -93,17 +96,18 @@ public class CancelInviteSubCommand extends FactionCloudCommand {
 
 					for (OfflinePlayerReference reference : references) {
 						PlaceholderList placeholders = new PlaceholderList(Faction.factionPlaceholders("faction", faction));
-						placeholders.addAll(commandMessenger.createPlaceholders("cancel", sender));
-						placeholders.addAll(commandMessenger.createPlaceholders("to", sender));
 						placeholders.add("reason", reason);
+						FInvite invite = faction.getInvite(sender);
+						placeholders.add(null, invite);
+						placeholders.addAll(messenger.createPlaceholders("sender", sender));
 
 						faction.cancelInvite(sender, reference.offlinePlayer(), reason);
 
-						commandMessenger.message(sender, TranslationKey.MESSAGE_INVITE_CANCEL, placeholders);
+						messenger.message(sender, TranslationKey.MESSAGE_INVITE_CANCEL, placeholders);
 						if (references instanceof PlayerReference playerReference) {
-							commandMessenger.message(playerReference, TranslationKey.MESSAGE_INVITE_CANCEL_PLAYER);
+							messenger.message(playerReference, TranslationKey.MESSAGE_INVITE_CANCEL_PLAYER);
 						}
-						commandMessenger.message(faction, TranslationKey.BROADCAST_INVITE_CANCEL, placeholders);
+						messenger.message(faction, TranslationKey.BROADCAST_INVITE_CANCEL, placeholders);
 					}
 				})
 		);

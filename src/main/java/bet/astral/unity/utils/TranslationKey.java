@@ -4,7 +4,6 @@ import org.incendo.cloud.caption.Caption;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.security.PublicKey;
 
 public final class TranslationKey {
 	public final static String DESCRIPTION_ROOT = "root.description";
@@ -14,54 +13,84 @@ public final class TranslationKey {
 	public final static String DESCRIPTION_HELP = "help.description";
 	public final static String DESCRIPTION_HELP_QUERY = "help.description-query";
 
-	public final static String DEFAULT_FACTION_DESCRIPTION = "faction.default-description";
-	public final static String DEFAULT_FACTION_JOIN_INFO = "faction.default-join-info";
+	public final static String DEFAULT_FACTION_DESCRIPTION = "faction-object.default-description";
+	public final static String DEFAULT_FACTION_JOIN_INFO = "faction-object.default-join-info";
 
+	public final static String DESCRIPTION_CREATE = "create.description";
+	public final static String DESCRIPTION_CREATE_NAME = "create.description-name-arg";
+	public final static String MESSAGE_CREATE_TOO_LONG = "create.message-name-is-too-long";
+	public final static String MESSAGE_CREATE_TOO_SHORT = "create-message-name-is-too-short";
+	public final static String MESSAGE_CREATE_ALREADY_EXISTS = "create-message-name-already-exists";
+	public final static String MESSAGE_CREATE_BANNED = "create-message-name-is-banned";
+
+	public final static String MESSAGE_CREATE_FACTION = "create.message-created-faction";
+	public final static String BROADCAST_CREATE_FACTION = "create.broadcast-public-of-creation";
+
+
+
+	// Base
 	public final static String DELETE_DESCRIPTION = "delete.description";
-	public final static String MESSAGE_DELETE = "delete.broadcast-deleted";
-	public final static String BROADCAST_DELETE_CONFIRM_FACTION = "delete.broadcast-deleted";
-	public final static String BROADCAST_DELETE_CONFIRM_FACTION_INTERNAL = "delete.broadcast-deleted-faction-only";
-	public final static String MESSAGE_DELETE_CONFIRM_FACTION = "delete.message-deleted";
-	public final static String MESSAGE_DELETE_TIME_RAN_OUT = "delete.message-time-ran-out";
+	// Force
 	public final static String DESCRIPTION_FORCE_DELETE = "delete.description-force";
-	public final static String DESCRIPTION_FORCE_DELETE_FACTION = "delete.description-force";
-	public final static String DESCRIPTION_FORCE_DELETE_REASON = "delete.description-force";
-	public final static String MESSAGE_FORCE_DELETE_FACTION = "delete.description-force";
-	public final static String MESSAGE_FORCE_DELETE_PUBLIC = "delete.description-force";
-	public final static String MESSAGE_FORCE_DELETE_SENDER = "delete.description-force";
+	public final static String DESCRIPTION_FORCE_DELETE_FACTION = "delete.description-force-arg-faction";
+	public final static String DESCRIPTION_FORCE_DELETE_REASON = "delete.description-force-arg-reason";
+	public final static String DESCRIPTION_FORCE_DELETE_SILENT = "delete.description-force-arg-silent";
+	public final static String MESSAGE_DELETE_REQUEST = "delete.message-requested-confirm";
+	// Base - Message
+	public final static String BROADCAST_DELETE_CONFIRM_FACTION = "delete.broadcast-public-of-deletion";
+	public final static String BROADCAST_DELETE_CONFIRM_FACTION_INTERNAL = "delete.broadcast-faction-of-deletion";
+	public final static String MESSAGE_DELETE_CONFIRM_FACTION = "delete.message-sender-of-deletion";
+	public final static String MESSAGE_DELETE_TIME_RAN_OUT = "delete.message-time-ran-out";
+	// Force - Message
+	public final static String MESSAGE_FORCE_DELETE_FACTION = "delete.broadcast-faction-about-force-disband";
+	public final static String MESSAGE_FORCE_DELETE_ADMIN = "delete.broadcast-admins-about-force-disband";
+	public final static String MESSAGE_FORCE_DELETE_PUBLIC = "delete.broadcast-public-about-force-disband";
+	public final static String MESSAGE_FORCE_DELETE_SENDER = "delete.message-inform-sender-about-force-disband";
 
+
+
+	// Invite
 	public final static String DESCRIPTION_INVITE = "invite.description";
-	public static final String DESCRIPTION_INVITE_ALL = "invite.description-all-flag";
-	public final static String DESCRIPTION_INVITE_WHO = "invite.description-who";
+	public static final String DESCRIPTION_INVITE_ALL = "invite.description--all-arg";
+	public final static String DESCRIPTION_INVITE_WHO = "invite.description-who-arg";
+	// Invites
 	public static final String DESCRIPTION_INVITES = "invite.description-invites";
+	// Accept
 	public final static String DESCRIPTION_INVITE_ACCEPT = "invite.description-accept";
-	public final static String DESCRIPTION_INVITE_ACCEPT_FACTION = "invite.description-accept-faction";
+	public final static String DESCRIPTION_INVITE_ACCEPT_FACTION = "invite.description-accept-faction-arg";
+	// Deny
 	public final static String DESCRIPTION_INVITE_DENY = "invite.description-deny";
-	public final static String DESCRIPTION_INVITE_DENY_FACTION = "invite.description-deny-faction";
+	public final static String DESCRIPTION_INVITE_DENY_FACTION = "invite.description-deny-faction-arg";
+	public final static String DESCRIPTION_INVITE_DENY_ALL = "invite.description-deny--all-arg";
+	// Cancel
 	public final static String DESCRIPTION_INVITE_CANCEL = "invite.description-cancel";
-	public static final String DESCRIPTION_INVITE_CANCEL_ALL = "invite.description-all-flag";
-	public final static String DESCRIPTION_INVITE_CANCEL_PLAYER = "invite.description-cancel-player";
-	public final static String DESCRIPTION_INVITE_CANCEL_REASON = "invite.description-cancel-reason";
-	public final static String BROADCAST_INVITE_FACTION = "invite.broadcast-faction-of-invite";
-	public final static String MESSAGE_INVITE_RECEIVER = "invite.message-receive-invite";
-	public final static String MESSAGE_INVITE_EXPIRED_FACTION = "invite.message-expired-faction";
-	public final static String MESSAGE_INVITE_EXPIRED = "invite.message-expired-player";
-	public final static String MESSAGE_INVITE_ACCEPT = "invite.message-accept";
-	public final static String BROADCAST_INVITE_ACCEPT = "invite.broadcast-accept";
-	public final static String MESSAGE_INVITE_DENY = "invite.message-deny";
-	public final static String BROADCAST_INVITE_DENY = "invite.broadcast-deny";
+	public static final String DESCRIPTION_INVITE_CANCEL_ALL = "invite.description-cancel--all-arg";
+	public final static String DESCRIPTION_INVITE_CANCEL_PLAYER = "invite.description-cancel-player-arg";
+	public final static String DESCRIPTION_INVITE_CANCEL_REASON = "invite.description-cancel-reason-arg";
+	// Messages
+	public final static String BROADCAST_INVITE_TO_FACTION = "invite.broadcast-faction-of-invite";
+	public final static String MESSAGE_INVITE_RECEIVER = "invite.message-receiver-of-invitation";
+	public final static String MESSAGE_INVITE_EXPIRED_FACTION = "invite.broadcast-faction-of-invitation-expiring";
+	public final static String MESSAGE_INVITE_EXPIRED = "invite.message-receiver-of-invitation-expiring";
+	public final static String MESSAGE_INVITE_ACCEPT = "invite.message-receiver-accepted";
+	public final static String BROADCAST_INVITE_ACCEPT = "invite.broadcast-faction-of-receiver-accepting";
+	public final static String MESSAGE_INVITE_DENY = "invite.message-receiver-denied";
+	public final static String MESSAGE_INVITE_DENIED_ALL = "invite.message-receiver-denied-all";
+	public final static String BROADCAST_INVITE_DENY = "invite.broadcast-faction-of-receiver-denying";
 	public final static String MESSAGE_INVITE_CANCEL = "invite.message-cancel";
-	public final static String MESSAGE_INVITE_CANCEL_PLAYER = "invite.message-cancel-cancelled";
-	public final static String BROADCAST_INVITE_CANCEL = "invite.broadcast-cancel";
+	public final static String MESSAGE_INVITE_CANCEL_PLAYER = "invite.message-player-of-cancel";
+	public final static String BROADCAST_INVITE_CANCEL = "invite.broadcast-faction-of-cancel";
 	public final static String MESSAGE_INVITES_HEADER = "invite.message-invites-header";
-	public final static String MESSAGE_INVITES_VALUE = "invite.message-invites-header";
-	public final static String DESCRIPTION_FORCE_INVITE = "invite.description-invite-force";
-	public final static String DESCRIPTION_FORCE_INVITE_FACTION = "invite.description-force-invite-faction";
-	public final static String DESCRIPTION_FORCE_INVITE_PLAYER = "invite.description-force-invite-player";
-	public final static String DESCRIPTION_FORCE_INVITE_ALL = "invite.description-force-invite-all";
+	public final static String MESSAGE_INVITES_VALUE = "invite.message-invites-value";
+	public final static String DESCRIPTION_FORCE_INVITE = "invite.description-force-invite";
+	public final static String DESCRIPTION_FORCE_INVITE_FACTION = "invite.description-force-invite-faction-arg";
+	public final static String DESCRIPTION_FORCE_INVITE_PLAYER = "invite.description-force-invite-player-arg";
+	public final static String DESCRIPTION_FORCE_INVITE_ALL = "invite.description-force-invite--all-arg";
+
 	public final static String BROADCAST_FORCE_INVITE_FACTION = "invite.broadcast-force-faction-of-invite";
-	public final static String MESSAGE_FORCE_INVITE_SENDER = "invite.message-force-receive-invite";
-	public final static String MESSAGE_FORCE_INVITE_RECEIVER = "invite.message-force-receive-invite";
+	public final static String MESSAGE_FORCE_INVITE_SENDER = "invite.message-force-invite-sent";
+	public final static String MESSAGE_FORCE_INVITE_RECEIVER = "invite.message-force-invite-receiver";
+
 	public final static String DESCRIPTION_FORCE_INVITE_CANCEL = "invite.description-invite-force";
 	public final static String DESCRIPTION_FORCE_INVITE_CANCEL_FACTION = "invite.description-force-invite-faction";
 	public final static String DESCRIPTION_FORCE_INVITE_CANCEL_PLAYER = "invite.description-force-invite-player";
@@ -69,8 +98,13 @@ public final class TranslationKey {
 	public final static String MESSAGE_FORCE_INVITE_CANCEL_RECEIVER = "invite.message-force-receive-invite";
 
 	public final static String DESCRIPTION_CHAT = "chat.description";
-	public final static String DESCRIPTION_CHAT_MESSAGE = "chat.description-message";
+	public final static String DESCRIPTION_CHAT_MESSAGE = "chat.description-message-arg";
+	public final static String DESCRIPTION_FORCE_CHAT = "chat.description-force";
+	public final static String DESCRIPTION_FORCE_CHAT_MESSAGE = "chat.description-force-message-arg";
+
+	@Deprecated(forRemoval = true)
 	public final static String DESCRIPTION_CHAT_TYPE_FLAG = "chat.description-type-flag";
+	@Deprecated(forRemoval = true)
 	public final static String DESCRIPTION_CHAT_TYPE = "chat.description-type";
 	public final static String FORMAT_CHAT = "chat.format-chat";
 	public final static String FORMAT_ALLY_CHAT = "chat.format-ally-chat";
@@ -79,15 +113,16 @@ public final class TranslationKey {
 	public final static String MESSAGE_CHAT_SWITCH_ALLY = "chat.format-switch-ally";
 
 	public final static String DESCRIPTION_INFO = "info.description";
-	public final static String DESCRIPTION_INFO_FACTION = "info.description-faction";
-	public final static String DESCRIPTION_INFO_PLAYER_LITERAL = "info.description-player-sub";
-	public final static String DESCRIPTION_INFO_PLAYER = "info.description-player";
+	public final static String DESCRIPTION_INFO_FACTION = "info.description-faction-arg";
+	public final static String DESCRIPTION_INFO_PLAYER_LITERAL = "info.description-player-subcommand-arg";
+	public final static String DESCRIPTION_INFO_PLAYER = "info.description-player-arg";
 	public final static String MESSAGE_INFO = "info.message-info";
 	public final static String MESSAGE_INFO_NO_FACTION = "info.message-no-faction";
 
 	public final static String DESCRIPTION_LEAVE = "leave.description";
-	public final static String MESSAGE_LEAVE = "leave.message-leave";
-	public final static String BROADCAST_LEAVE = "leave.broadcast-leave";
+	public final static String MESSAGE_LEAVE = "leave.message-leaving-player";
+	@Done
+	public final static String BROADCAST_LEAVE = "leave.broadcast-leaving-faction-of-leave";
 
 	public final static String DESCRIPTION_KICK = "kick.description";
 	public final static String DESCRIPTION_KICK_MEMBER = "kick.description-member";
@@ -101,6 +136,11 @@ public final class TranslationKey {
 	public final static String DESCRIPTION_FORCE_KICK_REASON = "kick.description-force";
 	public final static String MESSAGE_FORCE_KICK = "kick.message-kicked";
 	public final static String BROADCAST_FORCE_KICK = "kick.broadcast-kicked";
+
+	public final static String DESCRIPTION_JOIN = "join.description";
+	public final static String DESCRIPTION_JOIN_FACTION = "join.description";
+	public final static String MESSAGE_JOINED = "join.message-join";
+	public final static String BROADCAST_JOINED = "join.broadcast-join";
 
 	@IsCaption(true)
 	public final static Caption CAPTION_INVITE_ALREADY_HAS_FACTION = Caption.of("invite.");
@@ -130,17 +170,58 @@ public final class TranslationKey {
 	public final static Caption CAPTION_CANNOT_CHECK_OFFLINE_PLAYER = Caption.of("caption.cannot-check-offline");
 
 
-	public final static String DESCRIPTION_CREATE = "create.description";
-	public final static String DESCRIPTION_CREATE_NAME = "create.description-name";
-	public final static String MESSAGE_CREATE_TOO_LONG = "create-message-too-long";
-	public final static String MESSAGE_CREATE_TOO_SHORT = "create-message-too-short";
-	public final static String MESSAGE_CREATE_ALREADY_EXISTS = "create-message-already-exists";
-	public final static String MESSAGE_CREATE_BANNED = "create-message-banned";
-	public final static String MESSAGE_CREATE_FACTION = "create.message-created-faction";
-	public final static String BROADCAST_CREATE_FACTION = "create.broadcast-created-faction";
+
+	public final static String DESCRIPTION_META = "meta.description";
+	public final static String DESCRIPTION_PREFIX = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_SET = "prefix.description-set";
+	public final static String DESCRIPTION_PREFIX_RESET = "prefix.description-reset";
+
+	public final static String DESCRIPTION_PREFIX_PUBLIC = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PUBLIC_ROLE = "prefix.description";
+//	public final static String DESCRIPTION_PREFIX_PUBLIC_MEMBER = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PUBLIC_PREFIX = "prefix.description";
+	public final static String MESSAGE_PREFIX_PUBLIC_TOO_SHORT = "prefix.too-short";
+	public final static String MESSAGE_PREFIX_PUBLIC_TOO_LONG = "prefix.too-long";
+	public final static String MESSAGE_PREFIX_PUBLIC_ILLEGAL = "prefix.illegal";
+	public final static String MESSAGE_PREFIX_PUBLIC_CHANGED = "prefix.changed";
+
+	public final static String DESCRIPTION_PREFIX_PRIVATE = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PRIVATE_PLAYER = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PRIVATE_ROLE = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PRIVATE_ROLE_ROLE = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PRIVATE_ROLE_PREFIX = "prefix.description";
+	public final static String MESSAGE_PREFIX_PRIVATE_ROLE_CHANGED = "prefix.changed";
+
+	public final static String DESCRIPTION_PREFIX_PRIVATE_MEMBER = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PRIVATE_MEMBER_MEMBER = "prefix.description";
+	public final static String DESCRIPTION_PREFIX_PRIVATE_MEMBER_PREFIX = "prefix.description";
+	public final static String MESSAGE_PREFIX_PRIVATE_MEMBER_CHANGED = "prefix.changed";
+
+//	public final static String DESCRIPTION_PREFIX_PRIVATE = "prefix.description";
+
+	public final static String DESCRIPTION_FORCE_BAN = "faction-ban.force-description";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION = "faction-ban.force-description";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION_FACTION = "faction-ban.force-description";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION_REASON = "faction-ban.force-description";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION_SILENT = "faction-ban.force-description";
+	public final static String MESSAGE_FORCE_BAN_ALREADY_BANNED = "faction-ban.message-banned";
+	public final static String MESSAGE_FORCE_BAN_BANNED = "faction-ban.message-banned";
+	public final static String BROADCAST_FORCE_BAN_BANNED_STAFF = "faction-ban.message-banned";
+	public final static String BROADCAST_FORCE_BAN_BANNED_PUBLIC = "faction-ban.message-banned";
+	public final static String BROADCAST_FORCE_BAN_BANNED_FACTION = "faction-ban.message-banned";
+
+	public final static String DESCRIPTION_FORCE_JOIN = "join.description-force";
+	public final static String DESCRIPTION_FORCE_JOIN_FACTION = "join.description-force";
+	public final static String DESCRIPTION_FORCE_JOIN_ROLE = "join.description-force";
+	public final static String MESSAGE_FORCE_JOIN_DEFAULT = "join.message-force-joined";
+	public final static String MESSAGE_FORCE_JOIN_NOT_DEFAULT = "join.message-force-joined";
+
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface IsCaption {
 		boolean value() default false;
+	}
+
+	public @interface Done {
 	}
 }

@@ -1,7 +1,6 @@
 package bet.astral.unity.commands.core;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
-import bet.astral.messenger.permission.Permission;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
@@ -14,6 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
+import org.incendo.cloud.permission.PredicatePermission;
 
 @Cloud
 public class CreateSubCommand extends FactionCloudCommand {
@@ -41,32 +41,34 @@ public class CreateSubCommand extends FactionCloudCommand {
 							placeholders.add("length", name.length());
 							placeholders.add("max_length", 10);
 							placeholders.add("min_length", 3);
+							placeholders.addAll(messenger.createPlaceholders("sender", sender));
 
 							if (name.length()>10){
-								commandMessenger.message(sender, TranslationKey.MESSAGE_CREATE_TOO_LONG, placeholders);
+								messenger.message(sender, TranslationKey.MESSAGE_CREATE_TOO_LONG, placeholders);
 								return;
 							} else if (name.length()<3){
-								commandMessenger.message(sender, TranslationKey.MESSAGE_CREATE_TOO_SHORT, placeholders);
+								messenger.message(sender, TranslationKey.MESSAGE_CREATE_TOO_SHORT, placeholders);
 								return;
 							} else if (plugin.getFactionManager().exists(name)){
-								commandMessenger.message(sender, TranslationKey.MESSAGE_CREATE_ALREADY_EXISTS, placeholders);
+								messenger.message(sender, TranslationKey.MESSAGE_CREATE_ALREADY_EXISTS, placeholders);
 								return;
 							} else if (plugin.getFactionManager().isBanned(name)){
-								commandMessenger.message(sender, TranslationKey.MESSAGE_CREATE_BANNED, placeholders);
+								messenger.message(sender, TranslationKey.MESSAGE_CREATE_BANNED, placeholders);
 								return;
 							}
-
 							Faction faction = plugin.getFactionManager().create(name, sender);
 							if (faction == null){
 								return;
 							}
+							placeholders.add("faction", faction);
+
 							plugin.getPlayerManager().convert(sender)
 									.setFactionId(faction.getUniqueId());
 
 							placeholders.addAll(Faction.factionPlaceholders("", faction));
 							placeholders.addAll(PlaceholderUtils.createPlaceholders("player", (LivingEntity) sender));
-							commandMessenger.message(sender, TranslationKey.MESSAGE_CREATE_FACTION, placeholders);
-							commandMessenger.broadcast(Permission.of(commandSender -> !commandSender.equals(sender)), TranslationKey.BROADCAST_CREATE_FACTION, placeholders);
+							messenger.message(sender, TranslationKey.MESSAGE_CREATE_FACTION, placeholders);
+							messenger.broadcast(PredicatePermission.of(commandSender -> !commandSender.equals(sender)), TranslationKey.BROADCAST_CREATE_FACTION, placeholders);
 						})
 		);
 	}

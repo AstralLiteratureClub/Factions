@@ -45,10 +45,9 @@ public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender>
 
 		root = commandBuilder("factions",
 				plugin.loadDescription(TranslationKey.DESCRIPTION_ROOT, "/factions"),
-					"faction", "f",
-					"clans", "clan", "c",
-					"guilds", "guild", "g"
-				)
+				"faction", "f",
+				"clans", "clan", "c",
+				"guilds", "guild", "g")
 				.commandDescription(plugin.loadDescription(TranslationKey.DESCRIPTION_ROOT, "/factions"))
 				.permission(PermissionUtils.of("factions"))
 				.handler(context -> {

@@ -15,8 +15,10 @@ public class CloudPPCommand<P extends JavaPlugin, C extends CommandSender> imple
 	protected final P plugin;
 	protected final CommandRegisterer<P> registerer;
 
-	protected Messenger<? extends JavaPlugin> commandMessenger;
-	protected Messenger<? extends JavaPlugin> debugMessenger;
+	@Deprecated
+	protected Messenger<P> commandMessenger;
+	protected Messenger<P> messenger;
+	protected Messenger<P> debugMessenger;
 
 	public CloudPPCommand(P plugin, CommandRegisterer<P> registerer, PaperCommandManager<C> commandManager) {
 		this.plugin = plugin;
@@ -33,10 +35,12 @@ public class CloudPPCommand<P extends JavaPlugin, C extends CommandSender> imple
 		//noinspection unchecked
 		this.registerer = (CommandRegisterer<P>) registerer;
 		this.commandManager = commandManager;
+		reloadMessengers();
 	}
 
 	@Override
 	public void reloadMessengers() {
+		this.messenger = registerer.commandMessenger();
 		this.commandMessenger = registerer.commandMessenger();
 		this.debugMessenger = registerer.debugMessenger();
 	}
