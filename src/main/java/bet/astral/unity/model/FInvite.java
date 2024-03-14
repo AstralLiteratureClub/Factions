@@ -48,6 +48,11 @@ public class FInvite implements Placeholderable {
 	@Override
 	public Collection<Placeholder> asPlaceholder(String prefix) {
 		PlaceholderList placeholders = new PlaceholderList();
+		if (prefix != null){
+			prefix = prefix+"_";
+		} else {
+			prefix = "";
+		}
 		placeholders.addAll(PlaceholderUtils.createPlaceholders(prefix +"from", from.offlinePlayer()));
 		placeholders.addAll(PlaceholderUtils.createPlaceholders(prefix +"to", to.offlinePlayer()));
 		return placeholders;

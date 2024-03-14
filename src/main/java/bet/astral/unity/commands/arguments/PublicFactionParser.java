@@ -1,7 +1,10 @@
 package bet.astral.unity.commands.arguments;
 
 import bet.astral.unity.model.Faction;
+import bet.astral.unity.nms.TooltipSuggestion;
 import bet.astral.unity.utils.TranslationKey;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.bukkit.parser.PlayerParser;
 import org.incendo.cloud.caption.CaptionVariable;
@@ -12,6 +15,9 @@ import org.incendo.cloud.exception.parsing.ParserException;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.Suggestion;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class PublicFactionParser<C> extends FactionParser<C>{
 	protected PublicFactionParser(Mode mode) {
@@ -52,16 +58,25 @@ public class PublicFactionParser<C> extends FactionParser<C>{
 	}
 
 	@Override
-	public @NonNull Iterable<@NonNull Suggestion> suggestions(@NonNull CommandContext<C> commandContext, @NonNull CommandInput input) {
-		return super.suggestions(commandContext, input);
+	public @NonNull CompletableFuture<? extends @NonNull Iterable<? extends @NonNull Suggestion>> suggestionsFuture(@NonNull CommandContext context, @NonNull CommandInput input) {
+		return CompletableFuture.supplyAsync(() -> factions.getFactionManager().created().stream()
+				.filter(Faction::isPublic)
+				.map(
+						faction -> new TooltipSuggestion(
+								faction,
+								mode,
+								Component.text(faction.getName(), NamedTextColor.WHITE)
+										.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
+										.append(Component.text("Owner: ", NamedTextColor.WHITE))
+						)
+				).collect(Collectors.toList()));
 	}
-
 
 	public static final class PublicFactionParserException extends ParserException {
 		private final String input;
 
 		public PublicFactionParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_ALREADY_INVITED, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKey.CAPTION_PRIVATE_FACTION, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

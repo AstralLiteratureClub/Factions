@@ -1,7 +1,6 @@
 package bet.astral.unity.commands.ban.faction;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
-import bet.astral.messenger.permission.Permission;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
@@ -34,7 +33,7 @@ public class FactionBanSubCommand extends FactionCloudCommand {
 				ban
 						.literal("faction")
 						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_BAN_FACTION, "/factions force ban faction"))
-						.permission(PermissionUtils.forceOfFactionsExist("ban.faction"))
+						.permission(PermissionUtils.forceOf("ban.faction"))
 						.required(
 								StringParser.stringComponent(StringParser.StringMode.SINGLE)
 										.suggestionProvider(FactionParser.factionParser().parser().suggestionProvider())
@@ -59,7 +58,7 @@ public class FactionBanSubCommand extends FactionCloudCommand {
 							}
 
 							PlaceholderList placeholders = new PlaceholderList();
-							placeholders.addAll(commandMessenger.createPlaceholders("sender", sender));
+							placeholders.addAll(messenger.createPlaceholders("sender", sender));
 							placeholders.add("name", name);
 							placeholders.add("silent", isSilent);
 							placeholders.add("is_faction", faction != null);
@@ -70,21 +69,21 @@ public class FactionBanSubCommand extends FactionCloudCommand {
 
 							FactionManager fM = plugin.getFactionManager();
 							if (fM.isBanned(name)){
-								commandMessenger.message(sender, TranslationKey.MESSAGE_FORCE_BAN_ALREADY_BANNED, placeholders);
+								messenger.message(sender, TranslationKey.MESSAGE_FORCE_BAN_ALREADY_BANNED, placeholders);
 								return;
 							}
-							commandMessenger.message(sender, TranslationKey.MESSAGE_FORCE_BAN_BANNED, placeholders);
-							commandMessenger.broadcast(Permission.of(PermissionUtils.forceOf("ban.faction").permissionString()), TranslationKey.BROADCAST_FORCE_BAN_BANNED_STAFF, placeholders);
+							messenger.message(sender, TranslationKey.MESSAGE_FORCE_BAN_BANNED, placeholders);
+							messenger.broadcast(PermissionUtils.forceOf("ban.faction"), TranslationKey.BROADCAST_FORCE_BAN_BANNED_STAFF, placeholders);
 							if (faction != null){
 								fM.ban(faction, true, true, true);
 								if (isSilent){
 									return;
 								}
-								commandMessenger.message(faction, TranslationKey.BROADCAST_FORCE_BAN_BANNED_FACTION, placeholders);
+								messenger.message(faction, TranslationKey.BROADCAST_FORCE_BAN_BANNED_FACTION, placeholders);
 							} else {
 								fM.ban(name, Component.text(name));
 							}
-							commandMessenger.broadcast(TranslationKey.BROADCAST_FORCE_BAN_BANNED_PUBLIC, placeholders);
+							messenger.broadcast(TranslationKey.BROADCAST_FORCE_BAN_BANNED_PUBLIC, placeholders);
 						})
 		);
 	}

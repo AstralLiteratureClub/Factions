@@ -1,6 +1,7 @@
 package bet.astral.unity.commands;
 
 import bet.astral.cloudplusplus.command.CloudPPCommand;
+import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.unity.Factions;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,8 +24,8 @@ public class FactionCloudCommand extends CloudPPCommand<Factions, CommandSender>
 
 
 
-	public RichDescription loadDescription(String name, String command){
-		return plugin.loadDescription(name, command);
+	public RichDescription loadDescription(String name, String command, Placeholder... placeholders){
+		return plugin.loadDescription(name, command, placeholders);
 	}
 
 

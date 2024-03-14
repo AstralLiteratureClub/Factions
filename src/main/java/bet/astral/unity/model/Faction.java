@@ -35,6 +35,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.translation.Translatable;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -63,12 +64,14 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	public static PlaceholderList factionPlaceholders(@Nullable String prefix, @NotNull Faction faction){
 		PlaceholderList placeholders = new PlaceholderList();
 		if (prefix != null){
-			placeholders.add(PlaceholderUtils.createPlaceholder(null, prefix, faction));
+			placeholders.add(PlaceholderUtils.createPlaceholder(null, prefix, faction.name));
 		}
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "name", faction.name));
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "displayname", faction.displayname));
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "customname", faction.displayname));
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "description", faction.description));
+		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "how_to_join", faction.joinInfo));
+		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "leader", Bukkit.getOfflinePlayer(faction.superOwner).getName()));
 		if (faction.home != null) {
 			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_name", faction.home.getName()));
 			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_id", faction.home.getUniqueId()));
@@ -451,8 +454,15 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 
 		playerPrefixes.put(player, after);
 	}
+
+	public void resetPrivatePrefix(FRole role){
+		this.rolePrefixes.put(role, DEFAULT_PRIVATE_PREFIXES.get(role));
+	}
+	public void resetPublicPrefix(FRole role){
+		this.publicRolePrefixes.put(role, DEFAULT_PUBLIC_PREFIXES.get(role));
+	}
 	public void resetPrefix(OfflinePlayer player){
-		playerPrefixes.remove(player);
+		this.playerPrefixes.remove(player);
 	}
 
 	public FPrefix getPrivatePrefix(FRole role){

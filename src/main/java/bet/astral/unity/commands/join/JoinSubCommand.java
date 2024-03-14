@@ -2,15 +2,14 @@ package bet.astral.unity.commands.join;
 
 
 import bet.astral.cloudplusplus.annotations.Cloud;
-import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
-import bet.astral.unity.commands.arguments.PublicFactionParser;
 import bet.astral.unity.commands.arguments.RoleParser;
 import bet.astral.unity.commands.core.DeleteSubCommand;
 import bet.astral.unity.event.FactionEvent;
+import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
@@ -20,8 +19,6 @@ import org.bukkit.entity.Player;
 import org.incendo.cloud.component.DefaultValue;
 import org.incendo.cloud.paper.PaperCommandManager;
 
-import java.util.List;
-
 @Cloud
 public class JoinSubCommand extends FactionCloudCommand {
 	public JoinSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
@@ -30,7 +27,7 @@ public class JoinSubCommand extends FactionCloudCommand {
 				root.literal("join")
 						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_JOIN, "/factions join"))
 						.permission(PermissionUtils.of("join", false))
-						.required(PublicFactionParser.factionComponent(FactionParser.Mode.NAME)
+						.required(FactionParser.factionComponent(FactionParser.Mode.NAME)
 								.name("faction")
 								.description(loadDescription(TranslationKey.DESCRIPTION_JOIN_FACTION, "/factions join <faction>"))
 						)
@@ -42,6 +39,22 @@ public class JoinSubCommand extends FactionCloudCommand {
 									PlaceholderList placeholders = new PlaceholderList();
 									placeholders.addAll(Faction.factionPlaceholders("faction", faction));
 									placeholders.addAll(messenger.createPlaceholders("sender", sender));
+
+									if (!faction.isPublic()){
+										if (!faction.isInvited(sender)){
+											messenger.message(sender, TranslationKey.MESSAGE_FACTION_PRIVATE, placeholders);
+											return;
+										}
+										FInvite invite = faction.getInvite(sender);
+										placeholders.add(null, invite);
+
+										if (faction.acceptInvite(sender)) {
+											messenger.message(sender, TranslationKey.MESSAGE_INVITE_ACCEPT, placeholders);
+											messenger.message(faction, TranslationKey.BROADCAST_INVITE_ACCEPT, placeholders);
+										}
+										return;
+									}
+
 
 									messenger.message(sender, TranslationKey.MESSAGE_JOINED, placeholders);
 									messenger.message(faction, TranslationKey.BROADCAST_JOINED, placeholders);

@@ -177,24 +177,33 @@ public final class TranslationKey {
 
 	public final static String DESCRIPTION_PREFIX = "prefix.description";
 	public final static String DESCRIPTION_PREFIX_SET = "prefix.description-set-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PUBLIC = "prefix.description-set-public-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PUBLIC_ROLE = "prefix.description-set-public-role-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PUBLIC_PREFIX = "prefix.description-set-public-prefix-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PRIVATE = "prefix.description-set-private-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PRIVATE_PLAYER = "prefix.description-set-private-player-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PRIVATE_PLAYER_MEMBER = "prefix.description-set-private-player-member-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PRIVATE_ROLE = "prefix.description-set-private-role-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PRIVATE_ROLE_ROLE = "prefix.description-set-private-role-role-arg";
+	public final static String DESCRIPTION_PREFIX_SET_PRIVATE_PREFIX = "prefix.description-private-prefix-arg";
+	public final static String MESSAGE_PREFIX_SET_PRIVATE_ROLE_CHANGED = "prefix.message-changed-private-role";
+	public final static String MESSAGE_PREFIX_SET_PRIVATE_MEMBER_CHANGED = "prefix.message-changed-private-member";
+	public final static String MESSAGE_PREFIX_SET_PUBLIC_TOO_SHORT = "prefix.message-public-prefix-too-short";
+	public final static String MESSAGE_PREFIX_SET_PUBLIC_TOO_LONG = "prefix.message-public-prefix-too-long";
+	public final static String MESSAGE_PREFIX_SET_PUBLIC_ILLEGAL = "prefix.message-public-prefix-does-not-match";
+	public final static String MESSAGE_PREFIX_SET_PUBLIC_CHANGED = "prefix.message-changed-public-prefix";
+
 	public final static String DESCRIPTION_PREFIX_RESET = "prefix.description-reset-arg";
-
-	public final static String DESCRIPTION_PREFIX_PUBLIC = "prefix.description-set-public-arg";
-	public final static String DESCRIPTION_PREFIX_PUBLIC_ROLE = "prefix.description-set-public-role-arg";
-	public final static String DESCRIPTION_PREFIX_PUBLIC_PREFIX = "prefix.description-set-public-prefix-arg";
-	public final static String DESCRIPTION_PREFIX_PRIVATE = "prefix.description-set-private-arg";
-	public final static String DESCRIPTION_PREFIX_PRIVATE_PLAYER = "prefix.description-set-private-player-arg";
-	public final static String DESCRIPTION_PREFIX_PRIVATE_PLAYER_MEMBER = "prefix.description-set-private-player-member-arg";
-	public final static String DESCRIPTION_PREFIX_PRIVATE_ROLE = "prefix.description-set-private-role-arg";
-	public final static String DESCRIPTION_PREFIX_PRIVATE_ROLE_ROLE = "prefix.description-set-private-role-role-arg";
-	public final static String DESCRIPTION_PREFIX_PRIVATE_PREFIX = "prefix.description-private-prefix-arg";
-	public final static String MESSAGE_PREFIX_PRIVATE_ROLE_CHANGED = "prefix.message-changed-private-role";
-	public final static String MESSAGE_PREFIX_PRIVATE_MEMBER_CHANGED = "prefix.message-changed-private-member";
-	public final static String MESSAGE_PREFIX_PUBLIC_TOO_SHORT = "prefix.message-public-prefix-too-short";
-	public final static String MESSAGE_PREFIX_PUBLIC_TOO_LONG = "prefix.message-public-prefix-too-long";
-	public final static String MESSAGE_PREFIX_PUBLIC_ILLEGAL = "prefix.message-public-prefix-illegal";
-	public final static String MESSAGE_PREFIX_PUBLIC_CHANGED = "prefix.message-changed-public-prefix";
-
+	public final static String DESCRIPTION_PREFIX_RESET_PUBLIC = "prefix.description-reset-public-arg";
+	public final static String DESCRIPTION_PREFIX_RESET_PUBLIC_ROLE = "prefix.description-reset-public-role-arg";
+	public final static String DESCRIPTION_PREFIX_RESET_PRIVATE = "prefix.description-reset-private-arg";
+	public final static String DESCRIPTION_PREFIX_RESET_PRIVATE_ROLE = "prefix.description-reset-private-role-arg";
+	public final static String DESCRIPTION_PREFIX_RESET_PRIVATE_ROLE_ROLE = "prefix.description-reset-private-role-role-arg";
+	public final static String DESCRIPTION_PREFIX_RESET_PRIVATE_PLAYER = "prefix.description-reset-private-player-arg";
+	public final static String DESCRIPTION_PREFIX_RESET_PRIVATE_PLAYER_MEMBER = "prefix.description-reset-private-player-member-arg";
+	public final static String MESSAGE_PREFIX_RESET_PRIVATE_ROLE = "prefix.message-reset-private-role-prefix";
+	public final static String MESSAGE_PREFIX_RESET_PRIVATE_PLAYER = "prefix.message-reset-private-member-prefix";
+	public final static String MESSAGE_PREFIX_RESET_PUBLIC_ROLE = "prefix.message-reset-public-role-prefix";
 
 	public final static String DESCRIPTION_FORCE_BAN = "ban.force-description";
 	public final static String DESCRIPTION_FORCE_BAN_FACTION = "ban.force-factions.force-faction.description";

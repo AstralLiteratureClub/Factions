@@ -55,7 +55,7 @@ public class RoleParser<C> implements ArgumentParser<C, FRole>, BlockingSuggesti
 		private final String input;
 
 		public RoleParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_ALREADY_INVITED, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKey.CAPTION_UNKNOWN_ROLE, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

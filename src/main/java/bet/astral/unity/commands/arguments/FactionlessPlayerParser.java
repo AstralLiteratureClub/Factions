@@ -6,21 +6,7 @@ import org.incendo.cloud.bukkit.parser.PlayerParser;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.exception.parsing.ParserException;
 
-public class FactionlessPlayerParser {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+public class FactionlessPlayerParser{
 
 	public static final class SelfFactionlessParserException extends ParserException {
 		private final String input;

@@ -3,6 +3,7 @@ package bet.astral.unity;
 import bet.astral.cloudplusplus.CommandRegisterer;
 import bet.astral.messenger.Message;
 import bet.astral.messenger.Messenger;
+import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.configuration.FactionConfig;
 import bet.astral.unity.database.PlayerDatabase;
@@ -259,11 +260,15 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
 
 
 
-    public RichDescription loadDescription(String name, String command){
-        PlaceholderList placeholders = new PlaceholderList();
-        placeholders.add("command", command);
+    public RichDescription loadDescription(String name, String command, Placeholder... placeholders){
+        PlaceholderList placeholderList = new PlaceholderList();
+        placeholderList.add("command", command);
+        placeholderList.addAll(placeholders);
         Message message = messenger.getMessage(name);
-        Component component = messenger.parse(message, Message.Type.CHAT, placeholders);
+        if (message == null){
+            message = new Message(name, Component.text(name));
+        }
+        Component component = messenger.parse(message, Message.Type.CHAT, placeholderList);
 
         return RichDescription.of(component);
     }

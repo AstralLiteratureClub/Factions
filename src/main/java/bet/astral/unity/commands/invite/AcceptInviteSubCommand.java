@@ -5,6 +5,7 @@ import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionInviteParser;
+import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
@@ -47,11 +48,13 @@ public class AcceptInviteSubCommand extends FactionCloudCommand {
 							Faction faction = context.get("faction");
 
 							PlaceholderList placeholders = new PlaceholderList(Faction.factionPlaceholders("faction", faction));
-							placeholders.addAll(commandMessenger.createPlaceholders(sender));
+							placeholders.addAll(messenger.createPlaceholders("sender", sender));
+							FInvite invite = faction.getInvite(sender);
+							placeholders.add(null, invite);
 
 							if (faction.acceptInvite(sender)) {
-								commandMessenger.message(sender, TranslationKey.MESSAGE_INVITE_ACCEPT, placeholders);
-								commandMessenger.message(faction, TranslationKey.BROADCAST_INVITE_ACCEPT, placeholders);
+								messenger.message(sender, TranslationKey.MESSAGE_INVITE_ACCEPT, placeholders);
+								messenger.message(faction, TranslationKey.BROADCAST_INVITE_ACCEPT, placeholders);
 							}
 						})
 		);

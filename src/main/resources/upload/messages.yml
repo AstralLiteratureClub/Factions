@@ -35,7 +35,7 @@ faction-object:
 
 create:
   description: "Allows creation of a new faction."
-  description-name-arg: "The name of the new faction."
+  description-name-arg: "The name of the new faction. Allowed pattern regex: %allowed_pattern% (%allowed_min_length%-%allowed_max_length%)"
 
   message-name-is-too-long: "%prefix% You're trying to create a faction with too long name. Allowed length: %min_length%-%max_length% current: %length%"
   message-name-is-too-short: "%prefix% You're trying to create a faction with too short name. Allowed length: %min_length%-%max_length% current: %length%"
@@ -177,9 +177,8 @@ prefix:
   description-set-arg: "Allows clan admins to set the public and private prefix of members and roles."
   description-set-public-arg: "Allows clan admins to set the public prefix of roles."
   description-set-public-role-arg: "The role to change prefix of."
-  description-set-public-prefix-arg: "The new prefix for the role. Allowed pattern regex: %allowed_pattern%"
+  description-set-public-prefix-arg: "The new prefix for the role. Allowed pattern regex: %allowed_pattern% (%allowed_min_length%-%allowed_max_length%)"
   description-set-private-arg: "Allows clan admins to change private prefixes of members and roles."
-
   description-set-private-role-arg: "Allows clan admins to change private prefix of the roles."
   description-set-private-role-role-arg: "The role to change the role for."
   description-set-private-player-arg: "Allows clan admins to change private prefix of a member."
@@ -187,14 +186,24 @@ prefix:
   description-set-private-prefix-arg: "The new prefix for the role. Type in \"Quotation marks\" to add spaces."
 
   description-reset-arg: "Allows clan admins to reset the public and private prefixes of members and roles."
+  description-reset-public-arg: "Allows clan admins to reset a role's public prefix"
+  description-reset-public-role-arg: "The role to have the default public prefix"
+  description-reset-private-arg: "Allows clan admins to reset a player's prefix and role's prefix."
+  description-reset-private-role-arg: "Allows clan admins to reset a role's prefix."
+  description-reset-private-role-role-arg: "The role to have the default private prefix"
+  description-reset-private-player-arg: "Allows clan admins to reset member's role."
+  description-reset-private-player-member-arg: "The member to have the default private prefix."
 
   message-public-prefix-is-too-short: "%prefix% The prefix you are trying to use is too short!"
   message-public-prefix-is-too-long: "%prefix% The prefix you are trying to use is too long!"
-  message-public-prefix-is-too-does-not-match: "%prefix% The prefix you are trying to use does not match the allowed prefixes!"
-  message-changed-public-prefix: "%prefix% Changed the public prefix of <yellow>%role%<white> to <yellow>%prefix%<white>."
+  message-public-prefix-does-not-match: "%prefix% The prefix you are trying to use does not match the allowed prefixes!"
+  message-changed-public-prefix: "%prefix% Changed the public prefix of <yellow>%role%<white> to <yellow>%new_prefix%<white>."
+  message-changed-private-role: "%prefix% Changed the private prefix of <yellow>%role%<white> to <yellow>%new_prefix%<white>."
+  message-changed-private-member: "%prefix% Changed the private prefix of <yellow>%member%<white> to <yellow>%new_prefix%<white>."
 
-  message-changed-private-role: "%prefix% Changed the private prefix of <yellow>%role%<white> to <yellow>%prefix%<white>."
-  message-changed-private-member: "%prefix% Changed the private prefix of <yellow>%member%<white> to <yellow>%prefix%<white>."
+  message-reset-public-role-prefix: "%prefix% Reset the public prefix of role <yellow>%role%<white>."
+  message-reset-private-role-prefix: "%prefix% Reset the private prefix of role <yellow>%role%<white>"
+  message-reset-private-member-prefix: "%prefix% Reset the private prefix of <red>%member%<white>"
 
 ban:
   description-force: "<red>Allows admins to ban factions and sudo factions to ban a player."

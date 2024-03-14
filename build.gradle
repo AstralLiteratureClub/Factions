@@ -42,10 +42,10 @@ dependencies {
     // Cloud and brigadier for commands
     compileOnly 'com.mojang:brigadier:1.0.18'
     var cloudVersion = "2.0.0-SNAPSHOT";
-    implementation 'org.incendo:cloud-core:'+cloudVersion
-    implementation 'org.incendo:cloud-paper:'+cloudVersion
-    implementation 'org.incendo:cloud-brigadier:'+cloudVersion
-    implementation 'org.incendo:cloud-minecraft-extras:'+cloudVersion
+    implementation 'org.incendo:cloud-core:' + cloudVersion
+    implementation 'org.incendo:cloud-paper:' + cloudVersion
+    implementation 'org.incendo:cloud-brigadier:' + cloudVersion
+    implementation 'org.incendo:cloud-minecraft-extras:' + cloudVersion
     /*
     var cloudOther = "1.0.0-SNAPSHOT";
     implementation 'org.incendo:cloud-processors-cooldown:'+cloudOther

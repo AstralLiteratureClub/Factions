@@ -1,6 +1,7 @@
 package bet.astral.unity.commands.core;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
+import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
@@ -24,40 +25,45 @@ public class CreateSubCommand extends FactionCloudCommand {
 						.literal("create",
 								loadDescription(TranslationKey.DESCRIPTION_CREATE, "/factions create"),
 								"new"
-								)
+						)
 						.senderType(Player.class)
 						.permission(PermissionUtils.of("create", false))
 						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_CREATE, "/factions create"))
 						.required(
 								StringParser.stringComponent(StringParser.StringMode.SINGLE)
 										.name("name")
-										.description(loadDescription(TranslationKey.DESCRIPTION_CREATE_NAME, "/factions create <name>")))
-						.handler(context->{
+										.description(loadDescription(TranslationKey.DESCRIPTION_CREATE_NAME, "/factions create <name>",
+												new Placeholder("allowed_max_length", plugin.getFactionConfig().getName().getMaxLength()),
+												new Placeholder("allowed_min_length", plugin.getFactionConfig().getName().getMinLength()),
+												new Placeholder("allowed_pattern", plugin.getFactionConfig().getName().getRegexPattern())
+										)))
+						.handler(context -> {
 							Player sender = context.sender();
 							String name = context.get("name");
 
 							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.add("name", name);
 							placeholders.add("length", name.length());
-							placeholders.add("max_length", 10);
-							placeholders.add("min_length", 3);
+							placeholders.add("max_length", plugin.getFactionConfig().getName().getMaxLength());
+							placeholders.add("min_length", plugin.getFactionConfig().getName().getMinLength());
+							placeholders.add("pattern", plugin.getFactionConfig().getName().getRegexPattern());
 							placeholders.addAll(messenger.createPlaceholders("sender", sender));
 
-							if (name.length()>10){
+							if (name.length() > 10) {
 								messenger.message(sender, TranslationKey.MESSAGE_CREATE_TOO_LONG, placeholders);
 								return;
-							} else if (name.length()<3){
+							} else if (name.length() < 3) {
 								messenger.message(sender, TranslationKey.MESSAGE_CREATE_TOO_SHORT, placeholders);
 								return;
-							} else if (plugin.getFactionManager().exists(name)){
+							} else if (plugin.getFactionManager().exists(name)) {
 								messenger.message(sender, TranslationKey.MESSAGE_CREATE_ALREADY_EXISTS, placeholders);
 								return;
-							} else if (plugin.getFactionManager().isBanned(name)){
+							} else if (plugin.getFactionManager().isBanned(name)) {
 								messenger.message(sender, TranslationKey.MESSAGE_CREATE_BANNED, placeholders);
 								return;
 							}
 							Faction faction = plugin.getFactionManager().create(name, sender);
-							if (faction == null){
+							if (faction == null) {
 								return;
 							}
 							placeholders.add("faction", faction);

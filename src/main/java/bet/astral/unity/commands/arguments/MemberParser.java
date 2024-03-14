@@ -136,7 +136,7 @@ public class MemberParser<C> implements ArgumentParser<C, OfflinePlayer>, Blocki
 		private final String input;
 
 		public MemberParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_ALREADY_INVITED, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKey.CAPTION_UNKNOWN_MEMBER, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

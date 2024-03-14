@@ -20,16 +20,17 @@ import org.incendo.cloud.exception.parsing.ParserException;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
-import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 import org.incendo.cloud.suggestion.Suggestion;
+import org.incendo.cloud.suggestion.SuggestionProvider;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
-public class FactionInviteParser<C> implements ArgumentParser<C, Faction>, BlockingSuggestionProvider<C> {
+public class FactionInviteParser<C> implements ArgumentParser<C, Faction>, SuggestionProvider<C> {
 	private static Component toString(List<OfflinePlayerReference> members) {
 		Component component = null;
 		for (OfflinePlayerReference reference : members){
@@ -69,17 +70,24 @@ public class FactionInviteParser<C> implements ArgumentParser<C, Faction>, Block
 		return ArgumentParseResult.success(faction);
 	}
 
-	public @NonNull Iterable<@NonNull Suggestion> suggestions(final @NonNull CommandContext<C> commandContext, final @NonNull CommandInput input) {
-		Player sender = (Player) commandContext.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
+	/*
+	 * Using the Completable future one might be better as it won't block the main thread hopefully,
+	 */
+	@Override
+	public @NonNull CompletableFuture<? extends @NonNull Iterable<? extends @NonNull Suggestion>> suggestionsFuture(@NonNull CommandContext<C> context, @NonNull CommandInput input) {
+		return CompletableFuture.supplyAsync(()->{
+					Player sender = (Player) context.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
 
-		return factions.getFactionManager().created().stream()
-				.filter(faction->faction.isInvited(sender))
-				.map(faction -> new TooltipSuggestion(faction, FactionParser.Mode.NAME,
-						Component.text(faction.getName(), NamedTextColor.WHITE)
-								.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-								.append(Component.text("Owner: ", NamedTextColor.WHITE))
-				))
-				.collect(Collectors.toList());
+					return factions.getFactionManager().created().stream()
+							.filter(faction->faction.isInvited(sender))
+							.map(faction -> new TooltipSuggestion(faction, FactionParser.Mode.NAME,
+									Component.text(faction.getName(), NamedTextColor.WHITE)
+											.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
+											.append(Component.text("Owner: ", NamedTextColor.WHITE))
+							))
+							.collect(Collectors.toList());
+				}
+		);
 	}
 
 	public static final class FactionInviteParserException extends ParserException {

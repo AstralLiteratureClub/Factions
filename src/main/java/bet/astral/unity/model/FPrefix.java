@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.OfflinePlayer;
@@ -18,7 +19,7 @@ import java.util.Collection;
 
 @Getter
 @Setter
-public class FPrefix implements Placeholderable {
+public class FPrefix implements Placeholderable, ComponentLike {
 	private final static MiniMessage miniMessage = MiniMessage.miniMessage();
 	@Nullable
 	private final Faction faction;
@@ -78,8 +79,13 @@ public class FPrefix implements Placeholderable {
 	@Override
 	public Collection<Placeholder> asPlaceholder(String s) {
 		PlaceholderList placeholders = new PlaceholderList();
-		placeholders.add(PlaceholderUtils.createPlaceholder(s, "prefix", prefix));
+		placeholders.add(PlaceholderUtils.createPlaceholder(s, "prefix", this));
 		placeholders.add(PlaceholderUtils.createPlaceholder(s, "prefix_serialzied", prefixSerialized));
 		return placeholders;
+	}
+
+	@Override
+	public @NotNull Component asComponent() {
+		return prefix;
 	}
 }

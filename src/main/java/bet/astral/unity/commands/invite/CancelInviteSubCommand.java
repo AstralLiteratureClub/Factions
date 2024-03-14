@@ -3,7 +3,6 @@ package bet.astral.unity.commands.invite;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
-import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.InvitedParser;
@@ -32,6 +31,8 @@ public class CancelInviteSubCommand extends FactionCloudCommand {
 		Command.Builder<Player> builder = root.literal(
 						"cancel-invite",
 						loadDescription(TranslationKey.DESCRIPTION_INVITE_CANCEL, "/factions cancel-invite"),
+						"uninvite",
+						"revoke-invite",
 						"cinv")
 				.commandDescription(loadDescription(TranslationKey.DESCRIPTION_INVITE_CANCEL, "/factions cancel-invite"))
 				.permission(PermissionUtils.of("invite.accept", FPermission.CANCEL_INVITE)

@@ -18,13 +18,15 @@ import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 import org.incendo.cloud.suggestion.Suggestion;
+import org.incendo.cloud.suggestion.SuggestionProvider;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class FactionParser<C> implements ArgumentParser<C, Faction>, BlockingSuggestionProvider<C> {
-	private static final Factions factions = Factions.getPlugin(Factions.class);
-	private final Mode mode;
+public class FactionParser<C> implements ArgumentParser<C, Faction>, SuggestionProvider {
+	protected static final Factions factions = Factions.getPlugin(Factions.class);
+	protected final Mode mode;
 	protected FactionParser(Mode mode) {
 		this.mode = mode;
 	}
@@ -62,24 +64,25 @@ public class FactionParser<C> implements ArgumentParser<C, Faction>, BlockingSug
 		return ArgumentParseResult.success(faction);
 	}
 
-	public @NonNull Iterable<@NonNull Suggestion> suggestions(final @NonNull CommandContext<C> commandContext, final @NonNull CommandInput input) {
-		return factions.getFactionManager().created().stream()
+	@Override
+	public @NonNull CompletableFuture<? extends @NonNull Iterable<? extends @NonNull Suggestion>> suggestionsFuture(@NonNull CommandContext context, @NonNull CommandInput input) {
+		return CompletableFuture.supplyAsync(()->factions.getFactionManager().created().stream()
 				.map(
 						faction -> new TooltipSuggestion(
 								faction,
-								Mode.NAME,
+								mode,
 								Component.text(faction.getName(), NamedTextColor.WHITE)
 										.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 										.append(Component.text("Owner: ", NamedTextColor.WHITE))
 						)
-				).collect(Collectors.toList());
+				).collect(Collectors.toList()));
 	}
 
 	public static final class FactionParserException extends ParserException {
 		private final String input;
 
 		public FactionParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_ALREADY_INVITED, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKey.CAPTION_UNKNOWN_FACTION, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

@@ -1,7 +1,12 @@
 package bet.astral.unity.utils.flags;
 
+import bet.astral.messenger.placeholder.Placeholder;
+import bet.astral.messenger.utils.PlaceholderUtils;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.List;
 
 public class FlagImpl<V> implements Flag<V>{
 	private final V defaultValue;
@@ -43,5 +48,12 @@ public class FlagImpl<V> implements Flag<V>{
 	@Override
 	public @NotNull NamespacedKey getKey() {
 		return key;
+	}
+
+	@Override
+	public Collection<Placeholder> asPlaceholder(String s) {
+		return List.of(
+				PlaceholderUtils.createPlaceholder(s, "key", key),
+				PlaceholderUtils.createPlaceholder(s, "value", value));
 	}
 }

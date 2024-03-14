@@ -7,6 +7,7 @@ import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.commands.arguments.MemberParser;
 import bet.astral.unity.model.FPermission;
+import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
 import bet.astral.unity.utils.TranslationKey;
@@ -39,17 +40,27 @@ public class KickSubCommand extends FactionCloudCommand {
 							Faction faction = plugin.getPlayerManager().convert(sender).getFaction();
 							OfflinePlayer member = context.get("member");
 							String reason = context.get("reason");
-							PlaceholderList placeholders = new PlaceholderList();
 							assert faction != null;
+
+							FRole senderRole = faction.getRole(sender);
+							FRole memberRole = faction.getRole(member);
+
+							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
 							placeholders.add("reason", reason);
-							placeholders.addAll(commandMessenger.createPlaceholders("sender", sender));
-							placeholders.addAll(commandMessenger.createPlaceholders("kicked", member));
+							placeholders.addAll(messenger.createPlaceholders("sender", sender));
+							placeholders.addAll(messenger.createPlaceholders("kicked", member));
+
+							if (!senderRole.isHigherThan(memberRole)) {
+								messenger.message(sender, TranslationKey.MESSAGE_KICK_CANNOT_HIGHER, placeholders);
+								return;
+							}
+
 							faction.kick(sender, member, reason, false);
 							if (member instanceof Player player) {
-								commandMessenger.message(player, TranslationKey.MESSAGE_KICK, placeholders);
+								messenger.message(player, TranslationKey.MESSAGE_KICK, placeholders);
 							}
-							commandMessenger.message(faction, TranslationKey.BROADCAST_KICK, placeholders);
+							messenger.message(faction, TranslationKey.BROADCAST_KICK, placeholders);
 						})
 		);
 		commandPlayer(
@@ -77,14 +88,15 @@ public class KickSubCommand extends FactionCloudCommand {
 							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
 							placeholders.add("reason", reason);
-							placeholders.addAll(commandMessenger.createPlaceholders("sender", sender));
-							placeholders.addAll(commandMessenger.createPlaceholders("kicked", member));
+							placeholders.addAll(messenger.createPlaceholders("sender", sender));
+							placeholders.addAll(messenger.createPlaceholders("kicked", member));
 							faction.kick(sender, member, reason, true);
 
 							if (member instanceof Player player) {
-								commandMessenger.message(player, TranslationKey.MESSAGE_FORCE_KICK, placeholders);
+								messenger.message(player, TranslationKey.MESSAGE_FORCE_KICK_KICKED, placeholders);
 							}
-							commandMessenger.message(faction, TranslationKey.BROADCAST_FORCE_KICK, placeholders);
+							messenger.message(faction, TranslationKey.BROADCAST_FORCE_KICK, placeholders);
+							messenger.message(sender, TranslationKey.MESSAGE_FORCE_KICK_SENDER, placeholders);
 						})
 		);
 	}
