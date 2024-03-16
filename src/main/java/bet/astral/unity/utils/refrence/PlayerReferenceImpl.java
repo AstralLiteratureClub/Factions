@@ -20,4 +20,10 @@ public class PlayerReferenceImpl implements PlayerReference {
 	public java.util.@NotNull UUID uuid() {
 		return uniqueId;
 	}
+
+
+	@Override
+	public java.util.@NotNull UUID getUniqueId() {
+		return uniqueId;
+	}
 }

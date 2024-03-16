@@ -1,3 +1,42 @@
+database:
+  # Data convert is not implemented currently,
+  #  but it's supposed to be able to convert from any database to a new database.
+  # Data converter values are meant for the old database login details, and the ones below are
+  #  for the new database connection.
+  data-converter:
+    # MySQL, SQLite, Mongodb?
+    type: MySQL
+    # Ip to the database
+    host: 198.0.0.0.1
+    # Port to the database
+    port: 25373
+    # Database name
+    name: "UnityFactions"
+    # The username to the db
+    user: "root"
+    # The password to the db
+    password: "MakeStrongPasswords"
+
+  # MySQL, SQLite, Mongodb?
+  type: MySQL
+  # Ip to the database
+  ip: 198.0.0.0.1
+  # Port to the database
+  port: 25373
+  # Database name
+  name: "UnityFactions"
+  # The username to the db
+  user: "root"
+  # The password to the db
+  password: "MakeStrongPasswords"
+  timeout-limit: 45000
+  minimum-idle: 20000
+
+  hikari:
+    minimum-pools: 1
+    maximum-pools: 200
+    testQuery: IGNORE
+
 faction:
   name:
     regex: "[a-zA-Z0-9_]*"

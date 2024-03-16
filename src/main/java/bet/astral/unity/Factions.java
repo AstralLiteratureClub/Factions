@@ -5,10 +5,14 @@ import bet.astral.messenger.Message;
 import bet.astral.messenger.Messenger;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
-import bet.astral.unity.configuration.FactionConfig;
-import bet.astral.unity.database.PlayerDatabase;
-import bet.astral.unity.handlers.ChatHandler;
 import bet.astral.unity.commands.root.FactionRootCommands;
+import bet.astral.unity.configuration.Config;
+import bet.astral.unity.configuration.FactionConfig;
+import bet.astral.unity.database.Database;
+import bet.astral.unity.database.impl.HikariDatabase;
+import bet.astral.unity.database.model.HikariLoginMaster;
+import bet.astral.unity.database.model.LoginMaster;
+import bet.astral.unity.handlers.ChatHandler;
 import bet.astral.unity.managers.FactionManager;
 import bet.astral.unity.managers.PlayerManager;
 import bet.astral.unity.model.Faction;
@@ -18,6 +22,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,7 +39,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import static bet.astral.unity.utils.Resource.loadResourceAsTemp;
 import static bet.astral.unity.utils.Resource.loadResourceToFile;
@@ -55,13 +62,11 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     private Command.Builder<CommandSender> rootAllyCommand;
     // /ally force
     private Command.Builder<CommandSender> rootAllyForceCommand;
-
     private MinecraftHelp<CommandSender> rootHelp;
     private MinecraftHelp<CommandSender> allyRootHelp;
     private Messenger<Factions> messenger;
     private Messenger<Factions> debugMessenger;
-    // TODO Implement this database
-    private PlayerDatabase playerDatabase;
+    private Database database;
     private PlayerManager playerManager;
     private FactionManager factionManager;
     private ChatHandler chatHandler;
@@ -70,11 +75,54 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     @Override
     public void onEnable() {
         uploadUploads();
+        reloadConfig();
+        Config config = new Config(super.getConfig());
+
         factionConfig = new FactionConfig(getConfig(new File(getDataFolder(), "config.yml")));
 
-
-	    playerManager = new PlayerManager(this);
+        playerManager = new PlayerManager(this);
         factionManager = new FactionManager(this);
+
+        config.setIfNotString("database.type", "SQLite");
+        config.setIfNotString("database.ip", "198.0.0.0.1");
+        config.setIfNotInt("database.ip", 123456);
+        config.setIfNotString("database.ip", "UnityFactions");
+        config.setIfNotString("database.user", "root");
+        config.setIfNotString("database.password", "MakeStrongPasswords");
+        config.setIfNotLong("database.timeout", 10000L);
+        config.setIfNotInt("database.hikari.minimum", 1);
+        config.setIfNotInt("database.hikari.maximum", 1);
+	    try {
+            config.save(new File(getDataFolder(), "config.yml"));
+	    } catch (IOException e) {
+		    throw new RuntimeException(e);
+	    }
+
+	    LoginMaster loginMaster;
+        String databaseType = getConfig().getString("database.type");
+        if (databaseType == null){
+            setEnabled(false);
+            throw new IllegalStateException("The plugin cannot initialize, as the database type is not correct!");
+        }
+        switch (databaseType.toLowerCase()) {
+            case "mysql", "sqlite" -> {
+                database = new HikariDatabase(this, databaseType.toLowerCase());
+                loginMaster = HikariLoginMaster.load(new Config(
+		                (MemorySection) config.get("database")));
+            }
+            case "mongo", "mongodb" -> {
+                getLogger().severe("Mongodb is not supported currently! Please use MySQL or SQLite for now! Disabling the plugin!");
+                setEnabled(false);
+                return;
+            }
+            default -> {
+                getLogger().severe("Currently "+ getName() + " does not support the database type "+ databaseType+". Please try another database type! Disabling the plugin!");
+                setEnabled(false);
+                return;
+            }
+        }
+
+        database.connect(loginMaster);
 
         commandManager = new PaperCommandManager<>(this, ExecutionCoordinator.asyncCoordinator(), SenderMapper.identity());
 
@@ -95,14 +143,14 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
                 if (field.isAnnotationPresent(TranslationKey.IsCaption.class) && field.getAnnotation(TranslationKey.IsCaption.class).value()) {
                     Caption caption = (Caption) field.get(null);
                     Message message = messenger.loadMessage(caption.key());
-                    if (message == null){
+                    if (message == null) {
                         messengerConfig.set(caption.key(), caption.key());
                     }
                 } else {
                     String fieldValue = (String) field.get(null);
                     messenger.loadMessage(fieldValue);
                     Message message = messenger.loadMessage(fieldValue);
-                    if (message == null){
+                    if (message == null) {
                         messengerConfig.set(fieldValue, fieldValue);
                     }
                 }
@@ -164,13 +212,18 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         });
 
 
-
         getLogger().info("Factions has enabled!");
     }
 
+
     @Override
     public void onDisable() {
-
+        if (database != null){
+            if (database.isConnected()){
+                // TODO
+                getLogger().info("Disabling the database..!");
+            }
+        }
         getLogger().info("Factions has disabled!");
     }
 

@@ -59,7 +59,7 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 					return ArgumentParseResult.failure(new CannotCheckOfflinePlayerException(input, commandContext));
 				}
 			}
-			fPlayer = factions.getPlayerDatabase().load(player.getUniqueId());
+			fPlayer = factions.getDatabase().load(player.getUniqueId());
 			if (fPlayer == null){
 				return ArgumentParseResult.failure(new FactionPlayerParseException(input, commandContext));
 			}

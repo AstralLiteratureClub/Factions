@@ -5,6 +5,7 @@ import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.Placeholderable;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
+import bet.astral.unity.database.model.DBPlayer;
 import bet.astral.unity.event.ASyncPlayerKickedFromFactionEvent;
 import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.event.invite.ASyncInviteExpireEvent;
@@ -469,6 +470,9 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		return rolePrefixes.get(role);
 	}
 
+	public FPrefix getPrivatePrefix(OfflinePlayerReference reference){
+		return getPrivatePrefix(reference.offlinePlayer());
+	}
 	public FPrefix getPrivatePrefix(OfflinePlayer player){
 		FPrefix prefix = playerPrefixes.get(player);
 		if (prefix == null) {
@@ -483,6 +487,14 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 			}
 		}
 		return prefix;
+	}
+
+
+	public boolean hasPrivatePrefix(FPlayer player) {
+		return playerPrefixes.containsKey(player.getUniqueId());
+	}
+	public boolean hasPrivatePrefix(OfflinePlayerReference value) {
+		return playerPrefixes.containsKey(value.uuid());
 	}
 
 	/**

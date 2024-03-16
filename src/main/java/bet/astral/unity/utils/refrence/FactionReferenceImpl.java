@@ -26,4 +26,9 @@ public class FactionReferenceImpl extends PlayerReferenceImpl implements Faction
 	public java.util.@Nullable UUID getFactionId() {
 		return factionId;
 	}
+
+	@Override
+	public java.util.@NotNull UUID getUniqueId() {
+		return uuid();
+	}
 }

@@ -13,10 +13,12 @@ import bet.astral.unity.event.player.ASyncPlayerDeleteFactionEvent;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
+import bet.astral.unity.utils.OfflinePlayerList;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -142,10 +144,6 @@ public class FactionManager {
 			if (playerReference.offlinePlayer() instanceof Player player){
 				FPlayer fPlayer = factions.getPlayerManager().convert(player);
 				fPlayer.setFactionId(null);
-				factions.getPlayerDatabase().delete(fPlayer);
-			} else {
-				FPlayer player = new FPlayer(factions, playerReference.uuid(), playerReference.uuid().toString());
-				factions.getPlayerDatabase().delete(player);
 			}
 		}
 
@@ -289,4 +287,22 @@ public class FactionManager {
 		return new HashSet<>(byId.values());
 	}
 
+	public void removeFromCache(Faction faction) {
+	}
+
+	public void addToCache(Faction faction) {
+	}
+
+	@NotNull
+	public Optional<@Nullable Faction> getPlayerFaction(@NotNull OfflinePlayerReference reference){
+		return this.getPlayerFaction(reference.offlinePlayer());
+	}
+	@NotNull
+	public Optional<@Nullable Faction> getPlayerFaction(@NotNull OfflinePlayer player){
+		return this.getPlayerFaction(player.getUniqueId());
+	}
+	@NotNull
+	public Optional<@Nullable Faction> getPlayerFaction(@NotNull UUID uniqueId){
+		return this.byId.values().stream().filter(faction->faction.getMembers().contains(uniqueId)).findAny();
+	}
 }

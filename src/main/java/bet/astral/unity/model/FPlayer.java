@@ -5,12 +5,12 @@ import bet.astral.unity.utils.flags.Flag;
 import bet.astral.unity.utils.flags.FlagImpl;
 import bet.astral.unity.utils.flags.Flaggable;
 import bet.astral.unity.utils.refrence.FactionReference;
+import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import bet.astral.unity.utils.refrence.PlayerReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.chat.ChatType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +42,12 @@ public class FPlayer implements Flaggable, ForwardingAudience, PlayerReference, 
 		this.factions = factions;
 		this.uniqueId = uniqueId;
 		this.name = name;
+	}
+
+	public FPlayer(Factions factions, OfflinePlayerReference of) {
+		this.factions = factions;
+		this.uniqueId = of.uuid();
+		this.name = of.name();
 	}
 
 	@Override

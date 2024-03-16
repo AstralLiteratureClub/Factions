@@ -46,14 +46,18 @@ dependencies {
     implementation 'org.incendo:cloud-paper:' + cloudVersion
     implementation 'org.incendo:cloud-brigadier:' + cloudVersion
     implementation 'org.incendo:cloud-minecraft-extras:' + cloudVersion
+
+    // SLF4j
+    compileOnly('org.slf4j:slf4j-simple:2.0.9')
+
     /*
-    var cloudOther = "1.0.0-SNAPSHOT";
-    implementation 'org.incendo:cloud-processors-cooldown:'+cloudOther
-    implementation 'org.incendo:cloud-processors-requirements:'+cloudOther
-    implementation 'org.incendo:cloud-processors-confirmation:'+cloudOther
+     * Databases
      */
+    // Hikari thread pool for sql based databases
+    implementation ('com.zaxxer:HikariCP:5.1.0')
 
 
+    // Lombok
     implementation 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 

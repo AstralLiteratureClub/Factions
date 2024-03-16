@@ -6,11 +6,14 @@ import bet.astral.messenger.placeholder.Placeholderable;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -35,6 +38,10 @@ public class FRole implements Placeholderable {
 	};
 	public static FRole[] values() {
 		return Arrays.copyOf(roles, roles.length);
+	}
+	@Nullable
+	public static FRole valueOf(@NotNull String name) {
+		return Stream.of(values()).filter(role->role.getName().equalsIgnoreCase(name)).findAny().orElse(null);
 	}
 
 
