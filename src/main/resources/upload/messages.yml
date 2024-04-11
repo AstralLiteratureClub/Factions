@@ -6,6 +6,8 @@ placeholders:
   - name: "prefix_force"
     value: "<dark_red><bold>FORCE <dark_gray>| <#8aff30><bold>Unity<reset>"
 
+date-format: "mm:HH dd/MM/yyyy"
+
 # Commonly known as command exceptions
 captions:
   unknown-role: "<white>Unknown faction role <red>%input%<white>."
@@ -20,6 +22,8 @@ captions:
   sender-has-no-faction: "<white>You need a faction to use this."
   faction-has-not-invited-player: "<red>%input% <white>has not been invited to the faction."
   faction-has-banned-player: "<red>%input%<white> has been banned from the faction."
+  unknown-super-owner: "<white>Couldn't find leading owner for name <red>%input%<white>."
+  no-super-owner: "<white>Couldn't find leading owner in the faction."
 
 root:
   description: "The root of the faction commands."
@@ -124,9 +128,38 @@ info:
   description-player-subcommand-arg: "Switches the information mode to player lookup."
   description-player-arg: "The player to see faction information of."
   message-info:
-    - ""
-    - ""
-    - ""
+    chat:
+      - ""
+      - " <dark_gray>| <yellow>Name: <white>%faction%"
+      - " <dark_gray>| <yellow>Power: <white>%power%"
+      - " <dark_gray>| <yellow>Created: <white>%created% <gray>(UTC)"
+      - " <dark_gray>| <yellow>Alliances <gray><italic>(%faction_allies_size%)<!italic><yellow>: <red><bold>NO_IMPL<!bold>"
+      - " <dark_gray>| <yellow>Enemies <gray><italic>(%faction_enemies_size%)<!italic><yellow>: <red><bold>NO_IMPL<!bold>"
+      - " <dark_gray>| <yellow>At War: <gray><italic>(%faction_wars_size%)<!italic><yellow>: <red><bold>NO_IMPL<!bold>"
+      - ""
+      - "%owners%%co-owners%%admins%%moderators%%members%%guests%"
+      - ""
+
+  entry-role-owner: " <dark_gray>| <yellow>Owner: <white>%members%"
+  entry-role-co-owner: "\n <dark_gray>| <yellow>Co<gray>-<yellow>Owner <gray><italic>(%amount%)<!italic><yellow>: <white>%members%"
+  entry-role-admin: "\n <dark_gray>| <yellow>Admins <gray><italic>(%amount%)<!italic><yellow>: <white>%members%"
+  entry-role-moderator: "\n <dark_gray>| <yellow>Mods <gray><italic>(%amount%)<!italic><yellow>: <white>%members%"
+  entry-role-member: "\n <dark_gray>| <yellow>Members <gray><italic>(%amount%)<!italic><yellow>: <white>%members%"
+  entry-role-guest: "\n <dark_gray>| <yellow>Guest <gray><italic>(%amount%)<!italic><yellow>: <white>%members%"
+
+  entry-user-offline: "<hover:show_text:'<dark_red><bold>OFFLINE <dark_gray>| <yellow>Offline since <yellow>%offline_since% <gray>(UTC)'><white>%prefix_player% <dark_red><bold>✘<reset>"
+  entry-user-online:  "<hover:show_text:'<dark_green><bold>ONLINE <dark_gray>| <yellow>Online since <white>%online_since% <gray>(UTC)'><white>%prefix_player% <dark_green><bold>✔<reset>"
+  entry-user-comma: "<gray>, "
+
+  entry-ally: "<hover:show_text:'<yellow>Allied since <white>%since%'><white>%ally%"
+  entry-ally-comma: "<gray>, <white>"
+
+  entry-enemy:  "<hover:show_text:'<yellow>Enemies since <white>%since%'><white>%enemy%"
+  entry-enemy-comma: "<gray>, <white>"
+
+  entry-war: "<hover:show_text:'<yellow>At war since <white>%since%\n<red>Participants <white>%participants%'><white>%war%"
+  entry-war-participant: "<hover:show_text:'<yellow>Participant since <white>%since%'><white>%participant%"
+
   message-no-faction: "%prefix% <red>You do not have an faction! <white>/factions info %faction"
 
 leave:
@@ -207,18 +240,32 @@ prefix:
 
 ban:
   description-force: "<red>Allows admins to ban factions and sudo factions to ban a player."
-  force-faction:
-    description: "<red>Allows admins to ban factions from the server."
-    description-faction-arg: "<red>The faction name to ban."
-    description-reason-arg: "<red>The reason to ban this faction."
-    description-silent-arg: "<red>Should this action be silent from the public."
+  force:
+    faction:
+      description: "<red>Allows admins to ban factions from the server."
+      description-faction-arg: "<red>The faction name to ban."
+      description-reason-arg: "<red>The reason to ban this faction."
+      description-silent-arg: "<red>Should this action be silent from the public."
 
-    message-already-banned: "%prefix_force% <red>%banned% <white>is already banned from the server."
-    message-banned: "%prefix_force% <dark_green>Banned faction <white>%faction%<dark_green> from the server."
-    broadcast-admins-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server."
-    broadcast-public-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server."
-    broadcast-faction-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server. You will no longer have a faction."
-  force-player:
-    description: "<red>Selects ban type to player."
+      message-already-banned: "%prefix_force% <red>%banned% <white>is already banned from the server."
+      message-banned: "%prefix_force% <dark_green>Banned faction <white>%faction%<dark_green> from the server."
+      broadcast-admins-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server. For the reason: <yellow>%reason%"
+      broadcast-public-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server. For the reason: <yellow>%reason%"
+      broadcast-faction-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%faction%<white> from the server. Your faction will be deleted. For the reason: <yellow>%reason%"
+    player:
+      description: "<red>Selects ban type to player."
+      description-faction-arg: "<red>The faction to ban player from."
+      description-player-arg: "<red>The player to ban from the faction."
+      description-reason-arg: "<red>The reason to ban this player from this faction."
+
+      message-already-banned: "%prefix_force% <red>%banned% <white>is already banned from the faction."
+      message-banned: "%prefix_force% <dark_green>Banned player <white>%player%<dark_green> from <red>%faction%<white>. For the reason: <yellow>%reason%"
+      broadcast-admins-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%player%<white> from the faction <red>%faction%<white>. For the reason: <yellow>%reason%"
+      broadcast-faction-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%player%<white> from your faction. For the reason: <yellow>%reason%"
+      broadcast-player-of-ban: "%prefix_force% <red>%sender%<white> has force-banned <red>%player%<white> from your faction. For the reason: <yellow>%reason%"
+
+takeover:
+  description: "Allows a clan member to try to take over the faction. Requires majority of votes in the faction from the members. If takeover attempt is failed, the player who tried to takeover will be kicked from the faction."
+  description-owner-arg: "The leading owner of the faction."
 
 # description-

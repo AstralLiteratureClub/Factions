@@ -5,7 +5,9 @@ import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
+import bet.astral.unity.commands.ban.FactionForceBanCommand;
 import bet.astral.unity.managers.FactionManager;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
 import bet.astral.unity.utils.TranslationKey;
@@ -18,19 +20,11 @@ import org.incendo.cloud.parser.flag.CommandFlag;
 import org.incendo.cloud.parser.standard.StringParser;
 
 @Cloud
-public class FactionBanSubCommand extends FactionCloudCommand {
+public class FactionBanSubCommand extends FactionForceBanCommand {
 	public FactionBanSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
-		Command.Builder<Player> ban = forceRoot
-				.literal("ban")
-				.commandDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_BAN, "/factions force ban"))
-				.senderType(Player.class)
-				.handler(context->{
-					rootHelp.queryCommands("factions force ban", context.sender());
-				})
-				;
-		commandPlayer(
-				ban
+		command(
+				banRoot
 						.literal("faction")
 						.commandDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_BAN_FACTION, "/factions force ban faction"))
 						.permission(PermissionUtils.forceOf("ban.faction"))
@@ -46,9 +40,11 @@ public class FactionBanSubCommand extends FactionCloudCommand {
 										.description(loadDescription(TranslationKey.DESCRIPTION_FORCE_BAN_FACTION_REASON, "/factions force ban <faction>"))
 						)
 						.flag(CommandFlag.builder("silent")
-								.withDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_BAN_FACTION_SILENT, "/factions force ban <faction>")))
+								.withDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_BAN_FACTION_SILENT, "/factions force ban <faction>"))
+								.build()
+						)
 						.handler(context -> {
-							Player sender = context.sender();
+							CommandSender sender = context.sender();
 							String name = context.get("name");
 							String reason = context.get("reason");
 							boolean isSilent = context.flags().isPresent("silent");
@@ -58,13 +54,13 @@ public class FactionBanSubCommand extends FactionCloudCommand {
 							}
 
 							PlaceholderList placeholders = new PlaceholderList();
-							placeholders.addAll(messenger.createPlaceholders("sender", sender));
+							placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 							placeholders.add("name", name);
 							placeholders.add("silent", isSilent);
 							placeholders.add("is_faction", faction != null);
 							placeholders.add("reason", reason);
 							if (faction != null){
-								placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+								placeholders.addAll(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 							}
 
 							FactionManager fM = plugin.getFactionManager();

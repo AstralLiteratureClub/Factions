@@ -9,6 +9,7 @@ import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.commands.arguments.RoleParser;
 import bet.astral.unity.commands.core.DeleteSubCommand;
 import bet.astral.unity.event.FactionEvent;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
@@ -37,8 +38,8 @@ public class JoinSubCommand extends FactionCloudCommand {
 									Faction faction = context.get("faction");
 
 									PlaceholderList placeholders = new PlaceholderList();
-									placeholders.addAll(Faction.factionPlaceholders("faction", faction));
-									placeholders.addAll(messenger.createPlaceholders("sender", sender));
+									placeholders.addAll(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
+									placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 
 									if (!faction.isPublic()){
 										if (!faction.isInvited(sender)){
@@ -75,13 +76,13 @@ public class JoinSubCommand extends FactionCloudCommand {
 						.optional(RoleParser.roleComponent()
 								.name("role")
 								.description(loadDescription(TranslationKey.DESCRIPTION_FORCE_JOIN_ROLE, "/factions force join <faction> <role>"))
-								.defaultValue(DefaultValue.constant(FRole.DEFAULT)))
+								.defaultValue(DefaultValue.constant(FRole.MEMBER)))
 						.handler(context -> {
 									Player sender = context.sender();
 									Faction faction = context.get("faction");
 									FRole role = context.get("role");
 									PlaceholderList placeholders = new PlaceholderList();
-									placeholders.addAll(messenger.createPlaceholders("sender", sender));
+									placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 									placeholders.add("faction", faction);
 									placeholders.add("faction", faction.getName());
 									placeholders.add("role", role);
@@ -100,7 +101,7 @@ public class JoinSubCommand extends FactionCloudCommand {
 									}
 
 									faction.join(sender, FactionEvent.Cause.FORCE);
-									if (!role.equals(FRole.DEFAULT)) {
+									if (!role.equals(FRole.MEMBER)) {
 										faction.setRole(sender, role);
 										messenger.message(faction, TranslationKey.MESSAGE_FORCE_JOIN_NOT_DEFAULT, placeholders);
 									} else {

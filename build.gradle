@@ -37,15 +37,15 @@ repositories {
 }
 
 dependencies {
-    implementation 'bet.astral:Messenger:1.5.2' // Messenger
+    implementation 'bet.astral:Messenger:1.6.0' // Messenger
 
     // Cloud and brigadier for commands
     compileOnly 'com.mojang:brigadier:1.0.18'
     var cloudVersion = "2.0.0-SNAPSHOT";
-    implementation 'org.incendo:cloud-core:' + cloudVersion
-    implementation 'org.incendo:cloud-paper:' + cloudVersion
-    implementation 'org.incendo:cloud-brigadier:' + cloudVersion
-    implementation 'org.incendo:cloud-minecraft-extras:' + cloudVersion
+    compileOnly 'org.incendo:cloud-core:' + cloudVersion
+    compileOnly 'org.incendo:cloud-paper:' + cloudVersion
+    compileOnly 'org.incendo:cloud-brigadier:' + cloudVersion
+    compileOnly 'org.incendo:cloud-minecraft-extras:' + cloudVersion
 
     // SLF4j
     compileOnly('org.slf4j:slf4j-simple:2.0.9')
@@ -54,7 +54,7 @@ dependencies {
      * Databases
      */
     // Hikari thread pool for sql based databases
-    implementation ('com.zaxxer:HikariCP:5.1.0')
+    compileOnly ('com.zaxxer:HikariCP:5.1.0')
 
 
     // Lombok
@@ -62,7 +62,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     // Classgraph for reflections of commands
-    implementation 'io.github.classgraph:classgraph:4.8.165'
+    compileOnly 'io.github.classgraph:classgraph:4.8.165'
 
     compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
     paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
@@ -116,9 +116,6 @@ shadowJar {
     archiveClassifier = "main"
 
     relocate 'bet.astral.messenger', 'bet.astral.unity.libs.bet.astral.messenger'
-
-    relocate 'io.github.classgraph', "bet.astral.unity.libs.io.github.classgraph"
-    relocate 'org.incendo.cloud', 'bet.astral.unity.libs.org.incendo.cloud'
 }
 
 

@@ -1,11 +1,11 @@
 package bet.astral.unity.model;
 
+import bet.astral.messenger.Messenger;
+import bet.astral.messenger.adventure.MessengerAudience;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.Placeholderable;
-import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
-import bet.astral.unity.database.model.DBPlayer;
 import bet.astral.unity.event.ASyncPlayerKickedFromFactionEvent;
 import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.event.invite.ASyncInviteExpireEvent;
@@ -17,13 +17,16 @@ import bet.astral.unity.event.player.invite.ASyncPlayerAcceptInviteEvent;
 import bet.astral.unity.event.player.invite.ASyncPlayerCancelInviteEvent;
 import bet.astral.unity.event.player.invite.ASyncPlayerDenyInviteEvent;
 import bet.astral.unity.event.player.invite.ASyncPlayerSendInviteEvent;
-import bet.astral.unity.utils.IdentifiedPosition;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
+import bet.astral.unity.model.location.FHome;
 import bet.astral.unity.utils.OfflinePlayerList;
 import bet.astral.unity.utils.PlayerMap;
 import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.utils.UniqueId;
 import bet.astral.unity.utils.flags.Flag;
 import bet.astral.unity.utils.flags.FlagImpl;
 import bet.astral.unity.utils.flags.Flaggable;
+import bet.astral.unity.utils.refrence.FactionReference;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
@@ -36,7 +39,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.translation.Translatable;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -45,47 +47,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class Faction implements Identity, ForwardingAudience, Translatable, Flaggable, Placeholderable {
+public class Faction implements Identity, ForwardingAudience, Translatable, Flaggable, Placeholderable, UniqueId, FactionReference, MessengerAudience<Factions> {
 	private static final Map<FRole, FPrefix> DEFAULT_PRIVATE_PREFIXES = new HashMap<>();
 	private static final Map<FRole, FPrefix> DEFAULT_PUBLIC_PREFIXES = new HashMap<>();
 	static {
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.OWNER, new FPrefix(null, "+", NamedTextColor.RED));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.ADMIN, new FPrefix(null, "**", NamedTextColor.GOLD));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, "*", NamedTextColor.YELLOW));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.DEFAULT, new FPrefix(null, "", NamedTextColor.GREEN));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.OWNER, new FPrefix(null, "**", NamedTextColor.RED));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, "*", NamedTextColor.RED));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.ADMIN, new FPrefix(null, "++", NamedTextColor.GOLD));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, "+", NamedTextColor.YELLOW));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.MEMBER, new FPrefix(null, "-", NamedTextColor.GREEN));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.GUEST, new FPrefix(null, "", NamedTextColor.GRAY));
 
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.OWNER, new FPrefix(null, Component.text("Owner ", NamedTextColor.RED, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
+		DEFAULT_PRIVATE_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, Component.text("Co-Owner ", NamedTextColor.RED, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.ADMIN, new FPrefix(null, Component.text("Admin ", NamedTextColor.GOLD, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, Component.text("Mod ", NamedTextColor.YELLOW, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
-		DEFAULT_PRIVATE_PREFIXES.put(FRole.DEFAULT, new FPrefix(null, Component.text("", NamedTextColor.GREEN).append(Component.text().decoration(TextDecoration.BOLD, false))));
+		DEFAULT_PRIVATE_PREFIXES.put(FRole.MEMBER, new FPrefix(null, Component.text("", NamedTextColor.GREEN).append(Component.text().decoration(TextDecoration.BOLD, false))));
+		DEFAULT_PRIVATE_PREFIXES.put(FRole.GUEST, new FPrefix(null, Component.text("", NamedTextColor.GRAY).append(Component.text().decoration(TextDecoration.BOLD, false))));
 	}
+	@Deprecated(forRemoval = true)
 	public static PlaceholderList factionPlaceholders(@Nullable String prefix, @NotNull Faction faction){
-		PlaceholderList placeholders = new PlaceholderList();
-		if (prefix != null){
-			placeholders.add(PlaceholderUtils.createPlaceholder(null, prefix, faction.name));
-		}
-		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "name", faction.name));
-		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "displayname", faction.displayname));
-		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "customname", faction.displayname));
-		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "description", faction.description));
-		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "how_to_join", faction.joinInfo));
-		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "leader", Bukkit.getOfflinePlayer(faction.superOwner).getName()));
-		if (faction.home != null) {
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_name", faction.home.getName()));
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_id", faction.home.getUniqueId()));
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_x", faction.home.getX()));
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_y", faction.home.getY()));
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_z", faction.home.getZ()));
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_pitch", faction.home.getPitch()));
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_home", faction.home.getWorld()));
-			placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "base_home", faction.home.getWorld()));
-		}
-
-
-		return placeholders;
+		return ((FactionPlaceholderManager)faction.getFactions().getMessenger().getPlaceholderManager()).factionPlaceholders(prefix, faction);
 	}
 	//
 	private final Factions factions;
@@ -107,7 +93,8 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	// Flags
 	@Setter(AccessLevel.NONE)
 	private final Map<NamespacedKey, Flag<?>> flags = new HashMap<>();
-	private UUID superOwner;
+	private final OfflinePlayerList banned = new OfflinePlayerList();
+	private OfflinePlayerReference superOwner;
 	private final UUID uniqueId;
 	private final long firstCreated;
 	@Setter(AccessLevel.NONE)
@@ -116,18 +103,19 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	private Component displayname;
 	private Component description;
 	private Component joinInfo;
-	private IdentifiedPosition home = null;
+	private Map<String, FHome> homesByName = null;
+	private Map<UUID, FHome> homesById = null;
 	private boolean isPublic = false;
 	{
 		publicRolePrefixes.put(FRole.OWNER, new FPrefix(this, DEFAULT_PUBLIC_PREFIXES.get(FRole.OWNER)));
 		publicRolePrefixes.put(FRole.ADMIN, new FPrefix(this, DEFAULT_PUBLIC_PREFIXES.get(FRole.ADMIN)));
 		publicRolePrefixes.put(FRole.MODERATOR, new FPrefix(this, DEFAULT_PUBLIC_PREFIXES.get(FRole.MODERATOR)));
-		publicRolePrefixes.put(FRole.DEFAULT, new FPrefix(this, DEFAULT_PUBLIC_PREFIXES.get(FRole.DEFAULT)));
+		publicRolePrefixes.put(FRole.MEMBER, new FPrefix(this, DEFAULT_PUBLIC_PREFIXES.get(FRole.MEMBER)));
 
 		rolePrefixes.put(FRole.OWNER, new FPrefix(this, DEFAULT_PRIVATE_PREFIXES.get(FRole.OWNER)));
 		rolePrefixes.put(FRole.ADMIN, new FPrefix(this, DEFAULT_PRIVATE_PREFIXES.get(FRole.ADMIN)));
 		rolePrefixes.put(FRole.MODERATOR, new FPrefix(this, DEFAULT_PRIVATE_PREFIXES.get(FRole.MODERATOR)));
-		rolePrefixes.put(FRole.DEFAULT, new FPrefix(this, DEFAULT_PRIVATE_PREFIXES.get(FRole.DEFAULT)));
+		rolePrefixes.put(FRole.MEMBER, new FPrefix(this, DEFAULT_PRIVATE_PREFIXES.get(FRole.MEMBER)));
 	}
 
 	public Faction(Factions factions, UUID uniqueId, String name, long firstCreated){
@@ -148,9 +136,11 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 //		this.joinInfo = factions.messenger().parse(defaultJoin, Message.Type.CHAT, placeholders);
 		this.description = Component.text("Default description to factions");
 		this.joinInfo = Component.text("Message the owner to join this faction!");
+		homesByName = new HashMap<>();
+		homesById = new HashMap<>();
 	}
 
-	public Faction(Factions factions, java.util.UUID uniqueId, long firstCreated, String name, Component displayname, Component description, Component joinInfo, IdentifiedPosition home) {
+	public Faction(Factions factions, java.util.UUID uniqueId, long firstCreated, String name, Component displayname, Component description, Component joinInfo, Collection<FHome> homes) {
 		this.factions = factions;
 		this.uniqueId = uniqueId;
 		this.firstCreated = firstCreated;
@@ -158,7 +148,15 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		this.displayname = displayname;
 		this.description = description;
 		this.joinInfo = joinInfo;
-		this.home = home;
+		homesByName = new HashMap<>();
+		homesById = new HashMap<>();
+		if (homes != null && !homes.isEmpty()) {
+			homes.forEach(home -> {
+						homesByName.put(home.getName().toLowerCase(), home);
+						homesById.put(home.getUniqueId(), home);
+					}
+			);
+		}
 	}
 
 	private void requestSave(){
@@ -334,7 +332,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 			return false;
 		}
 		members.add(player);
-		roles.put(player.getUniqueId(), FRole.DEFAULT);
+		roles.put(player.getUniqueId(), FRole.MEMBER);
 		requestSave();
 		return true;
 	}
@@ -377,9 +375,10 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 
 		members.remove(sender.getUniqueId());
 		roles.remove(sender.getUniqueId());
-		if (sender.getUniqueId().equals(superOwner)){
+		if (sender.getUniqueId().equals(superOwner.getUniqueId())){
 			setSuperOwner(null);
 		}
+		factions.getDatabase().getPlayerDatabase().delete(sender);
 	}
 
 	public void kick(OfflinePlayer member, String reason) {
@@ -390,13 +389,13 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		if (player == null){
 			player = new FPlayer(factions, member.getUniqueId(), member.getUniqueId().toString());
 		}
-		factions.getPlayerDatabase().delete(player);
+		factions.getDatabase().getPlayerDatabase().delete(player);
 		player.setFactionId(null);
 
 
 		members.remove(member.getUniqueId());
 		roles.remove(member.getUniqueId());
-		if (member.getUniqueId().equals(superOwner)){
+		if (member.getUniqueId().equals(superOwner.getUniqueId())){
 			setSuperOwner(null);
 		}
 	}
@@ -409,13 +408,13 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		if (player == null){
 			player = new FPlayer(factions, member.getUniqueId(), member.getUniqueId().toString());
 		}
-		factions.getPlayerDatabase().delete(player);
+		factions.getDatabase().getPlayerDatabase().delete(player);
 		player.setFactionId(null);
 
 
 		members.remove(member.getUniqueId());
 		roles.remove(member.getUniqueId());
-		if (member.getUniqueId().equals(superOwner)){
+		if (member.getUniqueId().equals(superOwner.getUniqueId())){
 			setSuperOwner(null);
 		}
 	}
@@ -478,7 +477,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		if (prefix == null) {
 			FRole role = roles.get(player);
 			if (role == null) {
-				role = FRole.DEFAULT;
+				role = FRole.MEMBER;
 			}
 			prefix = rolePrefixes.get(role);
 			if (prefix == null){
@@ -504,9 +503,35 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	public List<java.util.UUID> getMembers() {
 		return ImmutableList.copyOf(new OfflinePlayerList(members));
 	}
+	public List<OfflinePlayerReference> getMembersWithRole(FRole role){
+		return roles.keySetPlayerReference()
+				.stream().filter(ref->roles.get(ref)==role).collect(Collectors.toList());
+	}
 
 	@Override
 	public Collection<Placeholder> asPlaceholder(String prefix) {
 		return factionPlaceholders(prefix, this);
+	}
+
+	public boolean allowsOwnerKicking() {
+		if (members.size()>10){
+			return true;
+		}
+		return superOwner != null;
+	}
+
+	@Override
+	public @Nullable Faction getFaction() {
+		return this;
+	}
+
+	@Override
+	public java.util.@Nullable UUID getFactionId() {
+		return uniqueId;
+	}
+
+	@Override
+	public Messenger<Factions> messenger() {
+		return factions.messenger();
 	}
 }

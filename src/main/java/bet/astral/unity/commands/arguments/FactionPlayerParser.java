@@ -2,10 +2,11 @@ package bet.astral.unity.commands.arguments;
 
 import bet.astral.unity.Factions;
 import bet.astral.unity.model.FPlayer;
+import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
 import bet.astral.unity.utils.PermissionUtils;
 import bet.astral.unity.utils.TranslationKey;
-import bet.astral.unity.utils.refrence.FactionReferenceImpl;
+import bet.astral.unity.utils.refrence.PlayerFactionReferenceImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -29,6 +30,7 @@ import org.incendo.cloud.suggestion.Suggestion;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>, BlockingSuggestionProvider<C> {
@@ -59,10 +61,12 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 					return ArgumentParseResult.failure(new CannotCheckOfflinePlayerException(input, commandContext));
 				}
 			}
-			fPlayer = factions.getDatabase().load(player.getUniqueId());
-			if (fPlayer == null){
+			Optional<Faction> faction = factions.getFactionManager().getPlayerFaction(player);
+
+			if (faction.isEmpty()){
 				return ArgumentParseResult.failure(new FactionPlayerParseException(input, commandContext));
 			}
+			return ArgumentParseResult.success(player);
 		}
 		if (fPlayer.getFactionId()==null){
 			return ArgumentParseResult.failure(new FactionPlayerParseException(input, commandContext));
@@ -73,7 +77,7 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 	public @NonNull Iterable<@NonNull Suggestion> suggestions(final @NonNull CommandContext<C> commandContext, final @NonNull CommandInput input) {
 		return Bukkit.getOnlinePlayers().stream()
 				.filter(p->factions.getPlayerManager().convert(p).getFaction()!=null)
-				.map(FactionReferenceImpl::of)
+				.map(PlayerFactionReferenceImpl::of)
 				.map(
 						reference -> new TooltipSuggestion(reference, Component.text(
 										reference.player().getName(), NamedTextColor.WHITE)

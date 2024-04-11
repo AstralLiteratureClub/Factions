@@ -1,24 +1,18 @@
-package bet.astral.unity.utils;
+package bet.astral.unity.utils.location;
 
 import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
-import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.translation.Translatable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
-
 @Getter
 @Setter
-public class IdentifiedPosition implements Identity {
-	@Expose
-	private final UUID uniqueId;
-	@Expose
-	private String name;
+public class Position implements Translatable {
 	@Expose
 	private double x;
 	@Expose
@@ -26,60 +20,51 @@ public class IdentifiedPosition implements Identity {
 	@Expose
 	private double z;
 	@Expose
-	private float pitch;
+	private float yaw;
 	@Expose
 	private String world;
 
-	private IdentifiedPosition(){
-		this.name = null;
-		this.uniqueId = null;
+	private Position(){
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
-		this.pitch = 0;
+		this.yaw = 0;
 		this.world = null;
 	}
 
-	public IdentifiedPosition(String name, UUID uniqueId, double x, double y, double z, float pitch, @NotNull String worldName) {
-		this.name = name;
-		this.uniqueId = uniqueId;
+	public Position(@NotNull String worldName, double x, double y, double z, float yaw) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.pitch = pitch;
+		this.yaw = yaw;
 		this.world = worldName;
 	}
-	public IdentifiedPosition(String name, UUID uniqueId, double x, double y, double z, float pitch, @NotNull World world) {
-		this.name = name;
-		this.uniqueId = uniqueId;
+	public Position(@NotNull World world, double x, double y, double z, float yaw) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.pitch = pitch;
+		this.yaw = yaw;
 		this.world = world.getName();
 	}
 
-	public IdentifiedPosition(String name, UUID uniqueId, Location location){
-		this.name = name;
-		this.uniqueId = uniqueId;
+	public Position(Location location){
 		this.x = location.getX();
 		this.y = location.getY();
 		this.z = location.getZ();
-		this.pitch = location.getPitch();
+		this.yaw = location.getYaw();
 		this.world = location.getWorld().getName();
 	}
-
 
 	public void update(Location location){
 		this.x = location.getX();
 		this.y = location.getY();
 		this.z = location.getZ();
-		this.pitch = location.getPitch();
+		this.yaw = location.getYaw();
 		this.world = location.getWorld().getName();
 	}
 
 	public Location asLocation(){
-		return new Location(Bukkit.getWorld(world), x, y, z, pitch, 90);
+		return new Location(Bukkit.getWorld(world), x, y, z, yaw, 90);
 
 	}
 
@@ -94,7 +79,7 @@ public class IdentifiedPosition implements Identity {
 	}
 
 	@Override
-	public java.util.@NotNull UUID uuid() {
-		return uniqueId;
+	public @NotNull String translationKey() {
+		return "unity.position";
 	}
 }

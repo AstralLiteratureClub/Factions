@@ -6,6 +6,7 @@ import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudConfirmableCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
@@ -40,7 +41,7 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 			Faction faction = plugin.getFactionManager().get(factionId);
 
 			PlaceholderList placeholders = new PlaceholderList();
-			placeholders.addAll(messenger.createPlaceholders("sender", (Player) sender));
+			placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 			placeholders.add("faction", faction);
 			placeholders.add("faction", faction.getName());
 
@@ -109,7 +110,9 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 								.description(loadDescription(TranslationKey.DESCRIPTION_FORCE_DELETE_REASON, "/factions force delete <faction> <reason>"))
 						)
 						.flag(CommandFlag.builder("silent")
-								.withDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_DELETE_SILENT, "/factions force delete <faction> <reason> [--silent]")))
+								.withDescription(loadDescription(TranslationKey.DESCRIPTION_FORCE_DELETE_SILENT, "/factions force delete <faction> <reason> [--silent]"))
+								.build()
+						)
 						.handler(context -> {
 							CommandSender sender = context.sender();
 							Faction faction = context.get("faction");
@@ -134,9 +137,9 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 
 	public static void handleForce(CommandSender sender, Faction faction, String reason, boolean isSilent, Messenger<Factions> commandMessenger) {
 		PlaceholderList placeholders = new PlaceholderList();
-		placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+		placeholders.addAll(((FactionPlaceholderManager) commandMessenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 		placeholders.add("reason", reason);
-		placeholders.addAll(commandMessenger.createPlaceholders("sender", sender));
+		placeholders.addAll(commandMessenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 		commandMessenger.message(sender, TranslationKey.MESSAGE_FORCE_DELETE_SENDER, placeholders);
 		commandMessenger.broadcast(PermissionUtils.forceOf("disband"), TranslationKey.MESSAGE_FORCE_DELETE_ADMIN, placeholders);
 		if (!isSilent) {
@@ -145,6 +148,6 @@ public class DeleteSubCommand extends FactionCloudConfirmableCommand {
 					&& !faction.getMembers().contains(player.getUniqueId())
 			), TranslationKey.MESSAGE_FORCE_DELETE_PUBLIC, placeholders);
 		}
-		commandMessenger.plugin().getFactionManager().delete(faction, false);
+		commandMessenger.getMain().getFactionManager().delete(faction, false);
 	}
 }

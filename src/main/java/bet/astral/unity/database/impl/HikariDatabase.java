@@ -4,10 +4,8 @@ import bet.astral.unity.Factions;
 import bet.astral.unity.database.Database;
 import bet.astral.unity.database.impl.mysql.MySQLFactionDatabase;
 import bet.astral.unity.database.impl.mysql.MySQLPlayerDatabase;
-import bet.astral.unity.database.model.DBPlayer;
 import bet.astral.unity.database.model.HikariLoginMaster;
 import bet.astral.unity.database.model.LoginMaster;
-import bet.astral.unity.model.FPlayer;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -30,7 +28,7 @@ public class HikariDatabase extends Database {
 		if (!(loginMaster instanceof HikariLoginMaster hikariLoginMaster)){
 			throw new IllegalArgumentException("Trying to connect using hikari was denied, as LoginMaster is not the right format ("+HikariLoginMaster.class.getName()+") found: "+loginMaster.getClass().getName());
 		}
-		Type type = Type.valueOf(this.type);
+		Type type = Type.valueOf(this.type.toUpperCase());
 		HikariConfig config = new HikariConfig();
 		switch (type){
 			case MYSQL -> {
@@ -60,18 +58,19 @@ public class HikariDatabase extends Database {
 		switch (type){
 			case MYSQL -> {
 				playerDatabase = new MySQLPlayerDatabase(this,
-						(player)-> getFactions()
-								.getPlayerManager().addToCache(player),
-						(player)-> getFactions().getPlayerManager().removeFromCache(player),
-						(player) -> new DBPlayer(getFactions(), player),
-						(cached) -> new FPlayer(getFactions(), cached.getUniqueId(), cached.name())
+						(player) -> {},
+						(player) -> {},
+						(player) -> player,
+						(player) -> player
 						);
 				factionDatabase = new MySQLFactionDatabase(this,
 						(faction)->getFactions().getFactionManager().removeFromCache(faction),
 						(faction)->getFactions().getFactionManager().addToCache(faction),
 						(faction)->faction,
-						(faction)->faction
-						);
+						(faction)->faction,
+						"factions",
+						(MySQLPlayerDatabase) playerDatabase
+				);
 			}
 			case SQLITE -> {
 			}

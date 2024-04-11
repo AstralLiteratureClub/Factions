@@ -1,15 +1,13 @@
 package bet.astral.unity.configuration;
 
-import org.bukkit.configuration.ConfigurationOptions;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.Map;
 
-public class Config extends MemorySection implements Configuration{
+public class Config implements Configuration{
 	private final MemorySection configuration;
 	public Config(MemorySection configuration) {
 		this.configuration = configuration;
@@ -54,50 +52,30 @@ public class Config extends MemorySection implements Configuration{
 	}
 
 	@Override
-	public void addDefaults(@NotNull Map<String, Object> map) {
-		if (configuration instanceof Configuration config){
-			config.addDefaults(map);
-		}
-		throw new UnsupportedOperationException("Couldn't add defaults as it's not supported using "+ configuration.getClass().getName());
+	public String getString(String key) {
+		return configuration.getString(key);
 	}
 
 	@Override
-	public void addDefaults(org.bukkit.configuration.@NotNull Configuration configuration) {
-		if (configuration instanceof Configuration config){
-			config.addDefaults(configuration);
-		}
-		throw new UnsupportedOperationException("Couldn't add defaults as it's not supported using "+ configuration.getClass().getName());
+	public int getInt(String key) {
+		return configuration.getInt(key);
 	}
 
 	@Override
-	public void setDefaults(org.bukkit.configuration.@NotNull Configuration configuration) {
-		if (configuration instanceof Configuration config){
-			config.setDefaults(configuration);
-		}
-		throw new UnsupportedOperationException("Couldn't set defaults as it's not supported using "+ configuration.getClass().getName());
+	public long getLong(String key) {
+		return configuration.getLong(key);
 	}
 
 	@Override
-	public org.bukkit.configuration.@Nullable Configuration getDefaults() {
-		if (configuration instanceof Configuration config){
-			return config.getDefaults();
-		}
-		throw new UnsupportedOperationException("Couldn't get defaults as it's not supported using "+ configuration.getClass().getName());
-	}
-
-	@Override
-	public @NotNull ConfigurationOptions options() {
-		if (configuration instanceof Configuration config){
-			return config.options();
-		}
-		throw new UnsupportedOperationException("Couldn't get options as it's not supported using "+ configuration.getClass().getName());
+	public Object get(String key) {
+		return configuration.get(key);
 	}
 
 	public void save(@NotNull File file) throws IOException {
-		if (configuration instanceof FileConfiguration config){
+		if (configuration instanceof YamlConfiguration config){
 			config.save(file);
+			return;
 		}
-		throw new UnsupportedOperationException("Couldn't save configuration as it's not supported while using "+ configuration.getClass().getName());
+		throw new UnsupportedOperationException("Couldn't save configuration as it's not supported while using "+ configuration.getClass().getName() + " looked for "+ YamlConfiguration.class.getName());
 	}
-
 }

@@ -1,4 +1,4 @@
-name: Unity
+name: Unity-Factions
 version: '${version}'
 main: bet.astral.unity.Factions
 api-version: '1.20'
@@ -6,3 +6,4 @@ prefix: Unity
 authors: [Antritus]
 description: Allows players to create a faction and have war between other players!
 website: astral.bet
+loader: bet.astral.unity.UnityLoader

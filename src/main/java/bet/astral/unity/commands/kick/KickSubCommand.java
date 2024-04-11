@@ -6,6 +6,7 @@ import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.commands.arguments.MemberParser;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
@@ -46,14 +47,17 @@ public class KickSubCommand extends FactionCloudCommand {
 							FRole memberRole = faction.getRole(member);
 
 							PlaceholderList placeholders = new PlaceholderList();
-							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+							placeholders.addAll(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 							placeholders.add("reason", reason);
-							placeholders.addAll(messenger.createPlaceholders("sender", sender));
-							placeholders.addAll(messenger.createPlaceholders("kicked", member));
+							placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
+							placeholders.addAll(messenger.getPlaceholderManager().offlinePlayerPlaceholders("kicked", member));
 
 							if (!senderRole.isHigherThan(memberRole)) {
 								messenger.message(sender, TranslationKey.MESSAGE_KICK_CANNOT_HIGHER, placeholders);
 								return;
+							}
+							if (!faction.getSuperOwner().getUniqueId().equals(sender.getUniqueId())){
+
 							}
 
 							faction.kick(sender, member, reason, false);
@@ -86,10 +90,10 @@ public class KickSubCommand extends FactionCloudCommand {
 							OfflinePlayer member = context.get("member");
 							String reason = context.get("reason");
 							PlaceholderList placeholders = new PlaceholderList();
-							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+							placeholders.addAll(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 							placeholders.add("reason", reason);
-							placeholders.addAll(messenger.createPlaceholders("sender", sender));
-							placeholders.addAll(messenger.createPlaceholders("kicked", member));
+							placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
+							placeholders.addAll(messenger.getPlaceholderManager().offlinePlayerPlaceholders("kicked", member));
 							faction.kick(sender, member, reason, true);
 
 							if (member instanceof Player player) {

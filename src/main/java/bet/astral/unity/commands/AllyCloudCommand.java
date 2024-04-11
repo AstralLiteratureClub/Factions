@@ -2,6 +2,7 @@ package bet.astral.unity.commands;
 
 import bet.astral.cloudplusplus.command.CloudPPCommand;
 import bet.astral.unity.Factions;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.utils.ReturningConsumer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ public class AllyCloudCommand extends CloudPPCommand<Factions, CommandSender> {
 	protected final Command.Builder<CommandSender> rootForce;
 	protected final MinecraftHelp<CommandSender> rootHelp;
 	protected final MinecraftHelp<CommandSender> factionHelp;
+	protected FactionPlaceholderManager placeholderManager;
 	public AllyCloudCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		this.root = plugin.getRootAllyCommand();
@@ -32,7 +34,11 @@ public class AllyCloudCommand extends CloudPPCommand<Factions, CommandSender> {
 	}
 
 
-
+	@Override
+	public void reloadMessengers() {
+		super.reloadMessengers();
+		this.placeholderManager = (FactionPlaceholderManager) messenger.getPlaceholderManager();
+	}
 	public RichDescription loadDescription(String name, String command){
 		return plugin.loadDescription(name, command);
 	}

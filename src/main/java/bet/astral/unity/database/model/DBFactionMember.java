@@ -1,14 +1,22 @@
 package bet.astral.unity.database.model;
 
+import bet.astral.messenger.Messenger;
+import bet.astral.messenger.placeholder.Placeholder;
+import bet.astral.unity.Factions;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.refrence.FactionReference;
 import bet.astral.unity.utils.refrence.PlayerReference;
 import lombok.Getter;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class DBFactionMember implements PlayerReference, FactionReference {
@@ -44,5 +52,28 @@ public class DBFactionMember implements PlayerReference, FactionReference {
 	@Override
 	public java.util.@NotNull UUID getUniqueId() {
 		return uniqueId;
+	}
+
+	@Override
+	public Messenger<Factions> messenger() {
+		return faction.getFactions().getMessenger();
+	}
+
+	@Override
+	public Collection<Placeholder> asPlaceholder(String s) {
+		return null;
+	}
+
+	@Override
+	public @Nullable Player player() {
+		return PlayerReference.super.player();
+	}
+
+	@Override
+	public @NotNull Iterable<? extends Audience> audiences() {
+		if (player() == null){
+			return List.of();
+		}
+		return List.of(Objects.requireNonNull(player()));
 	}
 }

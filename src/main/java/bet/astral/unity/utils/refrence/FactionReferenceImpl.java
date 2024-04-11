@@ -1,34 +1,27 @@
 package bet.astral.unity.utils.refrence;
 
+import bet.astral.unity.Factions;
 import bet.astral.unity.model.Faction;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class FactionReferenceImpl extends PlayerReferenceImpl implements FactionReference{
-	private final Faction faction;
-	private final UUID factionId;
-	public FactionReferenceImpl(@NotNull Player player, @Nullable Faction faction) {
-		super(player.getUniqueId());
-		this.faction = faction;
-		this.factionId = faction != null ? faction.getUniqueId() : null;
-	}
+public class FactionReferenceImpl implements FactionReference{
+	private final Factions factions;
+	private final UUID uniqueId;
 
+	public FactionReferenceImpl(Factions factions, UUID uniqueId) {
+		this.factions = factions;
+		this.uniqueId = uniqueId;
+	}
 
 	@Override
 	public @Nullable Faction getFaction() {
-		return faction;
+		return factions.getFactionManager().get(uniqueId);
 	}
 
 	@Override
-	public java.util.@Nullable UUID getFactionId() {
-		return factionId;
-	}
-
-	@Override
-	public java.util.@NotNull UUID getUniqueId() {
-		return uuid();
+	public @Nullable UUID getFactionId() {
+		return uniqueId;
 	}
 }

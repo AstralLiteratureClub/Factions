@@ -127,7 +127,7 @@ public class FactionManager {
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException(e);
 				}
-				faction.setSuperOwner(player.getUniqueId());
+				faction.setSuperOwner(OfflinePlayerReference.of(player));
 				break;
 			}
 		}

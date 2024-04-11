@@ -1,6 +1,11 @@
 package bet.astral.unity.model;
 
+import bet.astral.messenger.Messenger;
+import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.unity.Factions;
+import bet.astral.unity.managers.FactionManager;
+import bet.astral.unity.model.entity.ally.FAlliance;
+import bet.astral.unity.utils.UniqueId;
 import bet.astral.unity.utils.flags.Flag;
 import bet.astral.unity.utils.flags.FlagImpl;
 import bet.astral.unity.utils.flags.Flaggable;
@@ -10,20 +15,18 @@ import bet.astral.unity.utils.refrence.PlayerReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Setter
 @Getter
-public class FPlayer implements Flaggable, ForwardingAudience, PlayerReference, FactionReference {
+public class FPlayer implements Flaggable, ForwardingAudience, PlayerReference, FactionReference, UniqueId {
 	private final Factions factions;
 	@Getter(AccessLevel.NONE)
 	private final Map<NamespacedKey, Flag<?>> flags = new HashMap<>();
@@ -31,6 +34,7 @@ public class FPlayer implements Flaggable, ForwardingAudience, PlayerReference, 
 	private final String name;
 	private UUID factionId;
 	private FChat chatType = FChat.GLOBAL;
+	private final Set<FAlliance<FactionReference, OfflinePlayerReference>> alliances = new HashSet<>();
 
 	public FPlayer(Factions factions, Player player){
 		this.factions = factions;
@@ -105,5 +109,37 @@ public class FPlayer implements Flaggable, ForwardingAudience, PlayerReference, 
 			return null;
 		}
 		return factions.getFactionManager().get(factionId);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		FPlayer player = (FPlayer) o;
+		return
+				Objects.equals(factions, player.factions)
+				&& Objects.equals(uniqueId, player.uniqueId)
+				&& Objects.equals(factionId, player.factionId)
+				&& chatType == player.chatType;
+	}
+
+	@Override
+	public Messenger<Factions> messenger() {
+		return factions.getMessenger();
+	}
+
+	@Override
+	public Collection<Placeholder> asPlaceholder(String s) {
+		return null;
+	}
+
+	@Override
+	public @Nullable Player player() {
+		return PlayerReference.super.player();
+	}
+
+	@Override
+	public @NotNull Iterable<? extends Audience> audiences() {
+		return PlayerReference.super.audiences();
 	}
 }

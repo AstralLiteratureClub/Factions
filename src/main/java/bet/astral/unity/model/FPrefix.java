@@ -4,6 +4,7 @@ import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.Placeholderable;
 import bet.astral.messenger.utils.PlaceholderUtils;
+import bet.astral.unity.utils.placeholders.PlayerPlaceholderable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ import java.util.Collection;
 
 @Getter
 @Setter
-public class FPrefix implements Placeholderable, ComponentLike {
+public class FPrefix implements Placeholderable, ComponentLike, PlayerPlaceholderable {
 	private final static MiniMessage miniMessage = MiniMessage.miniMessage();
 	@Nullable
 	private final Faction faction;
@@ -80,12 +81,18 @@ public class FPrefix implements Placeholderable, ComponentLike {
 	public Collection<Placeholder> asPlaceholder(String s) {
 		PlaceholderList placeholders = new PlaceholderList();
 		placeholders.add(PlaceholderUtils.createPlaceholder(s, "prefix", this));
-		placeholders.add(PlaceholderUtils.createPlaceholder(s, "prefix_serialzied", prefixSerialized));
+		placeholders.add(PlaceholderUtils.createPlaceholder(s, "prefix_serialized", prefixSerialized));
 		return placeholders;
 	}
-
 	@Override
 	public @NotNull Component asComponent() {
 		return prefix;
+	}
+
+	@Override
+	public @NotNull Collection<Placeholder> asPlaceholder(@Nullable String prefix, @NotNull OfflinePlayer player) {
+		PlaceholderList placeholders = new PlaceholderList(asPlaceholder(prefix));
+		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "player", format(player)));
+		return placeholders;
 	}
 }

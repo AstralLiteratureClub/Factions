@@ -33,9 +33,10 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class MemberParser<C> implements ArgumentParser<C, OfflinePlayer>, BlockingSuggestionProvider<C> {
+public class MemberParser<C> implements ArgumentParser<C, OfflinePlayer> {
 	private static final Factions factions = Factions.getPlugin(Factions.class);
 	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("E, dd MMM yyyy");
 	private final Mode mode;
@@ -92,44 +93,46 @@ public class MemberParser<C> implements ArgumentParser<C, OfflinePlayer>, Blocki
 		}
 	}
 
-	public @NonNull Iterable<@NonNull Suggestion> suggestions(final @NonNull CommandContext<C> commandContext, final @NonNull CommandInput input) {
-		if (mode == Mode.OWN) {
-			CommandSender bukkit = commandContext.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
-			if (bukkit instanceof Player player) {
-				FPlayer fPlayer = factions.getPlayerManager().convert(player);
-				if (fPlayer.getFactionId() == null) {
-					return Collections.emptyList();
+	public @NonNull CompletableFuture<Iterable<@NonNull Suggestion>> suggestions(final @NonNull CommandContext<C> commandContext, final @NonNull CommandInput input) {
+		return CompletableFuture.supplyAsync(() -> {
+			if (mode == Mode.OWN) {
+				CommandSender bukkit = commandContext.get(BukkitCommandContextKeys.BUKKIT_COMMAND_SENDER);
+				if (bukkit instanceof Player player) {
+					FPlayer fPlayer = factions.getPlayerManager().convert(player);
+					if (fPlayer.getFactionId() == null) {
+						return Collections.emptyList();
+					}
+					return Bukkit.getOnlinePlayers().stream()
+							.map(p -> factions.getPlayerManager().convert(p))
+							.filter(p -> p.getFactionId() != null)
+							.filter(p -> p.getFactionId().equals(fPlayer.getFactionId()))
+							.map(p ->
+									new TooltipSuggestion(p, Component.text(
+													p.getName(), NamedTextColor.WHITE)
+											.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
+											.append(Component.text("First Played: ", NamedTextColor.WHITE))
+											.append(Component.text(DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(p.player().getFirstPlayed()))),
+													NamedTextColor.GREEN))
+									))
+							.collect(Collectors.toSet());
 				}
-				return Bukkit.getOnlinePlayers().stream()
-						.map(p -> factions.getPlayerManager().convert(p))
-						.filter(p -> p.getFactionId() != null)
-						.filter(p -> p.getFactionId().equals(fPlayer.getFactionId()))
+			} else {
+				Faction faction = commandContext.get("faction");
+				return faction.getMembers().stream()
+						.map(PlayerReferenceImpl::new)
+						.map(OfflinePlayerReference::offlinePlayer)
 						.map(p ->
 								new TooltipSuggestion(p, Component.text(
-												p.getName(), NamedTextColor.WHITE)
+												Objects.requireNonNull(p.getName()), NamedTextColor.WHITE)
 										.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
 										.append(Component.text("First Played: ", NamedTextColor.WHITE))
-										.append(Component.text(DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(p.player().getFirstPlayed()))),
+										.append(Component.text(DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(p.getFirstPlayed()))),
 												NamedTextColor.GREEN))
 								))
-						.collect(Collectors.toSet());
+						.collect(Collectors.toList());
 			}
-		} else {
-			Faction faction = commandContext.get("faction");
-			return faction.getMembers().stream()
-					.map(PlayerReferenceImpl::new)
-					.map(OfflinePlayerReference::offlinePlayer)
-					.map(p ->
-							new TooltipSuggestion(p, Component.text(
-											Objects.requireNonNull(p.getName()), NamedTextColor.WHITE)
-									.append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-									.append(Component.text("First Played: ", NamedTextColor.WHITE))
-									.append(Component.text(DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(p.getFirstPlayed()))),
-											NamedTextColor.GREEN))
-							))
-					.collect(Collectors.toList());
-		}
-		return Collections.emptyList();
+			return Collections.emptyList();
+		});
 	}
 
 	public static final class MemberParserException extends ParserException {

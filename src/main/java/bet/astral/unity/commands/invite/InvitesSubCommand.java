@@ -5,6 +5,7 @@ import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionInviteParser;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
@@ -36,17 +37,17 @@ public class InvitesSubCommand extends FactionCloudCommand {
 							assert faction != null;
 							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.add("invites", faction.getInvites().size());
-							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+							placeholders.addAll(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 
-							commandMessenger.message(player, TranslationKey.MESSAGE_INVITES_HEADER, placeholders);
+							messenger.message(player, TranslationKey.MESSAGE_INVITES_HEADER, placeholders);
 							for (FInvite invite : faction.getInvites().values()) {
 								PlaceholderList invitePlaceholders = new PlaceholderList(placeholders);
-								invitePlaceholders.addAll(commandMessenger.createPlaceholders("to", invite.getTo().offlinePlayer()));
-								invitePlaceholders.addAll(commandMessenger.createPlaceholders("from", invite.getFrom().offlinePlayer()));
+								invitePlaceholders.addAll(messenger.getPlaceholderManager().offlinePlayerPlaceholders("to", invite.getTo().offlinePlayer()));
+								invitePlaceholders.addAll(messenger.getPlaceholderManager().offlinePlayerPlaceholders("from", invite.getFrom().offlinePlayer()));
 								invitePlaceholders.add("sent", FactionInviteParser.DATE_FORMAT.format(Instant.ofEpochMilli(invite.getWhen())));
 								invitePlaceholders.add("expires", FactionInviteParser.DATE_FORMAT.format(Instant.ofEpochMilli(invite.getExpires())));
 
-								commandMessenger.message(player, TranslationKey.MESSAGE_INVITES_VALUE, invitePlaceholders);
+								messenger.message(player, TranslationKey.MESSAGE_INVITES_VALUE, invitePlaceholders);
 							}
 						})
 		);

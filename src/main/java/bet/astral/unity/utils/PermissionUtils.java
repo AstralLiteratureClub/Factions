@@ -12,8 +12,6 @@ import org.incendo.cloud.permission.Permission;
 import org.incendo.cloud.permission.PermissionResult;
 import org.incendo.cloud.permission.PredicatePermission;
 
-import javax.swing.plaf.SplitPaneUI;
-
 public class PermissionUtils {
 	private static final Factions factions = Factions.getPlugin(Factions.class);
 	public static Permission of(String permission){
@@ -68,7 +66,7 @@ public class PermissionUtils {
 
 							FRole role = player.getFaction().getRole(player);
 							if (role == null) {
-								role = FRole.DEFAULT;
+								role = FRole.MEMBER;
 							}
 									for (FPermission fPermission : permissions){
 										if (role.hasPermission(fPermission)){

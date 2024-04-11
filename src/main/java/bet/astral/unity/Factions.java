@@ -1,8 +1,12 @@
 package bet.astral.unity;
 
 import bet.astral.cloudplusplus.CommandRegisterer;
-import bet.astral.messenger.Message;
 import bet.astral.messenger.Messenger;
+import bet.astral.messenger.message.MessageType;
+import bet.astral.messenger.message.adventure.AdventureMessage;
+import bet.astral.messenger.message.adventure.serializer.ComponentTypeSerializer;
+import bet.astral.messenger.message.message.IMessage;
+import bet.astral.messenger.message.part.DefaultMessagePart;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.commands.root.FactionRootCommands;
@@ -15,10 +19,12 @@ import bet.astral.unity.database.model.LoginMaster;
 import bet.astral.unity.handlers.ChatHandler;
 import bet.astral.unity.managers.FactionManager;
 import bet.astral.unity.managers.PlayerManager;
-import bet.astral.unity.model.Faction;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.utils.TranslationKey;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,10 +41,16 @@ import org.incendo.cloud.minecraft.extras.RichDescription;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -65,12 +77,13 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     private MinecraftHelp<CommandSender> rootHelp;
     private MinecraftHelp<CommandSender> allyRootHelp;
     private Messenger<Factions> messenger;
-    private Messenger<Factions> debugMessenger;
     private Database database;
     private PlayerManager playerManager;
     private FactionManager factionManager;
     private ChatHandler chatHandler;
     private FactionConfig factionConfig;
+    private DateFormat dateFormat;
+    private boolean commandsRegistered = false;
 
     @Override
     public void onEnable() {
@@ -122,7 +135,8 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             }
         }
 
-        database.connect(loginMaster);
+        // TODO enable connecting to database
+//        database.connect(loginMaster);
 
         commandManager = new PaperCommandManager<>(this, ExecutionCoordinator.asyncCoordinator(), SenderMapper.identity());
 
@@ -130,27 +144,27 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         reloadMessengers();
 
         FileConfiguration messengerConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
-        messenger = new Messenger<>(this, messengerConfig, new HashMap<>());
-        debugMessenger = new Messenger<>(this, messengerConfig, new HashMap<>());
-        messenger.overrideDefaultPlaceholders(messenger.loadPlaceholders("placeholders"));
-        debugMessenger.overrideDefaultPlaceholders(debugMessenger.loadPlaceholders("placeholders"));
-
-        messenger.registerCommandManager(commandManager);
-        debugMessenger.registerCommandManager(commandManager);
+//        messenger = new Messenger<>(this, new HashMap<>(), new IMessageTypeSerializer<CommandSender>(), messengerConfig);
+//        debugMessenger = new Messenger<>(this, messengerConfig, new HashMap<>());
+        dateFormat = new SimpleDateFormat(messengerConfig.getString(TranslationKey.DATE_FORMAT, "mm:HH dd/MM/yyyy"));
+        messenger = new Messenger<>(this, commandManager, new HashMap<>(), new ComponentTypeSerializer(), messengerConfig);
+        FactionPlaceholderManager placeholderManager = new FactionPlaceholderManager();
+        placeholderManager.setDefaults(placeholderManager.loadPlaceholders("placeholders", messengerConfig));
+        messenger.setPlaceholderManager(placeholderManager);
 
         for (Field field : TranslationKey.class.getFields()) {
             try {
                 if (field.isAnnotationPresent(TranslationKey.IsCaption.class) && field.getAnnotation(TranslationKey.IsCaption.class).value()) {
                     Caption caption = (Caption) field.get(null);
-                    Message message = messenger.loadMessage(caption.key());
-                    if (message == null) {
+                    IMessage<?, Component> message = messenger.loadMessage(caption.key());
+                    if (message == null || message.parts().get(MessageType.CHAT) == null) {
                         messengerConfig.set(caption.key(), caption.key());
                     }
                 } else {
                     String fieldValue = (String) field.get(null);
                     messenger.loadMessage(fieldValue);
-                    Message message = messenger.loadMessage(fieldValue);
-                    if (message == null) {
+                    IMessage<?, Component> message = messenger.loadMessage(fieldValue);
+                    if (message == null || message.parts().get(MessageType.CHAT) == null) {
                         messengerConfig.set(fieldValue, fieldValue);
                     }
                 }
@@ -192,27 +206,37 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
 
         registerChatHandler((player, faction, receiver, message, type) -> {
             PlaceholderList placeholders = new PlaceholderList();
-            placeholders.addAll(messenger.createPlaceholders(player.player()));
-            placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+            placeholders.addAll(placeholderManager.offlinePlayerPlaceholders("player", player.offlinePlayer()));
+            placeholders.addAll(placeholderManager.factionPlaceholders("faction", faction));
             placeholders.add("message", message);
-            Message messengerMessage = null;
+            IMessage<?, Component> iMessage = null;
             switch (type) {
                 case FACTION -> {
-                    messengerMessage = messenger.getMessage(TranslationKey.FORMAT_CHAT);
+                    iMessage = messenger.getMessage(TranslationKey.FORMAT_CHAT);
                 }
                 case ALLY -> {
-                    messengerMessage = messenger.getMessage(TranslationKey.FORMAT_ALLY_CHAT);
+                    iMessage = messenger.getMessage(TranslationKey.FORMAT_ALLY_CHAT);
                 }
             }
-            if (messengerMessage == null) {
+            if (iMessage == null || iMessage.parts().get(MessageType.CHAT) == null) {
                 return null;
             }
 
-            return messenger.parse(messengerMessage, Message.Type.CHAT, placeholders);
+            return messenger.parse(iMessage, MessageType.CHAT, placeholders);
         });
 
 
         getLogger().info("Factions has enabled!");
+    }
+
+    @Override
+    public @NotNull ComponentLogger getComponentLogger() {
+        return super.getComponentLogger();
+    }
+
+    @Override
+    public @NotNull Logger getSLF4JLogger() {
+        return super.getSLF4JLogger();
     }
 
 
@@ -234,6 +258,13 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     @NotNull
     public ChatHandler allyChatHandler(){
         return chatHandler;
+    }
+
+    public Component formatDate(Date date){
+        return MiniMessage.miniMessage().deserialize(dateFormat.format(date));
+    }
+    public Component formatDate(long date){
+        return MiniMessage.miniMessage().deserialize(dateFormat.format(Date.from(Instant.ofEpochMilli(date))));
     }
 
     private void uploadUploads(){
@@ -308,25 +339,47 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
 
     @Override
     public Messenger<Factions> debugMessenger() {
-        return debugMessenger;
+        return messenger;
     }
 
+    @Override
+    public void registerCommands(List<String> packages, PaperCommandManager<?> commandManager) {
+        CommandRegisterer.super.registerCommands(packages, commandManager);
+    }
+
+    @Override
+    public boolean cannotInject(Class<?> clazz) {
+        return CommandRegisterer.super.cannotInject(clazz);
+    }
+
+    @Override
+    public void registerCommand(Class<?> clazz, PaperCommandManager<?> commandManager) {
+        CommandRegisterer.super.registerCommand(clazz, commandManager);
+    }
+
+    @Override
+    public Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
+        return CommandRegisterer.super.getConstructor(clazz, params);
+    }
 
 
     public RichDescription loadDescription(String name, String command, Placeholder... placeholders){
         PlaceholderList placeholderList = new PlaceholderList();
         placeholderList.add("command", command);
         placeholderList.addAll(placeholders);
-        Message message = messenger.getMessage(name);
+        IMessage<?, Component> message = messenger.getMessage(name);
         if (message == null){
-            message = new Message(name, Component.text(name));
+            message = new AdventureMessage(name, new DefaultMessagePart<>(MessageType.CHAT, Component.text(name)));
         }
-        Component component = messenger.parse(message, Message.Type.CHAT, placeholderList);
-
+        Component component = messenger.parse(message, MessageType.CHAT, placeholderList);
+        if (component == null){
+            return null;
+        }
         return RichDescription.of(component);
     }
 
     public Messenger<Factions> messenger(){
         return messenger;
     }
+
 }

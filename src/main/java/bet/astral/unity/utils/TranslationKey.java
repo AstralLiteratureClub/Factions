@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public final class TranslationKey {
+	public final static String DATE_FORMAT = "date-format";
+
 	public final static String DESCRIPTION_ROOT = "root.description";
 	public final static String DESCRIPTION_ROOT_FORCE = "root.description-force";
 	public final static String DESCRIPTION_ROOT_ALLY = "root.description-ally";
@@ -102,10 +104,6 @@ public final class TranslationKey {
 	public final static String DESCRIPTION_FORCE_CHAT = "chat.description-force";
 	public final static String DESCRIPTION_FORCE_CHAT_MESSAGE = "chat.description-force-message-arg";
 
-	@Deprecated(forRemoval = true)
-	public final static String DESCRIPTION_CHAT_TYPE_FLAG = "chat.description-type-flag";
-	@Deprecated(forRemoval = true)
-	public final static String DESCRIPTION_CHAT_TYPE = "chat.description-type";
 	public final static String FORMAT_CHAT = "chat.format-chat";
 	public final static String FORMAT_ALLY_CHAT = "chat.format-ally-chat";
 	public final static String MESSAGE_CHAT_SWITCH_GLOBAL = "chat.format-switch-global";
@@ -118,6 +116,15 @@ public final class TranslationKey {
 	public final static String DESCRIPTION_INFO_PLAYER = "info.description-player-arg";
 	public final static String MESSAGE_INFO = "info.message-info";
 	public final static String MESSAGE_INFO_NO_FACTION = "info.message-no-faction";
+	public final static String ENTRY_INFO_ROLE_OWNER = "info.entry-role-owner";
+	public final static String ENTRY_INFO_ROLE_CO_OWNER = "info.entry-role-co-owner";
+	public final static String ENTRY_INFO_ROLE_ADMIN = "info.entry-role-admin";
+	public final static String ENTRY_INFO_ROLE_MOD = "info.entry-role-moderator";
+	public final static String ENTRY_INFO_ROLE_MEMBER = "info.entry-role-member";
+	public final static String ENTRY_INFO_ROLE_GUEST = "info.entry-role-guest";
+	public final static String ENTRY_INFO_USER_OFFLINE = "info.entry-user-offline";
+	public final static String ENTRY_INFO_USER_ONLINE = "info.entry-user-online";
+	public final static String ENTRY_INFO_USER_COMMA = "info.entry-user-comma";
 
 	public final static String DESCRIPTION_LEAVE = "leave.description";
 	public final static String MESSAGE_LEAVE = "leave.message-leaving-player";
@@ -173,6 +180,13 @@ public final class TranslationKey {
 	public final static Caption CAPTION_PLAYER_HAS_NOT_BEEN_INVITED = Caption.of("caption.faction-has-not-invited-player");
 	@IsCaption(true)
 	public final static Caption CAPTION_BANNED = Caption.of("caption.faction-has-banned-player");
+	@NotDone
+	@IsCaption(true)
+	public static final Caption CAPTION_UNKNOWN_SUPER_OWNER = Caption.of("caption.unknown-super-owner");
+	@NotDone
+	@IsCaption(true)
+	public static final Caption CAPTION_NO_SUPER_OWNER = Caption.of("caption.no-super-owner-found");
+
 
 
 	public final static String DESCRIPTION_PREFIX = "prefix.description";
@@ -206,15 +220,23 @@ public final class TranslationKey {
 	public final static String MESSAGE_PREFIX_RESET_PUBLIC_ROLE = "prefix.message-reset-public-role-prefix";
 
 	public final static String DESCRIPTION_FORCE_BAN = "ban.force-description";
-	public final static String DESCRIPTION_FORCE_BAN_FACTION = "ban.force-factions.force-faction.description";
-	public final static String DESCRIPTION_FORCE_BAN_FACTION_FACTION = "ban.force-factions.force-faction.description-faction-arg";
-	public final static String DESCRIPTION_FORCE_BAN_FACTION_REASON = "ban.force-factions.force-faction.description-reason-arg";
-	public final static String DESCRIPTION_FORCE_BAN_FACTION_SILENT = "ban.force-factions.force-faction.description-silent-arg";
-	public final static String MESSAGE_FORCE_BAN_ALREADY_BANNED = "ban.force-factions.force-faction.message-already-banned";
-	public final static String MESSAGE_FORCE_BAN_BANNED = "ban.force-factions.force-faction.message-banned";
-	public final static String BROADCAST_FORCE_BAN_BANNED_STAFF = "ban.force-factions.force-faction.broadcast-admins-of-ban";
-	public final static String BROADCAST_FORCE_BAN_BANNED_PUBLIC = "ban.force-factions.force-faction.broadcast-public-of-ban";
-	public final static String BROADCAST_FORCE_BAN_BANNED_FACTION = "ban.force-factions.force-faction.broadcast-faction-of-ban";
+	public final static String DESCRIPTION_FORCE_BAN_PLAYER = "ban.force.player.description";
+	public final static String DESCRIPTION_FORCE_BAN_PLAYER_FACTION = "ban.force.player.description";
+	public final static String DESCRIPTION_FORCE_BAN_PLAYER_PLAYER = "ban.force.player.description";
+	public final static String DESCRIPTION_FORCE_BAN_PLAYER_REASON = "ban.force.player.description";
+	public final static String DESCRIPTION_FORCE_BAN_PLAYER_SILENT = "ban.force.player.description";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION = "ban.force.faction.description";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION_FACTION = "ban.force.faction.description-faction-arg";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION_REASON = "ban.force.faction.description-reason-arg";
+	public final static String DESCRIPTION_FORCE_BAN_FACTION_SILENT = "ban.force.faction.description-silent-arg";
+	public final static String MESSAGE_FORCE_BAN_ALREADY_BANNED = "ban.force.faction.message-already-banned";
+	public final static String MESSAGE_FORCE_BAN_BANNED = "ban.force.faction.message-banned";
+	public final static String BROADCAST_FORCE_BAN_BANNED_STAFF = "ban.force.faction.broadcast-admins-of-ban";
+	public final static String BROADCAST_FORCE_BAN_BANNED_PUBLIC = "ban.force.faction.broadcast-public-of-ban";
+	public final static String BROADCAST_FORCE_BAN_BANNED_FACTION = "ban.force.faction.broadcast-faction-of-ban";
+
+	public static final String DESCRIPTION_TAKEOVER = "takeover.description";
+	public static final String DESCRIPTION_TAKEOVER_OWNER = "takeover.description-owner-arg";
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface IsCaption {

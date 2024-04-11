@@ -29,7 +29,7 @@ public class LeaveSubCommand extends FactionCloudCommand {
 										return false;
 									}
 
-									return faction.getSuperOwner() != null && !faction.getSuperOwner().equals(player.uuid());
+									return faction.getSuperOwner() != null && !faction.getSuperOwner().equals(player);
 								}))
 						)
 						.handler(context -> {
@@ -41,8 +41,8 @@ public class LeaveSubCommand extends FactionCloudCommand {
 							faction.leave(sender);
 							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
-							commandMessenger.message(sender, TranslationKey.MESSAGE_LEAVE, placeholders);
-							commandMessenger.message(faction, TranslationKey.BROADCAST_LEAVE, placeholders);
+							messenger.message(sender, TranslationKey.MESSAGE_LEAVE, placeholders);
+							messenger.message(faction, TranslationKey.BROADCAST_LEAVE, placeholders);
 						})
 		);
 	}

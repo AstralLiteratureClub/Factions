@@ -24,7 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-public class FactionParser<C> implements ArgumentParser<C, Faction>, SuggestionProvider {
+public class FactionParser<C> implements ArgumentParser<C, Faction>, SuggestionProvider<C> {
 	protected static final Factions factions = Factions.getPlugin(Factions.class);
 	protected final Mode mode;
 	protected FactionParser(Mode mode) {

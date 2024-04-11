@@ -3,18 +3,15 @@ package bet.astral.unity.commands.core;
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
-import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
 import bet.astral.unity.utils.TranslationKey;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
-import org.incendo.cloud.permission.PredicatePermission;
 
 @Cloud
 public class CreateSubCommand extends FactionCloudCommand {
@@ -47,7 +44,7 @@ public class CreateSubCommand extends FactionCloudCommand {
 							placeholders.add("max_length", plugin.getFactionConfig().getName().getMaxLength());
 							placeholders.add("min_length", plugin.getFactionConfig().getName().getMinLength());
 							placeholders.add("pattern", plugin.getFactionConfig().getName().getRegexPattern());
-							placeholders.addAll(messenger.createPlaceholders("sender", sender));
+							placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 
 							if (name.length() > 10) {
 								messenger.message(sender, TranslationKey.MESSAGE_CREATE_TOO_LONG, placeholders);
@@ -71,8 +68,8 @@ public class CreateSubCommand extends FactionCloudCommand {
 							plugin.getPlayerManager().convert(sender)
 									.setFactionId(faction.getUniqueId());
 
-							placeholders.addAll(Faction.factionPlaceholders("", faction));
-							placeholders.addAll(PlaceholderUtils.createPlaceholders("player", (LivingEntity) sender));
+							placeholders.addAll(placeholderManager.factionPlaceholders("", faction));
+							placeholders.addAll(placeholderManager.playerPlaceholders("player", sender));
 							messenger.message(sender, TranslationKey.MESSAGE_CREATE_FACTION, placeholders);
 							messenger.broadcast(TranslationKey.BROADCAST_CREATE_FACTION, placeholders);
 						})

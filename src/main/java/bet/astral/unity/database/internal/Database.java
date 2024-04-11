@@ -1,6 +1,5 @@
 package bet.astral.unity.database.internal;
 
-import org.incendo.cloud.type.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

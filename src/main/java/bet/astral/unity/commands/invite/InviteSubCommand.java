@@ -6,6 +6,7 @@ import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.commands.arguments.InvitableParser;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
@@ -83,6 +84,9 @@ public class InviteSubCommand extends FactionCloudCommand {
 							}
 						})
 		);
+		/*
+		 * Force invite stuff
+		 */
 		Command.Builder<Player> forceInvite =
 				forceRoot
 						.literal("invite",
@@ -137,9 +141,9 @@ public class InviteSubCommand extends FactionCloudCommand {
 
 	private void invite(Player sender, Player other, Faction faction) {
 		PlaceholderList placeholders = new PlaceholderList();
-		placeholders.addAll(messenger.createPlaceholders("sender", sender));
-		placeholders.addAll(messenger.createPlaceholders("to", other));
-		placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+		placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
+		placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("to", other));
+		placeholders.addAll(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 
 		messenger.message(faction, TranslationKey.BROADCAST_INVITE_TO_FACTION, placeholders);
 		messenger.message(other, TranslationKey.MESSAGE_INVITE_RECEIVER, placeholders);
@@ -148,9 +152,9 @@ public class InviteSubCommand extends FactionCloudCommand {
 
 	private void forceInvite(Player sender, Player other, Faction faction) {
 		PlaceholderList placeholders = new PlaceholderList();
-		placeholders.addAll(messenger.createPlaceholders("sender", sender));
-		placeholders.addAll(messenger.createPlaceholders("to", other));
-		placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+		placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
+		placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("to", other));
+		placeholders.addAll(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 
 		messenger.message(sender, TranslationKey.MESSAGE_FORCE_INVITE_SENDER, placeholders);
 		messenger.message(faction, TranslationKey.BROADCAST_FORCE_INVITE_FACTION, placeholders);

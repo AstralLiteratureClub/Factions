@@ -3,9 +3,11 @@ package bet.astral.unity.commands.invite;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
+import bet.astral.messenger.placeholder.PlaceholderManager;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.InvitedParser;
+import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
@@ -65,11 +67,11 @@ public class CancelInviteSubCommand extends FactionCloudCommand {
 					Faction faction = plugin.getFactionManager().get(fPlayer.getFactionId());
 					String reason = (String) context.optional("reason").orElse("No reason listed");
 
-					PlaceholderList placeholders = new PlaceholderList(Faction.factionPlaceholders("faction", faction));
+					PlaceholderList placeholders = new PlaceholderList(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 					placeholders.add("reason", reason);
 					FInvite invite = faction.getInvite(sender);
 					placeholders.add(null, invite);
-					placeholders.addAll(messenger.createPlaceholders("sender", sender));
+					placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 
 					faction.cancelInvite(sender, player, reason);
 
@@ -96,11 +98,11 @@ public class CancelInviteSubCommand extends FactionCloudCommand {
 					Iterable<OfflinePlayerReference> references = faction.getInvites().keySetPlayerReference();
 
 					for (OfflinePlayerReference reference : references) {
-						PlaceholderList placeholders = new PlaceholderList(Faction.factionPlaceholders("faction", faction));
+						PlaceholderList placeholders = new PlaceholderList(((FactionPlaceholderManager) messenger.getPlaceholderManager()).factionPlaceholders("faction", faction));
 						placeholders.add("reason", reason);
 						FInvite invite = faction.getInvite(sender);
 						placeholders.add(null, invite);
-						placeholders.addAll(messenger.createPlaceholders("sender", sender));
+						placeholders.addAll(messenger.getPlaceholderManager().senderPlaceholders("sender", sender));
 
 						faction.cancelInvite(sender, reference.offlinePlayer(), reason);
 

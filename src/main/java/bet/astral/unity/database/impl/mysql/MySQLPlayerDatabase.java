@@ -6,9 +6,11 @@ import bet.astral.unity.database.internal.SQLDatabase;
 import bet.astral.unity.database.model.DBFactionMember;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
+import bet.astral.unity.utils.UniqueId;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -20,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class MySQLPlayerDatabase extends SQLDatabase<UUID, DBFactionMember, DBFactionMember> implements MemberDatabase<UUID, DBFactionMember> {
+public class MySQLPlayerDatabase extends SQLDatabase<UUID, DBFactionMember, DBFactionMember> implements MemberDatabase<UUID, DBFactionMember, DBFactionMember> {
 	public MySQLPlayerDatabase(HikariDatabase hikariDatabase, Consumer<DBFactionMember> cacheConsumer, Consumer<DBFactionMember> uncacheCOnsumer, Function<DBFactionMember, DBFactionMember> dataToCached, Function<DBFactionMember, DBFactionMember> cachedToData) {
 		super(hikariDatabase, cacheConsumer, uncacheCOnsumer, dataToCached, cachedToData, "players");
 	}
@@ -171,6 +173,16 @@ public class MySQLPlayerDatabase extends SQLDatabase<UUID, DBFactionMember, DBFa
 	}
 
 	@Override
+	public @NotNull CompletableFuture<Void> delete(@NotNull UniqueId uniqueId) {
+		return delete(uniqueId.getUniqueId());
+	}
+
+	@Override
+	public @NotNull CompletableFuture<Void> delete(@NotNull OfflinePlayer uniqueId) {
+		return delete(uniqueId.getUniqueId());
+	}
+
+	@Override
 	public DBFactionMember createDefault(UUID key) {
 		Optional<Faction> optFac = getFactions().getFactionManager().getPlayerFaction(key);
 		if (optFac.isPresent()){
@@ -180,19 +192,19 @@ public class MySQLPlayerDatabase extends SQLDatabase<UUID, DBFactionMember, DBFa
 						key,
 						null,
 						faction,
-						FRole.DEFAULT
+						FRole.MEMBER
 						);
 			}
 			return new DBFactionMember(key,
 					null,
 					faction,
-					FRole.DEFAULT
+					FRole.MEMBER
 					);
 		}
 		return new DBFactionMember(key,
 				null,
 				null,
-				FRole.DEFAULT
+				FRole.MEMBER
 		);
 	}
 
@@ -253,4 +265,5 @@ public class MySQLPlayerDatabase extends SQLDatabase<UUID, DBFactionMember, DBFa
 					});
 		});
 	}
+
 }

@@ -177,7 +177,7 @@ public class PrefixSubCommand extends FactionCloudCommand {
 							PlaceholderList placeholders = new PlaceholderList();
 
 							OfflinePlayer player = context.get("member");
-							placeholders.addAll(messenger.createPlaceholders("member", player));
+							placeholders.addAll(messenger.getPlaceholderManager().offlinePlayerPlaceholders("member", player));
 
 							// TODO add possibly some stuff so you cant make racist stuff
 

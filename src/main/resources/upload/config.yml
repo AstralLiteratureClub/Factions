@@ -33,7 +33,7 @@ database:
   minimum-idle: 20000
 
   hikari:
-    minimum-pools: 1
+    minimum-pools: 5
     maximum-pools: 200
     testQuery: IGNORE
 
@@ -53,9 +53,16 @@ faction:
   max-members: 9
   max-allies: 3
 
-chat:
-  handle-toggle-chat: false
-  chat-handler: "GoldenDupe"
+  require-members:
+    5:
+      mods: 1
+    10:
+      admins: 1
+      mods: 1
+
+#chat:
+ # handle-toggle-chat: false
+  #chat-handler: "GoldenDupe"
 
 performance:
   # If this is set to false, non-administrator players cannot load offline players to the server.
