@@ -1,5 +1,8 @@
-package bet.astral.unity.database.internal;
+package bet.astral.unity.database.structures;
 
+import bet.astral.unity.Factions;
+import bet.astral.unity.database.structures.migrator.Migrate;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,7 +12,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public interface Database<K, V, C> {
+public interface Database<K, V, C> extends Migrate<K, V, C> {
+	Factions getFactions();
+	default ComponentLogger getLogger(){
+		return getFactions().getComponentLogger();
+	}
+
 	@ApiStatus.Internal
 	void addToCache(@NotNull C value);
 	@ApiStatus.Internal
@@ -31,10 +39,17 @@ public interface Database<K, V, C> {
 	CompletableFuture<Void> delete(@NotNull K key);
 	CompletableFuture<Void> deleteCached(@NotNull C cachedValue);
 
-	boolean close();
 	String tableName();
 
 	C createDefault(K key);
+
+	default <U> CompletableFuture<U> handleExceptions(CompletableFuture<U> future){
+		future.exceptionallyAsync(throwable -> {
+			getLogger().error("When executing database tasks, came across an exception!", throwable);
+			return null;
+		});
+		return future;
+	}
 
 	@Nullable
 	default String uuidToString(@Nullable UUID uuid){
@@ -43,4 +58,10 @@ public interface Database<K, V, C> {
 		}
 		return uuid.toString();
 	}
+
+	/**
+	 * Starts this given database branch.
+	 * In SQL-based databases, this creates the tables and in the faction database it loads all the factions to cache.
+	 */
+	void init();
 }

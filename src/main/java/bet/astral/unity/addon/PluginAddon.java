@@ -1,37 +1,36 @@
 package bet.astral.unity.addon;
 
-import bet.astral.unity.Factions;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.plugin.Plugin;
 import org.incendo.cloud.description.Description;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface PluginAddon<P extends Plugin> extends Addon{
-	P getPlugin();
-
+@Deprecated(forRemoval = true)
+public interface PluginAddon extends Addon{
 	@Override
 	default @NotNull String getName() {
-		return getPlugin().getPluginMeta().getName();
+		return ((Plugin) this).getPluginMeta().getName();
 	}
 
 	@Override
 	default @NotNull String getVersion() {
-		return getPlugin().getPluginMeta().getVersion();
+		return ((Plugin) this).getPluginMeta().getVersion();
 	}
 
 	@Override
 	default @NotNull List<String> getAuthors() {
-		return getPlugin().getPluginMeta().getAuthors();
+		return ((Plugin) this).getPluginMeta().getAuthors();
 	}
 
 	@Override
 	default @NotNull Description getDescription() {
-		return Description.of(getPlugin().getPluginMeta().getDescription());
+		return Description.of(((Plugin) this).getPluginMeta().getDescription());
 	}
 
-	@Override
-	default Factions getUnity() {
-		return Factions.getPlugin(Factions.class);
+
+	default @NotNull ComponentLogger logger(){
+		return ((Plugin) this).getComponentLogger();
 	}
 }

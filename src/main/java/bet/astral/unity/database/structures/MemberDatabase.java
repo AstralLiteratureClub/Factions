@@ -1,4 +1,4 @@
-package bet.astral.unity.database.internal;
+package bet.astral.unity.database.structures;
 
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.UniqueId;

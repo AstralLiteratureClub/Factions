@@ -3,6 +3,7 @@ package bet.astral.unity.commands.meta;
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
+import bet.astral.messenger.placeholder.PlaceholderValue;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.MemberParser;
@@ -212,7 +213,7 @@ public class PrefixSubCommand extends FactionCloudCommand {
 
 							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.add("role", role);
-							placeholders.add("new_prefix", prefix);
+							placeholders.add("new_prefix", (PlaceholderValue) prefix);
 							messenger.message(sender, TranslationKey.MESSAGE_PREFIX_RESET_PUBLIC_ROLE, placeholders);
 						}));
 		Command.Builder<Player> privateReset = reset.literal("private")
@@ -249,7 +250,7 @@ public class PrefixSubCommand extends FactionCloudCommand {
 
 							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.add("role", role);
-							placeholders.add("new_prefix", prefix);
+							placeholders.add("new_prefix", (PlaceholderValue) prefix);
 							messenger.message(sender, TranslationKey.MESSAGE_PREFIX_RESET_PRIVATE_ROLE, placeholders);
 						}));
 		commandPlayer(
@@ -277,7 +278,7 @@ public class PrefixSubCommand extends FactionCloudCommand {
 
 							PlaceholderList placeholders = new PlaceholderList();
 							placeholders.add("member", member.getName());
-							placeholders.add("new_prefix", prefix);
+							placeholders.add("new_prefix", (PlaceholderValue) prefix);
 							messenger.message(sender, TranslationKey.MESSAGE_PREFIX_RESET_PRIVATE_PLAYER, placeholders);
 						}));
 	}

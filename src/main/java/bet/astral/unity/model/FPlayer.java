@@ -3,8 +3,8 @@ package bet.astral.unity.model;
 import bet.astral.messenger.Messenger;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.unity.Factions;
-import bet.astral.unity.managers.FactionManager;
 import bet.astral.unity.model.entity.ally.FAlliance;
+import bet.astral.unity.model.interactions.*;
 import bet.astral.unity.utils.UniqueId;
 import bet.astral.unity.utils.flags.Flag;
 import bet.astral.unity.utils.flags.FlagImpl;
@@ -26,7 +26,10 @@ import java.util.*;
 
 @Setter
 @Getter
-public class FPlayer implements Flaggable, ForwardingAudience, PlayerReference, FactionReference, UniqueId {
+public class FPlayer implements Flaggable,
+		ForwardingAudience, PlayerReference,
+		FactionReference, UniqueId,
+		FRelationship, FAntagonist, FAlliable {
 	private final Factions factions;
 	@Getter(AccessLevel.NONE)
 	private final Map<NamespacedKey, Flag<?>> flags = new HashMap<>();
@@ -141,5 +144,85 @@ public class FPlayer implements Flaggable, ForwardingAudience, PlayerReference, 
 	@Override
 	public @NotNull Iterable<? extends Audience> audiences() {
 		return PlayerReference.super.audiences();
+	}
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getAllies() {
+		return null;
+	}
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getAlliesShared(@NotNull FAlliable uniqueId) {
+		return null;
+	}
+
+	@Override
+	public boolean isAllied(@NotNull FAlliable alliable) {
+		return false;
+	}
+
+	@Override
+	public boolean isAllied(@NotNull OfflinePlayerReference reference) {
+		return false;
+	}
+
+	@Override
+	public @NotNull FRelationshipInfo markAlly(@NotNull FAlliable alliable) {
+		return null;
+	}
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getEnemies() {
+		return null;
+	}
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getEnemiesShared(@NotNull FAntagonist antagonist) {
+		return null;
+	}
+
+	@Override
+	public boolean isEnemy(@NotNull FAntagonist antagonist) {
+		return false;
+	}
+
+	@Override
+	public boolean isEnemy(@NotNull OfflinePlayerReference reference) {
+		return false;
+	}
+
+	@Override
+	public @NotNull FRelationshipInfo markEnemy(@NotNull FAntagonist antagonist) {
+		return null;
+	}
+
+	@Override
+	public @NotNull FRelationshipStatus getRelationshipStatus(@NotNull FRelationship relationShip) {
+		return null;
+	}
+
+	@Override
+	public @NotNull FRelationshipInfo getRelationshipInfo(@NotNull FRelationship relationship) {
+		return null;
+	}
+
+	@Override
+	public boolean isNeutral(@NotNull FRelationship relationship) {
+		return false;
+	}
+
+	@Override
+	public boolean isNeutral(@NotNull OfflinePlayerReference reference) {
+		return false;
+	}
+
+	@Override
+	public boolean isNeutral(@NotNull FactionReference factionReference) {
+		return false;
+	}
+
+	@Override
+	public FRelationshipInfo markNeutral(@NotNull FRelationship relationship) {
+		return null;
 	}
 }

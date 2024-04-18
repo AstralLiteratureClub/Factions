@@ -3,6 +3,7 @@ package bet.astral.unity.commands.join;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
+import bet.astral.messenger.placeholder.PlaceholderValue;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.FactionCloudCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
@@ -86,8 +87,8 @@ public class JoinSubCommand extends FactionCloudCommand {
 									placeholders.add("faction", faction);
 									placeholders.add("faction", faction.getName());
 									placeholders.add("role", role);
-									placeholders.add("role_private", faction.getPrivatePrefix(role));
-									placeholders.add("role_public", faction.getPublicPrefix(role));
+									placeholders.add("role_private", (PlaceholderValue) faction.getPrivatePrefix(role));
+									placeholders.add("role_public", (PlaceholderValue) faction.getPublicPrefix(role));
 
 									Faction current = plugin.getPlayerManager().convert(sender).getFaction();
 									if (current != null) {

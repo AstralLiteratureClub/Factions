@@ -1,7 +1,10 @@
-package bet.astral.unity.database.internal;
+package bet.astral.unity.database.impl.sql;
 
 import bet.astral.unity.Factions;
-import bet.astral.unity.database.impl.HikariDatabase;
+import bet.astral.unity.database.structures.Database;
+import bet.astral.unity.database.structures.FactionDatabase;
+import bet.astral.unity.managers.FactionManager;
+import bet.astral.unity.model.Faction;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,16 +16,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class SQLDatabase<K, V, C> implements Database<K, V, C> {
+	private final Factions factions;
 	@Getter
-	private final HikariDatabase hikariDatabase;
+	private final Connection connection;
 	private final Consumer<C> cacheConsumer;
 	private final Consumer<C> uncacheCOnsumer;
 	private final Function<C, V> dataToCached;
 	private final Function<V, C> cachedToData;
 	private final String table;
 
-	protected SQLDatabase(HikariDatabase hikariDatabase, Consumer<C> cacheConsumer, Consumer<C> uncacheCOnsumer, Function<C, V> dataToCached, Function<V, C> cachedToData, String table) {
-		this.hikariDatabase = hikariDatabase;
+	protected SQLDatabase(Factions factions, Connection connection, Consumer<C> cacheConsumer, Consumer<C> uncacheCOnsumer, Function<C, V> dataToCached, Function<V, C> cachedToData, String table) {
+		this.factions = factions;
+		this.connection = connection;
 		this.cacheConsumer = cacheConsumer;
 		this.uncacheCOnsumer = uncacheCOnsumer;
 		this.dataToCached = dataToCached;
@@ -30,7 +35,7 @@ public abstract class SQLDatabase<K, V, C> implements Database<K, V, C> {
 		this.table = table;
 	}
 
-	public abstract boolean createTable();
+	protected abstract boolean createTable();
 	protected void tryToClose(PreparedStatement statement) throws SQLException {
 		if (statement != null && !statement.isClosed()) {
 			statement.close();
@@ -39,6 +44,12 @@ public abstract class SQLDatabase<K, V, C> implements Database<K, V, C> {
 	protected void tryToClose(ResultSet resultSet) throws SQLException {
 		if (resultSet != null && !resultSet.isClosed()) {
 			resultSet.close();
+		}
+	}
+
+	protected void tryToClose(Connection connection) throws SQLException {
+		if (connection != null && !connection.isClosed()) {
+			connection.close();
 		}
 	}
 
@@ -74,30 +85,34 @@ public abstract class SQLDatabase<K, V, C> implements Database<K, V, C> {
 	}
 
 	@Override
-	public boolean close() {
-		if (getConnection() != null){
-			try {
-				getConnection().close();
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return true;
-	}
-
-	public Connection getConnection() {
-		try {
-			return hikariDatabase.getConnection();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public Factions getFactions() {
-		return hikariDatabase.getFactions();
+		return factions;
 	}
 
 	public String tableName(){
 		return table;
+	}
+
+	@Override
+	public void init() {
+		try {
+			if (createTable()) {
+				if (this instanceof FactionDatabase<?, ?, ?, ?, ?, ?, ?, ?, ?> database) {
+					database.loadAllFactions()
+							.thenAccept((factions) -> {
+								FactionManager factionManager = getFactions().getFactionManager();
+								factionManager.clearCache();
+								for (Faction faction : factions) {
+									factionManager.addToCache(faction);
+								}
+							})
+					;
+				}
+			} else {
+				getLogger().error("Couldn't create database named " + tableName() + ". Please check your configuration and restart the server.");
+			}
+		} catch (Exception e){
+			getLogger().error("Couldn't create database named " + tableName()+". Please check your configuration and restart the server.", e);
+		}
 	}
 }

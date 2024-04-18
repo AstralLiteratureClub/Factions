@@ -124,7 +124,7 @@ public class InfoSubCommand extends FactionCloudCommand {
 
 		PlaceholderList placeholders = new PlaceholderList();
 
-		List<OfflinePlayerReference> members = faction.getMembersWithRole(role);
+		List<OfflinePlayerReference> members = faction.getMembersWithRole(role).toUnmodifiableReferenceList();
 		if (members.isEmpty()){
 			return new Placeholder(name, "");
 		}

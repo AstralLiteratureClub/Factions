@@ -1,13 +1,13 @@
 package bet.astral.unity.messenger;
 
-import bet.astral.messenger.adventure.AdventurePlaceholderMessenger;
+import bet.astral.messenger.adventure.AdventurePlaceholderManager;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.refrence.FactionReference;
 
-public class FactionPlaceholderManager extends AdventurePlaceholderMessenger {
+public class FactionPlaceholderManager extends AdventurePlaceholderManager {
 	public PlaceholderList factionPlaceholders(String prefix, FactionReference factionReference){
 		Faction faction = factionReference.getFaction();
 		if (faction == null){

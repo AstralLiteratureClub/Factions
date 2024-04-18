@@ -1,8 +1,6 @@
 package bet.astral.unity.model;
 
-import bet.astral.messenger.placeholder.Placeholder;
-import bet.astral.messenger.placeholder.PlaceholderList;
-import bet.astral.messenger.placeholder.Placeholderable;
+import bet.astral.messenger.placeholder.*;
 import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.utils.placeholders.PlayerPlaceholderable;
 import lombok.AccessLevel;
@@ -12,6 +10,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,7 @@ import java.util.Collection;
 
 @Getter
 @Setter
-public class FPrefix implements Placeholderable, ComponentLike, PlayerPlaceholderable {
+public class FPrefix implements Placeholderable, ComponentLike, PlayerPlaceholderable, PlaceholderLegacyValue, PlaceholderComponentValue, PlaceholderValue, PlaceholderJsonValue {
 	private final static MiniMessage miniMessage = MiniMessage.miniMessage();
 	@Nullable
 	private final Faction faction;
@@ -84,6 +83,9 @@ public class FPrefix implements Placeholderable, ComponentLike, PlayerPlaceholde
 		placeholders.add(PlaceholderUtils.createPlaceholder(s, "prefix_serialized", prefixSerialized));
 		return placeholders;
 	}
+
+
+
 	@Override
 	public @NotNull Component asComponent() {
 		return prefix;
@@ -94,5 +96,15 @@ public class FPrefix implements Placeholderable, ComponentLike, PlayerPlaceholde
 		PlaceholderList placeholders = new PlaceholderList(asPlaceholder(prefix));
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "player", format(player)));
 		return placeholders;
+	}
+
+	@Override
+	public @NotNull String getValue() {
+		return PlainTextComponentSerializer.plainText().serialize(asComponent());
+	}
+
+	@Override
+	public @NotNull Placeholder toPlaceholder(@NotNull String prefix) {
+		return new Placeholder(prefix, (ComponentLike) this);
 	}
 }

@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
-public interface FactionReference extends MessengerAudience<Factions> {
+public interface FactionReference extends MessengerAudience<Factions>{
 	@Nullable
 	Faction getFaction();
 	@Nullable

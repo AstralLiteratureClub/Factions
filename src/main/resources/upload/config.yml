@@ -17,6 +17,16 @@ database:
     # The password to the db
     password: "MakeStrongPasswords"
 
+    hikari:
+      minimum-pools: 5
+      maximum-pools: 200
+      testQuery: IGNORE
+
+    sql:
+      table:
+        factions: unity_factions
+        members: unity_members
+        homes: unity_homes
   # MySQL, SQLite, Mongodb?
   type: MySQL
   # Ip to the database
@@ -32,10 +42,20 @@ database:
   timeout-limit: 45000
   minimum-idle: 20000
 
+  # Hikari is used when using SQL-based databases as it allows multiple connections at a time.
   hikari:
-    minimum-pools: 5
-    maximum-pools: 200
-    testQuery: IGNORE
+    # The minimum idle time for a connection
+    minimum-idle: 10000
+    # The maximum number of connection pools
+    maximum-pools: 10
+    # The test query for the database
+    test-query: IGNORE
+
+  sql:
+    table:
+      factions: unity_factions
+      members: unity_members
+      homes: unity_homes
 
 faction:
   name:

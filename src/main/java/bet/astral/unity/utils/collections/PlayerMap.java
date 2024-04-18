@@ -1,4 +1,4 @@
-package bet.astral.unity.utils;
+package bet.astral.unity.utils.collections;
 
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import bet.astral.unity.utils.refrence.PlayerReferenceImpl;

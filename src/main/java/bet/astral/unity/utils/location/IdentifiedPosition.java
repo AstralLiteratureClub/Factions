@@ -1,5 +1,6 @@
 package bet.astral.unity.utils.location;
 
+import bet.astral.unity.utils.UniqueId;
 import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,20 +13,20 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class IdentifiedPosition extends Position implements Identity {
+public class IdentifiedPosition extends Position implements Identity, UniqueId {
 	@Expose
 	private final UUID uniqueId;
 	@Expose
 	private String name;
 
-	public IdentifiedPosition(@NotNull String worldName, double x, double y, double z, float yaw, java.util.UUID uniqueId, String name) {
-		super(worldName, x, y, z, yaw);
+	public IdentifiedPosition(java.util.UUID uniqueId, String name, @NotNull String worldName, double x, double y, double z, float yaw, float pitch) {
+		super(worldName, x, y, z, yaw, pitch);
 		this.uniqueId = uniqueId;
 		this.name = name;
 	}
 
-	public IdentifiedPosition(@NotNull World world, double x, double y, double z, float yaw, java.util.UUID uniqueId, String name) {
-		super(world, x, y, z, yaw);
+	public IdentifiedPosition(java.util.UUID uniqueId, String name, @NotNull World world, double x, double y, double z, float yaw, float pitch) {
+		super(world, x, y, z, yaw, pitch);
 		this.uniqueId = uniqueId;
 		this.name = name;
 	}

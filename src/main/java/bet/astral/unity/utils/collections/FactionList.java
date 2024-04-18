@@ -1,4 +1,4 @@
-package bet.astral.unity.utils;
+package bet.astral.unity.utils.collections;
 
 import bet.astral.unity.model.Faction;
 import net.kyori.adventure.audience.Audience;

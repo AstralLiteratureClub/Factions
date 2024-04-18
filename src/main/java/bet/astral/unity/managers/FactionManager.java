@@ -13,13 +13,12 @@ import bet.astral.unity.event.player.ASyncPlayerDeleteFactionEvent;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
-import bet.astral.unity.utils.OfflinePlayerList;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -304,5 +303,12 @@ public class FactionManager {
 	@NotNull
 	public Optional<@Nullable Faction> getPlayerFaction(@NotNull UUID uniqueId){
 		return this.byId.values().stream().filter(faction->faction.getMembers().contains(uniqueId)).findAny();
+	}
+
+	@ApiStatus.Internal
+	public void clearCache() {
+		byId.clear();
+		byName.clear();
+		byCustomName.clear();
 	}
 }

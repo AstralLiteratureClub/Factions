@@ -9,11 +9,13 @@ import bet.astral.messenger.message.message.IMessage;
 import bet.astral.messenger.message.part.DefaultMessagePart;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
+import bet.astral.unity.addon.Addon;
+import bet.astral.unity.addon.internal.AddonRegistrar;
 import bet.astral.unity.commands.root.FactionRootCommands;
 import bet.astral.unity.configuration.Config;
 import bet.astral.unity.configuration.FactionConfig;
 import bet.astral.unity.database.Database;
-import bet.astral.unity.database.impl.HikariDatabase;
+import bet.astral.unity.database.impl.sql.source.HikariDatabaseSource;
 import bet.astral.unity.database.model.HikariLoginMaster;
 import bet.astral.unity.database.model.LoginMaster;
 import bet.astral.unity.handlers.ChatHandler;
@@ -22,9 +24,11 @@ import bet.astral.unity.managers.PlayerManager;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.utils.TranslationKey;
 import lombok.Getter;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,16 +54,22 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static bet.astral.unity.utils.Resource.loadResourceAsTemp;
 import static bet.astral.unity.utils.Resource.loadResourceToFile;
 
 @Getter
-public final class Factions extends JavaPlugin implements CommandRegisterer<Factions> {
+public final class Factions extends JavaPlugin implements CommandRegisterer<Factions>, AddonRegistrar {
+    private static boolean isFolia() {
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     private PaperCommandManager<CommandSender> commandManager;
     // faction
     private Command.Builder<CommandSender> rootFactionCommand;
@@ -84,6 +94,8 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     private FactionConfig factionConfig;
     private DateFormat dateFormat;
     private boolean commandsRegistered = false;
+    private final boolean isFolia = isFolia();
+    private final Set<Addon> addons = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -119,7 +131,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         }
         switch (databaseType.toLowerCase()) {
             case "mysql", "sqlite" -> {
-                database = new HikariDatabase(this, databaseType.toLowerCase());
+                database = new HikariDatabaseSource(this, databaseType.toLowerCase());
                 loginMaster = HikariLoginMaster.load(new Config(
 		                (MemorySection) config.get("database")));
             }
@@ -198,12 +210,6 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         rootHelp = rootCommand.help;
         allyRootHelp = rootCommand.helpAlly;
 
-        getLogger().info("Loading commands..!");
-        registerCommands(List.of(
-                        "bet.astral.unity.commands"),
-                commandManager);
-        getLogger().info("Loaded commands!");
-
         registerChatHandler((player, faction, receiver, message, type) -> {
             PlaceholderList placeholders = new PlaceholderList();
             placeholders.addAll(placeholderManager.offlinePlayerPlaceholders("player", player.offlinePlayer()));
@@ -225,6 +231,10 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             return messenger.parse(iMessage, MessageType.CHAT, placeholders);
         });
 
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+            PlaceholderAPIPlugin.getInstance().getLocalExpansionManager()
+                    .createExpansionInstance(UnityPlaceholderExpansion.class);
+        }
 
         getLogger().info("Factions has enabled!");
     }
@@ -382,4 +392,24 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         return messenger;
     }
 
+    @Override
+    public Set<Addon> getAddons() {
+        return addons;
+    }
+
+    @Override
+    public void unregisterCommands() {
+        for (String command : commandManager.rootCommands()){
+            commandManager.deleteRootCommand(command);
+        }
+    }
+
+    @Override
+    public void registerCommands() {
+        registerCommands(List.of(
+                        "bet.astral.unity.commands"),
+                commandManager);
+
+        AddonRegistrar.super.registerCommands();
+    }
 }

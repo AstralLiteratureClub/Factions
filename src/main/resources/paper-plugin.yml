@@ -1,9 +1,18 @@
 name: Unity-Factions
 version: '${version}'
-main: bet.astral.unity.Factions
 api-version: '1.20'
 prefix: Unity
 authors: [Antritus]
 description: Allows players to create a faction and have war between other players!
 website: astral.bet
 loader: bet.astral.unity.UnityLoader
+main: bet.astral.unity.Factions
+
+
+
+dependencies:
+  server:
+    PlaceholderAPI:
+      # Load order is relative to the dependency. So here PlaceholderAPI loads before our plugin.
+      load: BEFORE
+      required: false

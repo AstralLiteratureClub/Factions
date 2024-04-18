@@ -12,6 +12,7 @@ public class MemberBanSubCommand extends FactionForceBanCommand {
 		/*
 		 * FORCE
 		 */
+		/*
 		command(
 				banRoot.
 						literal(
@@ -24,5 +25,6 @@ public class MemberBanSubCommand extends FactionForceBanCommand {
 								)
 						)
 		);
+		 */
 	}
 }

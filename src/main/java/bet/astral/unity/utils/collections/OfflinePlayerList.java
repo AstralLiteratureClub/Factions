@@ -1,8 +1,7 @@
-package bet.astral.unity.utils;
+package bet.astral.unity.utils.collections;
 
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import bet.astral.unity.utils.refrence.PlayerReferenceImpl;
-import com.google.common.collect.ImmutableList;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import org.bukkit.Bukkit;
@@ -39,6 +38,9 @@ public class OfflinePlayerList extends LinkedList<UUID> implements ForwardingAud
 
 	public List<Player> getAllOnline(){
 		return getAll().stream().filter(p->p instanceof Player).map(OfflinePlayer::getPlayer).toList();
+	}
+	public List<OfflinePlayer> getAllOffline(){
+		return getAll().stream().filter(p->!(p instanceof Player)).toList();
 	}
 
 	public void addFirst(OfflinePlayer entity) {

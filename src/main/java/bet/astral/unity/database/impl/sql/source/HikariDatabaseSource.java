@@ -1,26 +1,27 @@
-package bet.astral.unity.database.impl;
+package bet.astral.unity.database.impl.sql.source;
 
 import bet.astral.unity.Factions;
 import bet.astral.unity.database.Database;
-import bet.astral.unity.database.impl.mysql.MySQLFactionDatabase;
-import bet.astral.unity.database.impl.mysql.MySQLPlayerDatabase;
+import bet.astral.unity.database.impl.DatabaseType;
+import bet.astral.unity.database.impl.sql.mysql.MySQLFactionDatabase;
+import bet.astral.unity.database.impl.sql.mysql.MySQLHomeDatabase;
+import bet.astral.unity.database.impl.sql.mysql.MySQLMemberDatabase;
 import bet.astral.unity.database.model.HikariLoginMaster;
 import bet.astral.unity.database.model.LoginMaster;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class HikariDatabase extends Database {
+public class HikariDatabaseSource extends Database {
 	private boolean isConnected = false;
 	private HikariDataSource hikari;
-	private final String type;
 
-	public HikariDatabase(Factions factions, String type) {
-		super(factions);
-		this.type = type;
+	public HikariDatabaseSource(Factions factions, DatabaseType type) {
+		super(factions, type);
 	}
 
 	@Override
@@ -28,7 +29,36 @@ public class HikariDatabase extends Database {
 		if (!(loginMaster instanceof HikariLoginMaster hikariLoginMaster)){
 			throw new IllegalArgumentException("Trying to connect using hikari was denied, as LoginMaster is not the right format ("+HikariLoginMaster.class.getName()+") found: "+loginMaster.getClass().getName());
 		}
-		Type type = Type.valueOf(this.type.toUpperCase());
+		HikariConfig config = getHikariConfig(loginMaster, hikariLoginMaster, getType());
+		hikari = new HikariDataSource(config);
+		isConnected = true;
+
+		switch (getType()){
+			case MYSQL -> {
+				memberDatabase = new MySQLMemberDatabase(
+						this,
+						hikariLoginMaster.getTableMembers()
+				);
+				homeDatabase = new MySQLHomeDatabase(this,
+						hikariLoginMaster.getTableHomes()
+						);
+				factionDatabase = new MySQLFactionDatabase(this,
+						(faction)->getFactions().getFactionManager().removeFromCache(faction),
+						(faction)->getFactions().getFactionManager().addToCache(faction),
+						hikariLoginMaster.getTableFactions(),
+						memberDatabase,
+						homeDatabase
+				);
+			}
+		}
+
+		memberDatabase.init();
+		homeDatabase.init();
+		factionDatabase.init();
+	}
+
+	@NotNull
+	private HikariConfig getHikariConfig(LoginMaster loginMaster, HikariLoginMaster hikariLoginMaster, DatabaseType type) {
 		HikariConfig config = new HikariConfig();
 		switch (type){
 			case MYSQL -> {
@@ -47,34 +77,15 @@ public class HikariDatabase extends Database {
 								file.getName());
 			}
 		}
-		config.setDriverClassName(type.driverClass);
-		config.setMinimumIdle(hikariLoginMaster.getMinimumPools());
+		config.setDriverClassName(type.getActualDataSourceClass());
+		config.setMinimumIdle(hikariLoginMaster.getMinimumIdle());
 		config.setMaximumPoolSize(hikariLoginMaster.getMaximumPools());
 		config.setConnectionTimeout(hikariLoginMaster.getTimeOut());
-		config.setConnectionTestQuery("");
-		hikari = new HikariDataSource(config);
-		isConnected = true;
 
-		switch (type){
-			case MYSQL -> {
-				playerDatabase = new MySQLPlayerDatabase(this,
-						(player) -> {},
-						(player) -> {},
-						(player) -> player,
-						(player) -> player
-						);
-				factionDatabase = new MySQLFactionDatabase(this,
-						(faction)->getFactions().getFactionManager().removeFromCache(faction),
-						(faction)->getFactions().getFactionManager().addToCache(faction),
-						(faction)->faction,
-						(faction)->faction,
-						"factions",
-						(MySQLPlayerDatabase) playerDatabase
-				);
-			}
-			case SQLITE -> {
-			}
+		if (!hikariLoginMaster.getTestQuery().equalsIgnoreCase("IGNORE")){
+			config.setConnectionTestQuery(hikariLoginMaster.getTestQuery());
 		}
+		return config;
 	}
 
 	@Override
@@ -89,16 +100,5 @@ public class HikariDatabase extends Database {
 
 	public Connection getConnection() throws SQLException {
 		return hikari.getConnection();
-	}
-
-	public enum Type {
-		SQLITE("org.sqlite.JDBC"),
-		MYSQL("com.mysql.jdbc.Driver"),
-		;
-
-		private final String driverClass;
-		Type(String driverClass) {
-			this.driverClass = driverClass;
-		}
 	}
 }

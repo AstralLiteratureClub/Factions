@@ -1,9 +1,12 @@
 package bet.astral.unity.managers;
 
 import bet.astral.unity.Factions;
+import bet.astral.unity.model.FChat;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
-import bet.astral.unity.utils.PlayerMap;
+import bet.astral.unity.utils.collections.PlayerMap;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,13 +48,22 @@ public class PlayerManager implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerLoginEvent event){
-		byId.put(event.getPlayer().getUniqueId(), new FPlayer(factions, event.getPlayer()));
-		Optional<Faction> optFac = factions.getFactionManager().getPlayerFaction(event.getPlayer());
-		if (optFac.isPresent()){
-			Faction faction = optFac.get();
-			FPlayer player = byId.get(event.getPlayer());
-			player.setFactionId(faction.getUniqueId());
+		FPlayer player = load(event.getPlayer().getUniqueId());
+		byId.put(player.getUniqueId(), player);
+	}
 
+	public FPlayer load(UUID uniqueId){
+		OfflinePlayer player = Bukkit.getOfflinePlayer(uniqueId);
+		FPlayer fPlayer = new FPlayer(factions, player.getUniqueId(), player.getName());
+		FactionManager factionManager = factions.getFactionManager();
+		Optional<Faction> factions = factionManager.getPlayerFaction(player);
+		if (factions.isPresent()) {
+			fPlayer.setFactionId(factions.get().getFactionId());
+		} else {
+			fPlayer.setFactionId(null);
 		}
+		fPlayer.setChatType(FChat.GLOBAL);
+
+		return fPlayer;
 	}
 }

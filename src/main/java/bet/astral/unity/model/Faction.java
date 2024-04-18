@@ -6,6 +6,8 @@ import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.Placeholderable;
 import bet.astral.unity.Factions;
+import bet.astral.unity.annotations.DoNotSave;
+import bet.astral.unity.database.model.DBFactionMember;
 import bet.astral.unity.event.ASyncPlayerKickedFromFactionEvent;
 import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.event.invite.ASyncInviteExpireEvent;
@@ -17,18 +19,27 @@ import bet.astral.unity.event.player.invite.ASyncPlayerAcceptInviteEvent;
 import bet.astral.unity.event.player.invite.ASyncPlayerCancelInviteEvent;
 import bet.astral.unity.event.player.invite.ASyncPlayerDenyInviteEvent;
 import bet.astral.unity.event.player.invite.ASyncPlayerSendInviteEvent;
+import bet.astral.unity.event.teams.FactionDisableEvent;
+import bet.astral.unity.event.teams.FactionEnableEvent;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
+import bet.astral.unity.model.interactions.FAlliable;
+import bet.astral.unity.model.interactions.FAntagonist;
+import bet.astral.unity.model.interactions.FRelationship;
+import bet.astral.unity.model.interactions.FRelationshipInfo;
+import bet.astral.unity.model.interactions.FRelationshipStatus;
 import bet.astral.unity.model.location.FHome;
-import bet.astral.unity.utils.OfflinePlayerList;
-import bet.astral.unity.utils.PlayerMap;
+import bet.astral.unity.model.minecraft.MinecraftTeam;
 import bet.astral.unity.utils.TranslationKey;
 import bet.astral.unity.utils.UniqueId;
+import bet.astral.unity.utils.collections.OfflinePlayerList;
+import bet.astral.unity.utils.collections.PlayerMap;
+import bet.astral.unity.utils.collections.PrefixMap;
+import bet.astral.unity.utils.collections.UniqueMap;
 import bet.astral.unity.utils.flags.Flag;
 import bet.astral.unity.utils.flags.FlagImpl;
 import bet.astral.unity.utils.flags.Flaggable;
 import bet.astral.unity.utils.refrence.FactionReference;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
-import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,9 +50,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.translation.Translatable;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,23 +64,27 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class Faction implements Identity, ForwardingAudience, Translatable, Flaggable, Placeholderable, UniqueId, FactionReference, MessengerAudience<Factions> {
+public class Faction extends MinecraftTeam
+		implements Identity, ForwardingAudience, Translatable,
+		Flaggable, Placeholderable, UniqueId,
+		FactionReference, MessengerAudience<Factions>,
+		FRelationship, FAlliable, FAntagonist {
 	private static final Map<FRole, FPrefix> DEFAULT_PRIVATE_PREFIXES = new HashMap<>();
 	private static final Map<FRole, FPrefix> DEFAULT_PUBLIC_PREFIXES = new HashMap<>();
 	static {
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.OWNER, new FPrefix(null, "**", NamedTextColor.RED));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, "*", NamedTextColor.RED));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.ADMIN, new FPrefix(null, "++", NamedTextColor.GOLD));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, "+", NamedTextColor.YELLOW));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.MEMBER, new FPrefix(null, "-", NamedTextColor.GREEN));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.OWNER, new FPrefix(null, "**", NamedTextColor.GRAY));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, "*", NamedTextColor.GRAY));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.ADMIN, new FPrefix(null, "++", NamedTextColor.GRAY));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, "+", NamedTextColor.GRAY));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.MEMBER, new FPrefix(null, "-", NamedTextColor.GRAY));
 		DEFAULT_PUBLIC_PREFIXES.put(FRole.GUEST, new FPrefix(null, "", NamedTextColor.GRAY));
 
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.OWNER, new FPrefix(null, Component.text("Owner ", NamedTextColor.RED, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, Component.text("Co-Owner ", NamedTextColor.RED, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.ADMIN, new FPrefix(null, Component.text("Admin ", NamedTextColor.GOLD, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, Component.text("Mod ", NamedTextColor.YELLOW, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
-		DEFAULT_PRIVATE_PREFIXES.put(FRole.MEMBER, new FPrefix(null, Component.text("", NamedTextColor.GREEN).append(Component.text().decoration(TextDecoration.BOLD, false))));
-		DEFAULT_PRIVATE_PREFIXES.put(FRole.GUEST, new FPrefix(null, Component.text("", NamedTextColor.GRAY).append(Component.text().decoration(TextDecoration.BOLD, false))));
+		DEFAULT_PRIVATE_PREFIXES.put(FRole.MEMBER, new FPrefix(null, Component.text("Member ", NamedTextColor.GREEN).append(Component.text().decoration(TextDecoration.BOLD, false))));
+		DEFAULT_PRIVATE_PREFIXES.put(FRole.GUEST, new FPrefix(null, Component.text("Guest ", NamedTextColor.GRAY).append(Component.text().decoration(TextDecoration.BOLD, false))));
 	}
 	@Deprecated(forRemoval = true)
 	public static PlaceholderList factionPlaceholders(@Nullable String prefix, @NotNull Faction faction){
@@ -79,21 +96,30 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	private final OfflinePlayerList members = new OfflinePlayerList();
 	// Invites
 	@Setter(AccessLevel.NONE)
+	@DoNotSave
 	private final PlayerMap<FInvite> invites = new PlayerMap<>();
 	// Roles
 	@Setter(AccessLevel.NONE)
 	private final PlayerMap<FRole> roles = new PlayerMap<>();
 	// Prefixes
 	@Getter(AccessLevel.NONE)
-	private final Map<FRole, FPrefix> publicRolePrefixes = new HashMap<>();
+	private final PrefixMap publicRolePrefixes = new PrefixMap();
 	@Getter(AccessLevel.NONE)
-	private final Map<FRole, FPrefix> rolePrefixes = new HashMap<>();
+	private final PrefixMap rolePrefixes = new PrefixMap();
 	@Getter(AccessLevel.NONE)
 	private final PlayerMap<FPrefix> playerPrefixes = new PlayerMap<>();
+
+	// Relationships
+	private final UniqueMap<FAlliable> alliances = new UniqueMap<>();
+	private final UniqueMap<FAntagonist> enemies = new UniqueMap<>();
+
 	// Flags
 	@Setter(AccessLevel.NONE)
+	@DoNotSave
 	private final Map<NamespacedKey, Flag<?>> flags = new HashMap<>();
 	private final OfflinePlayerList banned = new OfflinePlayerList();
+	@Deprecated(forRemoval = true)
+	@DoNotSave
 	private OfflinePlayerReference superOwner;
 	private final UUID uniqueId;
 	private final long firstCreated;
@@ -103,6 +129,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	private Component displayname;
 	private Component description;
 	private Component joinInfo;
+	// Store homes in their own database
 	private Map<String, FHome> homesByName = null;
 	private Map<UUID, FHome> homesById = null;
 	private boolean isPublic = false;
@@ -140,7 +167,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		homesById = new HashMap<>();
 	}
 
-	public Faction(Factions factions, java.util.UUID uniqueId, long firstCreated, String name, Component displayname, Component description, Component joinInfo, Collection<FHome> homes) {
+	public Faction(Factions factions, java.util.UUID uniqueId, long firstCreated, String name, Component displayname, Component description, Component joinInfo, PrefixMap privatePrefixes, PrefixMap publicPrefixes) {
 		this.factions = factions;
 		this.uniqueId = uniqueId;
 		this.firstCreated = firstCreated;
@@ -148,15 +175,28 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		this.displayname = displayname;
 		this.description = description;
 		this.joinInfo = joinInfo;
-		homesByName = new HashMap<>();
-		homesById = new HashMap<>();
-		if (homes != null && !homes.isEmpty()) {
-			homes.forEach(home -> {
-						homesByName.put(home.getName().toLowerCase(), home);
-						homesById.put(home.getUniqueId(), home);
-					}
-			);
+		this.homesByName = new HashMap<>();
+		this.homesById = new HashMap<>();
+		this.publicRolePrefixes.putAll(publicPrefixes);
+		this.rolePrefixes.putAll(privatePrefixes);
+	}
+
+	@Override
+	public void enable() {
+		super.enable();
+		for (OfflinePlayerReference reference : members.toUnmodifiableReferenceList()){
+			super.addPlayer(reference);
 		}
+
+		FactionEnableEvent event = new FactionEnableEvent(!Bukkit.isPrimaryThread(), this);
+		event.callEvent();
+	}
+
+	@Override
+	public void disable() {
+		super.disable();
+		FactionDisableEvent event = new FactionDisableEvent(!Bukkit.isPrimaryThread(), this);
+		event.callEvent();
 	}
 
 	private void requestSave(){
@@ -325,6 +365,14 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	}
 
 
+	@ApiStatus.Internal
+	public void addMember(@NotNull DBFactionMember member) {
+		members.add(member.getUniqueId());
+		roles.put(member.getUniqueId(), member.getRole());
+		if (member.getPrefix() != null){
+			playerPrefixes.put(member.getUniqueId(), new FPrefix(this, member.getPrefix()));
+		}
+	}
 
 	public boolean join(@NotNull Player player, FactionEvent.Cause cause){
 		ASyncPlayerJoinFactionEvent event = new ASyncPlayerJoinFactionEvent(this, player, cause);
@@ -348,28 +396,28 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	}
 
 
-	public void setRole(UUID uuid, FRole role){
+	public void setRole(@NotNull UUID uuid, @NotNull FRole role){
 		this.roles.put(uuid, role);
 	}
-	public void setRole(OfflinePlayer uuid, FRole role){
+	public void setRole(@NotNull OfflinePlayer uuid, @NotNull FRole role){
 		this.roles.put(uuid, role);
 	}
-	public void setRole(OfflinePlayerReference uuid, FRole role){
+	public void setRole(@NotNull OfflinePlayerReference uuid, @NotNull FRole role){
 		this.roles.put(uuid.offlinePlayer(), role);
 	}
 
-	public FRole getRole(UUID uuid){
+	public FRole getRole(@NotNull UUID uuid){
 		return this.roles.get(uuid);
 	}
-	public FRole getRole(OfflinePlayer uuid){
+	public FRole getRole(@NotNull OfflinePlayer uuid){
 		return this.roles.get(uuid);
 	}
-	public FRole getRole(OfflinePlayerReference uuid){
+	public FRole getRole(@NotNull OfflinePlayerReference uuid){
 		return this.roles.get(uuid.offlinePlayer());
 	}
 
 
-	public void leave(Player sender) {
+	public void leave(@NotNull Player sender) {
 		ASyncPlayerLeaveFactionEvent event = new ASyncPlayerLeaveFactionEvent(this, sender);
 		event.callEvent();
 
@@ -378,10 +426,10 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		if (sender.getUniqueId().equals(superOwner.getUniqueId())){
 			setSuperOwner(null);
 		}
-		factions.getDatabase().getPlayerDatabase().delete(sender);
+		factions.getDatabase().getMemberDatabase().delete(sender);
 	}
 
-	public void kick(OfflinePlayer member, String reason) {
+	public void kick(@NotNull OfflinePlayer member, @NotNull String reason) {
 		ASyncPlayerKickedFromFactionEvent event = new ASyncPlayerKickedFromFactionEvent(this, FactionEvent.Cause.PLUGIN, member, reason);
 		event.callEvent();
 
@@ -389,7 +437,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		if (player == null){
 			player = new FPlayer(factions, member.getUniqueId(), member.getUniqueId().toString());
 		}
-		factions.getDatabase().getPlayerDatabase().delete(player);
+		factions.getDatabase().getMemberDatabase().delete(player);
 		player.setFactionId(null);
 
 
@@ -400,7 +448,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		}
 	}
 
-	public void kick(Player whoKicked, OfflinePlayer member, String reason, boolean force){
+	public void kick(@NotNull Player whoKicked, @NotNull OfflinePlayer member, @NotNull String reason, boolean force){
 		ASyncPlayerKickedFromFactionByPlayerEvent event = new ASyncPlayerKickedFromFactionByPlayerEvent(this, force ? FactionEvent.Cause.FORCE : FactionEvent.Cause.PLAYER, member, whoKicked, reason);
 		event.callEvent();
 
@@ -408,7 +456,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		if (player == null){
 			player = new FPlayer(factions, member.getUniqueId(), member.getUniqueId().toString());
 		}
-		factions.getDatabase().getPlayerDatabase().delete(player);
+		factions.getDatabase().getMemberDatabase().delete(player);
 		player.setFactionId(null);
 
 
@@ -419,7 +467,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		}
 	}
 
-	public void setPublicPrefix(FRole role, Component prefix){
+	public void setPublicPrefix(@NotNull FRole role, @Nullable Component prefix){
 		if (prefix == null){
 			prefix = Component.empty();
 		}
@@ -427,11 +475,11 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		publicRolePrefixes.put(role, fPrefix);
 	}
 
-	public FPrefix getPublicPrefix(FRole role){
+	public FPrefix getPublicPrefix(@NotNull FRole role){
 		return publicRolePrefixes.get(role);
 	}
 
-	public void setPrivatePrefix(FRole role, Component prefix){
+	public void setPrivatePrefix(@NotNull FRole role, @Nullable Component prefix){
 		if (prefix == null){
 			prefix = Component.empty();
 		}
@@ -439,7 +487,7 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		fPrefix.setPrefix(prefix);
 	}
 
-	public void setPrivatePrefix(OfflinePlayer player, Component prefix, FactionEvent.Cause cause){
+	public void setPrivatePrefix(@NotNull OfflinePlayer player, @Nullable Component prefix, @NotNull FactionEvent.Cause cause){
 		if (prefix == null){
 			resetPrefix(player);
 			return;
@@ -455,27 +503,34 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 		playerPrefixes.put(player, after);
 	}
 
-	public void resetPrivatePrefix(FRole role){
+	public void resetPrivatePrefix(@NotNull FRole role){
 		this.rolePrefixes.put(role, DEFAULT_PRIVATE_PREFIXES.get(role));
 	}
-	public void resetPublicPrefix(FRole role){
+	public void resetPublicPrefix(@NotNull FRole role){
 		this.publicRolePrefixes.put(role, DEFAULT_PUBLIC_PREFIXES.get(role));
 	}
-	public void resetPrefix(OfflinePlayer player){
+	public void resetPrefix(@NotNull OfflinePlayer player){
 		this.playerPrefixes.remove(player);
 	}
 
-	public FPrefix getPrivatePrefix(FRole role){
+	public void resetPrefix(@NotNull UUID uniqueId){
+		this.playerPrefixes.remove(uniqueId);
+	}
+
+	public FPrefix getPrivatePrefix(@NotNull FRole role){
 		return rolePrefixes.get(role);
 	}
 
-	public FPrefix getPrivatePrefix(OfflinePlayerReference reference){
-		return getPrivatePrefix(reference.offlinePlayer());
+	public FPrefix getPrivatePrefix(@NotNull OfflinePlayerReference reference){
+		return getPrivatePrefix(reference.getUniqueId());
 	}
-	public FPrefix getPrivatePrefix(OfflinePlayer player){
-		FPrefix prefix = playerPrefixes.get(player);
+	public FPrefix getPrivatePrefix(@NotNull OfflinePlayer player){
+		return getPrivatePrefix(player.getUniqueId());
+	}
+	public FPrefix getPrivatePrefix(@NotNull UUID uniqueId){
+		FPrefix prefix = playerPrefixes.get(uniqueId);
 		if (prefix == null) {
-			FRole role = roles.get(player);
+			FRole role = roles.get(uniqueId);
 			if (role == null) {
 				role = FRole.MEMBER;
 			}
@@ -489,28 +544,45 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	}
 
 
-	public boolean hasPrivatePrefix(FPlayer player) {
+	public boolean hasPrivatePrefix(@NotNull FPlayer player) {
 		return playerPrefixes.containsKey(player.getUniqueId());
 	}
-	public boolean hasPrivatePrefix(OfflinePlayerReference value) {
+	public boolean hasPrivatePrefix(@NotNull UUID uniqueId){
+		return playerPrefixes.containsKey(uniqueId);
+	}
+	public boolean hasPrivatePrefix(@NotNull OfflinePlayerReference value) {
 		return playerPrefixes.containsKey(value.uuid());
+	}
+
+	@NotNull
+	@ApiStatus.Internal
+	public PrefixMap getPublicRolePrefixes(){
+		return publicRolePrefixes;
+	}
+	@NotNull
+	@ApiStatus.Internal
+	public PrefixMap getPrivateRolePrefixes(){
+		return rolePrefixes;
 	}
 
 	/**
 	 * Returns an immutable list of members.
 	 * @return members
 	 */
-	public List<java.util.UUID> getMembers() {
-		return ImmutableList.copyOf(new OfflinePlayerList(members));
+	@NotNull
+	public OfflinePlayerList getMembers() {
+		return new OfflinePlayerList(members);
 	}
-	public List<OfflinePlayerReference> getMembersWithRole(FRole role){
-		return roles.keySetPlayerReference()
-				.stream().filter(ref->roles.get(ref)==role).collect(Collectors.toList());
+	@NotNull
+	public OfflinePlayerList getMembersWithRole(@NotNull FRole role){
+		return new OfflinePlayerList(roles.keySet()
+				.stream().filter(ref->roles.get(ref)==role).collect(Collectors.toList()));
 	}
 
 	@Override
+	@NotNull
 	public Collection<Placeholder> asPlaceholder(String prefix) {
-		return factionPlaceholders(prefix, this);
+		return ((FactionPlaceholderManager) messenger().getPlaceholderManager()).factionPlaceholders(prefix, this);
 	}
 
 	public boolean allowsOwnerKicking() {
@@ -521,17 +593,121 @@ public class Faction implements Identity, ForwardingAudience, Translatable, Flag
 	}
 
 	@Override
-	public @Nullable Faction getFaction() {
+	@NotNull
+	public Faction getFaction() {
 		return this;
 	}
 
 	@Override
-	public java.util.@Nullable UUID getFactionId() {
+	@NotNull
+	public java.util.UUID getFactionId() {
 		return uniqueId;
 	}
 
 	@Override
+	@NotNull
 	public Messenger<Factions> messenger() {
 		return factions.messenger();
+	}
+
+
+	public void addHome(@NotNull FHome home) {
+		homesById.put(home.getUniqueId(), home);
+		homesByName.put(home.getName().toLowerCase(), home);
+	}
+
+	public void removeHome(@NotNull FHome home) {
+		homesById.remove(home.getUniqueId());
+		homesByName.remove(home.getName().toLowerCase());
+	}
+
+	@Nullable
+	public FHome getHome(@NotNull UUID uniqueId){
+		return homesById.get(uniqueId);
+	}
+	@Nullable
+	public FHome getHome(@NotNull String name){
+		return homesByName.get(name);
+	}
+
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getAllies() {
+		return null;
+	}
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getAlliesShared(@NotNull FAlliable uniqueId) {
+		return null;
+	}
+
+	@Override
+	public boolean isAllied(@NotNull FAlliable alliable) {
+		return false;
+	}
+
+	@Override
+	public boolean isAllied(@NotNull OfflinePlayerReference reference) {
+		return false;
+	}
+
+	@Override
+	public @NotNull FRelationshipInfo markAlly(@NotNull FAlliable alliable) {
+		return null;
+	}
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getEnemies() {
+		return null;
+	}
+
+	@Override
+	public @NotNull Set<@NotNull FRelationshipInfo> getEnemiesShared(@NotNull FAntagonist antagonist) {
+		return null;
+	}
+
+	@Override
+	public boolean isEnemy(@NotNull FAntagonist antagonist) {
+		return false;
+	}
+
+	@Override
+	public boolean isEnemy(@NotNull OfflinePlayerReference reference) {
+		return false;
+	}
+
+	@Override
+	public @NotNull FRelationshipInfo markEnemy(@NotNull FAntagonist antagonist) {
+		return null;
+	}
+
+	@Override
+	public @NotNull FRelationshipStatus getRelationshipStatus(@NotNull FRelationship relationShip) {
+		return null;
+	}
+
+	@Override
+	public @NotNull FRelationshipInfo getRelationshipInfo(@NotNull FRelationship relationship) {
+		return null;
+	}
+
+	@Override
+	public boolean isNeutral(@NotNull FRelationship relationship) {
+		return false;
+	}
+
+	@Override
+	public boolean isNeutral(@NotNull OfflinePlayerReference reference) {
+		return false;
+	}
+
+	@Override
+	public boolean isNeutral(@NotNull FactionReference factionReference) {
+		return false;
+	}
+
+	@Override
+	public FRelationshipInfo markNeutral(@NotNull FRelationship relationship) {
+		return null;
 	}
 }
