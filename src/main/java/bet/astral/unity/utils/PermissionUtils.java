@@ -33,17 +33,20 @@ public class PermissionUtils {
 				return PermissionResult.of(sender instanceof Player, this);
 			}
 		}).and(
-				new PredicatePermission<Player>() {
+				new PredicatePermission<CommandSender>() {
 					@Override
-					public @NonNull PermissionResult testPermission(@NonNull Player sender) {
+					public @NonNull PermissionResult testPermission(@NonNull CommandSender sender) {
+						if (!(sender instanceof Player player)){
+							return PermissionResult.denied(this);
+						}
 						if (hasFaction){
 							return PermissionResult.of(
-									factions.getPlayerManager().convert(sender).getFactionId() != null,
+									factions.getPlayerManager().convert(player).getFactionId() != null,
 									this
 							);
 						} else {
 							return PermissionResult.of(
-									factions.getPlayerManager().convert(sender).getFactionId() == null,
+									factions.getPlayerManager().convert(player).getFactionId() == null,
 									this
 							);
 						}
@@ -79,10 +82,13 @@ public class PermissionUtils {
 	}
 	public static Permission of(String permission, FPermission factionPermission){
 		return of(permission, true).and(
-				new PredicatePermission<Player>() {
+				new PredicatePermission<CommandSender>() {
 					@Override
-					public @NonNull PermissionResult testPermission(@NonNull Player sender) {
-						FPlayer player = factions.getPlayerManager().convert(sender);
+					public @NonNull PermissionResult testPermission(@NonNull CommandSender sender) {
+						if (!(sender instanceof Player p)){
+							return PermissionResult.denied(this);
+						}
+						FPlayer player = factions.getPlayerManager().convert(p);
 						if (player.getFactionId()==null){
 							return PermissionResult.denied(this);
 						}
@@ -91,7 +97,7 @@ public class PermissionUtils {
 							return PermissionResult.denied(this);
 						}
 
-						FRole role = faction.getRoles().get(sender.getUniqueId());
+						FRole role = faction.getRoles().get(p.getUniqueId());
 						if (role == null) {
 							factions.getLogger().severe("Couldn't find role for player "+ player.getName() + " ("+ player.getUniqueId()+")");
 							return PermissionResult.denied(this);
