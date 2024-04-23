@@ -8,7 +8,8 @@ import lombok.Getter;
 @Getter
 public enum DatabaseType {
 	MYSQL(HikariDatabaseSource.class, "com.mysql.jdbc.Driver"),
-	SQLITE(SQLDatabaseSource.class, "org.sqlite.JDBC")
+	SQLITE(SQLDatabaseSource.class, "org.sqlite.JDBC"),
+	MONGODB(null)
 	;
 
 	private final Class<? extends Database> dataSourceClass;

@@ -13,7 +13,9 @@ import bet.astral.unity.commands.root.FactionRootCommands;
 import bet.astral.unity.configuration.Config;
 import bet.astral.unity.configuration.FactionConfig;
 import bet.astral.unity.database.Database;
+import bet.astral.unity.database.impl.DatabaseType;
 import bet.astral.unity.database.impl.sql.source.HikariDatabaseSource;
+import bet.astral.unity.database.impl.sql.source.SQLDatabaseSource;
 import bet.astral.unity.database.model.HikariLoginMaster;
 import bet.astral.unity.database.model.LoginMaster;
 import bet.astral.unity.handlers.ChatHandler;
@@ -114,31 +116,36 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         config.setIfNotLong("database.timeout", 10000L);
         config.setIfNotInt("database.hikari.minimum", 1);
         config.setIfNotInt("database.hikari.maximum", 1);
-	    try {
+        try {
             config.save(new File(getDataFolder(), "config.yml"));
-	    } catch (IOException e) {
-		    throw new RuntimeException(e);
-	    }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-	    LoginMaster loginMaster;
+        LoginMaster loginMaster;
         String databaseType = getConfig().getString("database.type");
-        if (databaseType == null){
+        if (databaseType == null) {
             setEnabled(false);
             throw new IllegalStateException("The plugin cannot initialize, as the database type is not correct!");
         }
-        switch (databaseType.toLowerCase()) {
-            case "mysql", "sqlite" -> {
-                database = new HikariDatabaseSource(this, databaseType.toLowerCase());
+        DatabaseType databaseTypeEnum = DatabaseType.valueOf(databaseType.toUpperCase());
+        switch (databaseTypeEnum) {
+            case MYSQL -> {
+                database = new HikariDatabaseSource(this, databaseTypeEnum);
                 loginMaster = HikariLoginMaster.load(new Config(
-		                (MemorySection) config.get("database")));
+                        (MemorySection) config.get("database")));
             }
-            case "mongo", "mongodb" -> {
+            case MONGODB -> {
                 getLogger().severe("Mongodb is not supported currently! Please use MySQL or SQLite for now! Disabling the plugin!");
                 setEnabled(false);
                 return;
             }
+            case SQLITE -> {
+                database = new SQLDatabaseSource(this, databaseTypeEnum);
+                loginMaster = LoginMaster.load(new Config((MemorySection) config.get("database")));
+            }
             default -> {
-                getLogger().severe("Currently "+ getName() + " does not support the database type "+ databaseType+". Please try another database type! Disabling the plugin!");
+                getLogger().severe("Currently " + getName() + " does not support the database type " + databaseType + ". Please try another database type! Disabling the plugin!");
                 setEnabled(false);
                 return;
             }
@@ -228,7 +235,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             return messenger.parse(iMessage, MessageType.CHAT, placeholders);
         });
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             PlaceholderAPIPlugin.getInstance().getLocalExpansionManager()
                     .createExpansionInstance(UnityPlaceholderExpansion.class);
         }
