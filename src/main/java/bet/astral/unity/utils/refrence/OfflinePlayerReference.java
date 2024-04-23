@@ -1,19 +1,20 @@
 package bet.astral.unity.utils.refrence;
 
 import bet.astral.messenger.placeholder.Placeholder;
-import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.Placeholderable;
-import bet.astral.messenger.utils.PlaceholderUtils;
+import bet.astral.unity.Factions;
 import bet.astral.unity.utils.UniqueId;
 import net.kyori.adventure.identity.Identity;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public interface OfflinePlayerReference extends Identity, UniqueId, Placeholderable {
+	Factions factions = JavaPlugin.getPlugin(Factions.class);
 	static OfflinePlayerReference of(java.util.UUID uniqueId){
 		return new PlayerReferenceImpl(uniqueId);
 	}
@@ -41,6 +42,6 @@ public interface OfflinePlayerReference extends Identity, UniqueId, Placeholdera
 
 	@Override
 	default Collection<Placeholder> asPlaceholder(String s) {
-		return PlaceholderUtils.createPlaceholders(s, offlinePlayer());
+		return factions.getMessenger().getPlaceholderManager().offlinePlayerPlaceholders(s, offlinePlayer());
 	}
 }

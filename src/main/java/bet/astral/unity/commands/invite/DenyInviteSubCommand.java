@@ -53,7 +53,7 @@ public class DenyInviteSubCommand extends FactionCloudCommand {
 							Faction faction = context.get("faction");
 
 							FInvite invite = faction.getInvite(sender);
-							PlaceholderList placeholders = new PlaceholderList(Faction.factionPlaceholders("faction", faction));
+							PlaceholderList placeholders = new PlaceholderList(placeholderManager.factionPlaceholders("faction", faction));
 							placeholders.add(null, invite);
 
 							faction.denyInvite(sender);
@@ -72,7 +72,7 @@ public class DenyInviteSubCommand extends FactionCloudCommand {
 						}
 						blocked.append(faction.getName());
 						FInvite invite = faction.getInvite(sender);
-						PlaceholderList placeholders = new PlaceholderList(Faction.factionPlaceholders("faction", faction));
+						PlaceholderList placeholders = new PlaceholderList(placeholderManager.factionPlaceholders("faction", faction));
 						placeholders.add(null, invite);
 
 						faction.denyInvite(sender);

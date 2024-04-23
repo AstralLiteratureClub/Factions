@@ -3,7 +3,6 @@ package bet.astral.unity.model;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.Placeholderable;
-import bet.astral.messenger.utils.PlaceholderUtils;
 import bet.astral.unity.utils.refrence.PlayerReference;
 import bet.astral.unity.utils.refrence.PlayerReferenceImpl;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
@@ -53,8 +52,8 @@ public class FInvite implements Placeholderable {
 		} else {
 			prefix = "";
 		}
-		placeholders.addAll(PlaceholderUtils.createPlaceholders(prefix +"from", from.offlinePlayer()));
-		placeholders.addAll(PlaceholderUtils.createPlaceholders(prefix +"to", to.offlinePlayer()));
+		placeholders.addAll(faction.messenger().getPlaceholderManager().offlinePlayerPlaceholders(prefix +"from", from.offlinePlayer()));
+		placeholders.addAll(faction.messenger().getPlaceholderManager().offlinePlayerPlaceholders(prefix +"to", to.offlinePlayer()));
 		return placeholders;
 	}
 }

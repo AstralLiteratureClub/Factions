@@ -40,7 +40,7 @@ public class LeaveSubCommand extends FactionCloudCommand {
 							assert faction != null;
 							faction.leave(sender);
 							PlaceholderList placeholders = new PlaceholderList();
-							placeholders.addAll(Faction.factionPlaceholders("faction", faction));
+							placeholders.addAll(placeholderManager.factionPlaceholders("faction", faction));
 							messenger.message(sender, TranslationKey.MESSAGE_LEAVE, placeholders);
 							messenger.message(faction, TranslationKey.BROADCAST_LEAVE, placeholders);
 						})
