@@ -9,8 +9,6 @@ import bet.astral.messenger.message.message.IMessage;
 import bet.astral.messenger.message.part.DefaultMessagePart;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
-import bet.astral.unity.addon.Addon;
-import bet.astral.unity.addon.internal.AddonRegistrar;
 import bet.astral.unity.commands.root.FactionRootCommands;
 import bet.astral.unity.configuration.Config;
 import bet.astral.unity.configuration.FactionConfig;
@@ -60,7 +58,7 @@ import static bet.astral.unity.utils.Resource.loadResourceAsTemp;
 import static bet.astral.unity.utils.Resource.loadResourceToFile;
 
 @Getter
-public final class Factions extends JavaPlugin implements CommandRegisterer<Factions>, AddonRegistrar {
+public final class Factions extends JavaPlugin implements CommandRegisterer<Factions> {
     private static boolean isFolia() {
         try {
             Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
@@ -95,7 +93,6 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     private DateFormat dateFormat;
     private boolean commandsRegistered = false;
     private final boolean isFolia = isFolia();
-    private final Set<Addon> addons = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -390,26 +387,5 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
 
     public Messenger<Factions> messenger(){
         return messenger;
-    }
-
-    @Override
-    public Set<Addon> getAddons() {
-        return addons;
-    }
-
-    @Override
-    public void unregisterCommands() {
-        for (String command : commandManager.rootCommands()){
-            commandManager.deleteRootCommand(command);
-        }
-    }
-
-    @Override
-    public void registerCommands() {
-        registerCommands(List.of(
-                        "bet.astral.unity.commands"),
-                commandManager);
-
-        AddonRegistrar.super.registerCommands();
     }
 }

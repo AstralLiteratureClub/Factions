@@ -3,7 +3,6 @@ package bet.astral.unity.model;
 import bet.astral.messenger.Messenger;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.unity.Factions;
-import bet.astral.unity.model.entity.ally.FAlliance;
 import bet.astral.unity.model.interactions.*;
 import bet.astral.unity.utils.UniqueId;
 import bet.astral.unity.utils.flags.Flag;
@@ -37,7 +36,6 @@ public class FPlayer implements Flaggable,
 	private final String name;
 	private UUID factionId;
 	private FChat chatType = FChat.GLOBAL;
-	private final Set<FAlliance<FactionReference, OfflinePlayerReference>> alliances = new HashSet<>();
 
 	public FPlayer(Factions factions, Player player){
 		this.factions = factions;
