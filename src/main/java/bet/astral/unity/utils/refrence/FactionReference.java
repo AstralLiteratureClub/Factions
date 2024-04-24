@@ -19,6 +19,10 @@ public interface FactionReference extends MessengerAudience<Factions>{
 	Faction getFaction();
 	@Nullable
 	UUID getFactionId();
+	@Nullable
+	default String getFactionIdString() {
+		return getFactionId() != null ? getFactionId().toString() : null;
+	}
 
 	@Override
 	default Messenger<Factions> messenger() {
