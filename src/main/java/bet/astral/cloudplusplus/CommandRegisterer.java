@@ -10,6 +10,7 @@ import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.incendo.cloud.paper.PaperCommandManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +23,7 @@ public interface CommandRegisterer<P extends JavaPlugin> extends MessageReload {
 	P plugin();
 	Messenger<P> commandMessenger();
 	Messenger<P> debugMessenger();
+	boolean isDebug();
 
 
 	default void registerCommands(List<String> packages, PaperCommandManager<?> commandManager){
@@ -31,14 +33,38 @@ public interface CommandRegisterer<P extends JavaPlugin> extends MessageReload {
 				ClassInfoList classInfo = scanResult.getClassesWithAnnotation(Cloud.class);
 				List<String> classes = classInfo.getNames();
 				for (String clazzName : classes){
-					plugin().getLogger().info("Registering command: "+ clazzName);
+					if (isDebug()) {
+						plugin().getLogger().info("Registering command: " + clazzName);
+					}
 					Class<?> clazz = Class.forName(clazzName);
 					registerCommand(clazz, commandManager);
-					plugin().getLogger().info("Registered command: "+ clazzName);
+					if (isDebug()) {
+						plugin().getLogger().info("Registered command: " + clazzName);
+					}
 				}
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException(e);
 			}
+		}
+	}
+
+	default void registerCommands(String pkg, PaperCommandManager<?> commandManager){
+		try (ScanResult scanResult = new ClassGraph()
+				.enableAllInfo().acceptPackages(pkg).scan()){
+			ClassInfoList classInfo = scanResult.getClassesWithAnnotation(Cloud.class);
+			List<String> classes = classInfo.getNames();
+			for (String clazzName : classes){
+				if (isDebug()) {
+					plugin().getLogger().info("Registering command: " + clazzName);
+				}
+				Class<?> clazz = Class.forName(clazzName);
+				registerCommand(clazz, commandManager);
+				if (isDebug()) {
+					plugin().getLogger().info("Registered command: " + clazzName);
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -76,7 +102,7 @@ public interface CommandRegisterer<P extends JavaPlugin> extends MessageReload {
 	}
 
 
-	default Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
+	default Constructor<?> getConstructor(@NotNull Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
 		try {
 			return clazz.getConstructor(params);
 		} catch (NoSuchMethodException ignore) {

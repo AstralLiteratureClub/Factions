@@ -214,6 +214,8 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         rootHelp = rootCommand.help;
         allyRootHelp = rootCommand.helpAlly;
 
+        registerCommands(List.of("bet.astral.unity.commands"), commandManager);
+
         registerChatHandler((player, faction, receiver, message, type) -> {
             PlaceholderList placeholders = new PlaceholderList();
             placeholders.addAll(placeholderManager.offlinePlayerPlaceholders("player", player.offlinePlayer()));
@@ -372,7 +374,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     }
 
     @Override
-    public Constructor<?> getConstructor(Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
+    public Constructor<?> getConstructor(@NotNull Class<?> clazz, Class<?>... params) throws NoSuchMethodException {
         return CommandRegisterer.super.getConstructor(clazz, params);
     }
 
