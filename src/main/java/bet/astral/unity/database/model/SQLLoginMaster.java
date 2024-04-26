@@ -4,7 +4,7 @@ import bet.astral.unity.configuration.Configuration;
 import lombok.Getter;
 
 @Getter
-public class SQLLoginMaster {
+public class SQLLoginMaster extends LoginMaster {
 	private final String connectionString;
 	private final String user;
 	private final String password;

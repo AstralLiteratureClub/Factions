@@ -18,6 +18,7 @@ import bet.astral.unity.database.impl.sql.source.HikariDatabaseSource;
 import bet.astral.unity.database.impl.sql.source.SQLDatabaseSource;
 import bet.astral.unity.database.model.HikariLoginMaster;
 import bet.astral.unity.database.model.LoginMaster;
+import bet.astral.unity.database.model.SQLLoginMaster;
 import bet.astral.unity.handlers.ChatHandler;
 import bet.astral.unity.managers.FactionManager;
 import bet.astral.unity.managers.PlayerManager;
@@ -144,7 +145,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             }
             case SQLITE -> {
                 database = new SQLDatabaseSource(this, databaseTypeEnum);
-                loginMaster = LoginMaster.load(new Config((MemorySection) config.get("database")));
+                loginMaster = SQLLoginMaster.load(new Config((MemorySection) config.get("database")));
             }
             default -> {
                 getLogger().severe("Currently " + getName() + " does not support the database type " + databaseType + ". Please try another database type! Disabling the plugin!");
