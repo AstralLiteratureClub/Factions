@@ -178,6 +178,16 @@ public class MySQLFactionDatabase extends SQLHikariDatabase<UUID, Faction, Facti
 							saveStatement = connection
 									.prepareStatement("UPDATE "+ tableName() +
 											" SET name = ?, public = ?, created = ?, displayname = ?, description = ?, joinInfo = ?, privateRolePrefixes = ?, publicRolePrefixes = ?, bannedPlayers = ? WHERE uniqueId = ?");
+							saveStatement.setString(1, value.getName());
+							saveStatement.setBoolean(2, value.isPublic());
+							saveStatement.setLong(3, value.getFirstCreated());
+							saveStatement.setString(4, jsonSerializer.serialize(value.getDisplayname()));
+							saveStatement.setString(5, jsonSerializer.serialize(value.getDescription()));
+							saveStatement.setString(6, jsonSerializer.serialize(value.getJoinInfo()));
+							saveStatement.setString(7, gson.toJson(value.getPrivateRolePrefixes()));
+							saveStatement.setString(8, gson.toJson(value.getPublicRolePrefixes()));
+							saveStatement.setString(9, gson.toJson(value.getBanned()));
+							saveStatement.setString(10, value.getUniqueIdString());
 						} else {
 							// NEW
 							saveStatement = connection.
@@ -232,11 +242,12 @@ public class MySQLFactionDatabase extends SQLHikariDatabase<UUID, Faction, Facti
 					}
 					PreparedStatement deleteStatement = null;
 					try {
-						deleteStatement = connection.prepareStatement("DELETE FROM factions WHERE uniqueId = ?");
+						deleteStatement = connection.prepareStatement("DELETE FROM "+tableName()+" WHERE uniqueId = ?");
 						deleteStatement.setString(1, uuidToString(key));
 						deleteStatement.executeUpdate();
 						getMemberDatabase()
 								.deleteAllMembers(faction, key);
+						getHomeDatabase().deleteAllHomes(faction);
 					} catch (SQLException e) {
 						throw new RuntimeException(e);
 					} finally {

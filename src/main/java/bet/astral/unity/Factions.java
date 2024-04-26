@@ -95,12 +95,14 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     private DateFormat dateFormat;
     private boolean commandsRegistered = false;
     private final boolean isFolia = isFolia();
+    private boolean isDebug = false;
 
     @Override
     public void onEnable() {
         uploadUploads();
         reloadConfig();
         Config config = new Config(super.getConfig());
+        isDebug = super.getConfig().getBoolean("isDebug", false);
 
         factionConfig = new FactionConfig(getConfig(new File(getDataFolder(), "config.yml")));
 
@@ -151,6 +153,12 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             }
         }
 
+        try {
+            database.connect(loginMaster);
+        } catch (IllegalArgumentException e){
+            getComponentLogger().error("Couldn't enable UNITY as database login master is not correct!", e);
+            getServer().getPluginManager().disablePlugin(this);
+        }
         // TODO enable connecting to database
 //        database.connect(loginMaster);
 
@@ -214,7 +222,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         rootHelp = rootCommand.help;
         allyRootHelp = rootCommand.helpAlly;
 
-        registerCommands(List.of("bet.astral.unity.commands"), commandManager);
+        registerCommands("bet.astral.unity.commands", commandManager);
 
         registerChatHandler((player, faction, receiver, message, type) -> {
             PlaceholderList placeholders = new PlaceholderList();
@@ -356,6 +364,11 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     @Override
     public Messenger<Factions> debugMessenger() {
         return messenger;
+    }
+
+    @Override
+    public boolean isDebug() {
+        return false;
     }
 
     @Override

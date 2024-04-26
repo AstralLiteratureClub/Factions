@@ -58,23 +58,14 @@ public class HikariDatabaseSource extends Database {
 	}
 
 	@NotNull
-	private HikariConfig getHikariConfig(LoginMaster loginMaster, HikariLoginMaster hikariLoginMaster, DatabaseType type) {
+	private HikariConfig getHikariConfig(HikariLoginMaster loginMaster, HikariLoginMaster hikariLoginMaster, DatabaseType type) {
 		HikariConfig config = new HikariConfig();
+
 		switch (type){
 			case MYSQL -> {
-				config.setJdbcUrl(
-						"jdbc:mysql://" +
-								hikariLoginMaster.getHostName() + ":" +
-								hikariLoginMaster.getPort() + "/" +
-								hikariLoginMaster.getDatabase());
+				config.setJdbcUrl(loginMaster.getConnectionString());
 				config.setUsername(loginMaster.getUser());
 				config.setPassword(loginMaster.getPassword());
-			}
-			case SQLITE -> {
-				File file = new File(getFactions().getDataFolder(), loginMaster.getHostName()+".db");
-				config.setJdbcUrl(
-						"jdbc:sqlite:" +
-								file.getName());
 			}
 		}
 		config.setDriverClassName(type.getActualDataSourceClass());

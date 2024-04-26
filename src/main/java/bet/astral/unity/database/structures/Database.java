@@ -43,12 +43,13 @@ public interface Database<K, V, C> extends Migrate<K, V, C> {
 
 	C createDefault(K key);
 
-	default <U> CompletableFuture<U> handleExceptions(CompletableFuture<U> future){
-		future.exceptionallyAsync(throwable -> {
-			getLogger().error("When executing database tasks, came across an exception!", throwable);
-			return null;
+	default <T> CompletableFuture<T> handleExceptions(CompletableFuture<T> future){
+		return future.handleAsync((value, throwable)->{
+			if (throwable != null){
+				getLogger().error("Found exception while handling ASync database methods.", throwable);
+			}
+			return value;
 		});
-		return future;
 	}
 
 	@Nullable

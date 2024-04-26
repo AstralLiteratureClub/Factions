@@ -1,3 +1,5 @@
+debug: false
+
 database:
   # Data convert is not implemented currently,
   #  but it's supposed to be able to convert from any database to a new database.
@@ -6,41 +8,24 @@ database:
   data-converter:
     # MySQL, SQLite, Mongodb?
     type: MySQL
-    # Ip to the database
-    host: 198.0.0.0.1
-    # Port to the database
-    port: 25373
-    # Database name
-    name: "UnityFactions"
-    # The username to the db
-    user: "root"
     # The password to the db
     password: "MakeStrongPasswords"
 
-    hikari:
-      minimum-pools: 5
-      maximum-pools: 200
-      testQuery: IGNORE
-
     sql:
+      url: "jdbc:mysql://example.com/factions"
+      password: "MakeStrongPassword"
+      user: "Username"
+      timeout-limit: 45000
+      minimum-idle: 20000
+
       table:
         factions: unity_factions
         members: unity_members
         homes: unity_homes
-  # MySQL, SQLite, Mongodb?
-  type: MySQL
-  # Ip to the database
-  ip: 198.0.0.0.1
-  # Port to the database
-  port: 25373
-  # Database name
-  name: "UnityFactions"
-  # The username to the db
-  user: "root"
-  # The password to the db
-  password: "MakeStrongPasswords"
-  timeout-limit: 45000
-  minimum-idle: 20000
+      hikari:
+        minimum-pools: 5
+        maximum-pools: 200
+        testQuery: IGNORE
 
   # Hikari is used when using SQL-based databases as it allows multiple connections at a time.
   hikari:

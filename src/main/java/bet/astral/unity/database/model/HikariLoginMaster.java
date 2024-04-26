@@ -4,7 +4,7 @@ import bet.astral.unity.configuration.Configuration;
 import lombok.Getter;
 
 @Getter
-public class HikariLoginMaster extends LoginMaster{
+public class HikariLoginMaster extends SQLLoginMaster{
 	private final String tableFactions;
 	private final String tableMembers;
 	private final String tableHomes;
@@ -12,8 +12,8 @@ public class HikariLoginMaster extends LoginMaster{
 	private final int maximumPools;
 	private final int minimumIdle;
 
-	HikariLoginMaster(String hostName, int port, String database, String user, String password, long timeOut, String tableFactions, String tableMembers, String tableHomes, String testQuery, int maximumPools, int minimumIdle) {
-		super(hostName, port, database, user, password, timeOut);
+	public HikariLoginMaster(String connectionString, String user, String password, long timeOut, String tableFactions, String tableMembers, String tableHomes, String testQuery, int maximumPools, int minimumIdle) {
+		super(connectionString, user, password, timeOut);
 		this.tableFactions = tableFactions;
 		this.tableMembers = tableMembers;
 		this.tableHomes = tableHomes;
@@ -22,7 +22,7 @@ public class HikariLoginMaster extends LoginMaster{
 		this.minimumIdle = minimumIdle;
 	}
 
-	protected HikariLoginMaster(LoginMaster master, String tableFactions, String tableMembers, String tableHomes, String testQuery, int maximumPools, int minimumIdle) {
+	protected HikariLoginMaster(SQLLoginMaster master, String tableFactions, String tableMembers, String tableHomes, String testQuery, int maximumPools, int minimumIdle) {
 		super(master);
 		this.tableFactions = tableFactions;
 		this.tableMembers = tableMembers;
@@ -33,9 +33,8 @@ public class HikariLoginMaster extends LoginMaster{
 	}
 
 	public static HikariLoginMaster load(Configuration configuration) {
-		LoginMaster superMaster = LoginMaster.load(configuration);
 		return new HikariLoginMaster(
-				superMaster,
+				load(configuration),
 				configuration.getString("sql.table.factions"),
 				configuration.getString("sql.table.members"),
 				configuration.getString("sql.table.homes"),
