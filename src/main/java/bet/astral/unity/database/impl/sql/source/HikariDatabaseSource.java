@@ -29,7 +29,7 @@ public class HikariDatabaseSource extends Database {
 		if (!(loginMaster instanceof HikariLoginMaster hikariLoginMaster)){
 			throw new IllegalArgumentException("Trying to connect using hikari was denied, as LoginMaster is not the right format ("+HikariLoginMaster.class.getName()+") found: "+loginMaster.getClass().getName());
 		}
-		HikariConfig config = getHikariConfig(loginMaster, hikariLoginMaster, getType());
+		HikariConfig config = getHikariConfig(hikariLoginMaster, hikariLoginMaster, getType());
 		hikari = new HikariDataSource(config);
 		isConnected = true;
 
