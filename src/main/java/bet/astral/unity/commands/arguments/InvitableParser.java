@@ -4,7 +4,7 @@ import bet.astral.unity.Factions;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -103,7 +103,7 @@ public class InvitableParser<C> implements ArgumentParser<C, Player>, BlockingSu
 		private final String input;
 
 		public InvitableParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_ALREADY_INVITED, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_ALREADY_INVITED, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

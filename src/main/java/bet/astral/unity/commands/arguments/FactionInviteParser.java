@@ -3,7 +3,7 @@ package bet.astral.unity.commands.arguments;
 import bet.astral.unity.Factions;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -94,7 +94,7 @@ public class FactionInviteParser<C> implements ArgumentParser<C, Faction>, Sugge
 		private final String input;
 
 		public FactionInviteParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_PLAYER_HAS_NOT_BEEN_INVITED, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_PLAYER_HAS_NOT_BEEN_INVITED, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

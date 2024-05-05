@@ -1,6 +1,6 @@
 package bet.astral.unity.commands.arguments;
 
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.incendo.cloud.bukkit.parser.PlayerParser;
 import org.incendo.cloud.context.CommandContext;
@@ -12,7 +12,7 @@ public class FactionlessPlayerParser{
 		private final String input;
 
 		public SelfFactionlessParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_SELF_HAS_NO_FACTION);
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_SELF_HAS_NO_FACTION);
 			this.input = input;
 		}
 
@@ -24,7 +24,7 @@ public class FactionlessPlayerParser{
 		private final String input;
 
 		public FactionlessParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_HAS_A_FACTION);
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_HAS_A_FACTION);
 			this.input = input;
 		}
 
@@ -37,7 +37,7 @@ public class FactionlessPlayerParser{
 		private final String input;
 
 		public BannedFactionlessParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_BANNED);
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_BANNED);
 			this.input = input;
 		}
 

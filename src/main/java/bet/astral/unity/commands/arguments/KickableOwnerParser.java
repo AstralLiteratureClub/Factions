@@ -4,7 +4,7 @@ import bet.astral.unity.Factions;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -137,7 +137,7 @@ public class KickableOwnerParser<C> implements ArgumentParser<C, OfflinePlayer> 
 		private final String input;
 
 		public UnknownSuperOwnerException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_UNKNOWN_SUPER_OWNER, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_UNKNOWN_SUPER_OWNER, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 
@@ -149,7 +149,7 @@ public class KickableOwnerParser<C> implements ArgumentParser<C, OfflinePlayer> 
 		private final String input;
 
 		public NoSuperOwnerException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_NO_SUPER_OWNER, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_NO_SUPER_OWNER, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

@@ -5,13 +5,20 @@ import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.Legacy;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class UnityPlaceholderExpansion extends PlaceholderExpansion {
-	private final Factions factions = Factions.getPlugin(Factions.class);
+	private final Factions factions;
+
+	public UnityPlaceholderExpansion(Factions factions) {
+		this.factions = factions;
+	}
 
 	@Override
 	public @NotNull String getIdentifier() {
@@ -40,6 +47,9 @@ public class UnityPlaceholderExpansion extends PlaceholderExpansion {
 			if (split.length > 1) {
 				switch (split[1]) {
 					case "members" -> {
+						if (faction==null){
+							return "0";
+						}
 						if (split.length > 2) {
 							switch (split[2]) {
 								case "online" -> {
@@ -59,32 +69,53 @@ public class UnityPlaceholderExpansion extends PlaceholderExpansion {
 						}
 					}
 					case "name" -> {
-						return faction.getName();
+						if (faction==null){
+							if (split.length>2){
+								if (split.length>3 && split[2].equalsIgnoreCase("?")){
+									return split[3];
+								}
+								return split[2];
+							}
+							return "NONE";
+						}
+						return PlainTextComponentSerializer.plainText().serialize(faction.getDisplayname());
 					}
 					case "displayname" -> {
+						if (faction==null){
+							if (split.length>2){
+								if (split.length>3 && split[2].equalsIgnoreCase("?")){
+									return split[3];
+								}
+								return split[2];
+							}
+							return "NONE";
+						}
 						return Legacy.string(faction.getDisplayname());
 					}
 					case "owner" -> {
-						return roleInfo(split, faction, FRole.OWNER);
+						return roleInfo(player, split, faction, FRole.OWNER);
 					}
 					case "coowner" -> {
-						return roleInfo(split, faction, FRole.CO_OWNER);
+						return roleInfo(player, split, faction, FRole.CO_OWNER);
 					}
 					case "admin" -> {
-						return roleInfo(split, faction, FRole.ADMIN);
+						return roleInfo(player, split, faction, FRole.ADMIN);
 					}
 					case "moderator" -> {
-						return roleInfo(split, faction, FRole.MODERATOR);
+						return roleInfo(player, split, faction, FRole.MODERATOR);
 					}
 					case "member" -> {
-						return roleInfo(split, faction, FRole.MEMBER);
+						return roleInfo(player, split, faction, FRole.MEMBER);
 					}
 					case "guest" -> {
-						return roleInfo(split, faction, FRole.GUEST);
+						return roleInfo(player, split, faction, FRole.GUEST);
 					}
 				}
 			} else {
-				return "None";
+				if (faction == null){
+					return "NONE";
+				}
+				return faction.getName();
 			}
 		}
 		if (params.equalsIgnoreCase("has")) {
@@ -92,30 +123,67 @@ public class UnityPlaceholderExpansion extends PlaceholderExpansion {
 		}
 		return null;
 	}
-	private String roleInfo(String[] split, Faction faction, FRole role) {
+	private String roleInfo(OfflinePlayer p, String[] split, Faction faction, FRole role) {
 		if (split.length > 2) {
 			switch (split[2]) {
 				case "online" -> {
+					if (faction == null) {
+						return "0";
+					}
+
 					return faction.getMembersWithRole(role)
 							.getAllOnline()
+							.stream().filter(player -> {
+								if (p.isOnline()) {
+									return Objects.requireNonNull(p.getPlayer()).canSee(player);
+								}
+								return true;
+							})
+							.toList()
 							.size() + "";
 				}
 				case "offline" -> {
+					if (faction == null) {
+						return "0";
+					}
+
 					return faction.getMembersWithRole(role)
-							.getAllOffline()
+							.getAll()
+							.stream()
+							.filter(player -> {
+								if (player.isOnline() && p.isOnline()) {
+									return !p.getPlayer().canSee(player.getPlayer());
+								} else if (player.isOnline()) {
+									return false;
+								}
+								return true;
+							})
+							.toList()
 							.size() + "";
 				}
 				case "private" -> {
+					if (faction == null){
+						return "";
+					}
 					return faction.getPrivatePrefix(role).asLegacy();
 				}
 				case "public" -> {
+					if (faction == null){
+						return "";
+					}
 					return faction.getPublicPrefix(role).asLegacy();
 				}
 			}
 		} else {
+			if (faction == null){
+				return "0";
+			}
 			return faction.getMembersWithRole(role)
 					.getAll()
 					.size() + "";
+		}
+		if (faction == null){
+			return "0";
 		}
 		return faction.getMembersWithRole(role).size()+"";
 	}

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.SQLException;
 
 public class HikariDatabaseSource extends Database {
@@ -68,12 +69,13 @@ public class HikariDatabaseSource extends Database {
 				config.setPassword(loginMaster.getPassword());
 			}
 		}
-		config.setDriverClassName(type.getActualDataSourceClass());
-		config.setMinimumIdle(hikariLoginMaster.getMinimumIdle());
+		config.setDataSourceClassName(type.getActualDataSourceClass());
 		config.setMaximumPoolSize(hikariLoginMaster.getMaximumPools());
-		config.setConnectionTimeout(hikariLoginMaster.getTimeOut());
+		config.setConnectionTimeout(hikariLoginMaster.getConnectionTimeOut());
+		config.setIdleTimeout(hikariLoginMaster.getIdleTimeOut());
+		config.setMaxLifetime(hikariLoginMaster.getMaxLifetime());
 
-		if (!hikariLoginMaster.getTestQuery().equalsIgnoreCase("IGNORE")){
+		if (hikariLoginMaster.getTestQuery() != null && !hikariLoginMaster.getTestQuery().equalsIgnoreCase("IGNORE")){
 			config.setConnectionTestQuery(hikariLoginMaster.getTestQuery());
 		}
 		return config;
@@ -81,7 +83,7 @@ public class HikariDatabaseSource extends Database {
 
 	@Override
 	public void disconnect() {
-
+		hikari.close();
 	}
 
 	@Override

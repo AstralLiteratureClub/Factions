@@ -15,40 +15,43 @@ database:
       url: "jdbc:mysql://example.com/factions"
       password: "MakeStrongPassword"
       user: "Username"
-      timeout-limit: 45000
-      minimum-idle: 20000
+      timeout: 45000
 
       table:
         factions: unity_factions
         members: unity_members
         homes: unity_homes
       hikari:
-        minimum-pools: 5
+        minimum-idle: 28800
         maximum-pools: 200
-        testQuery: IGNORE
+        test-query: IGNORE
 
-  # Hikari is used when using SQL-based databases as it allows multiple connections at a time.
-  hikari:
-    # The minimum idle time for a connection
-    minimum-idle: 10000
-    # The maximum number of connection pools
-    maximum-pools: 10
-    # The test query for the database
-    test-query: IGNORE
+
+  type: MySQL
+  # The password to the db
+  password: "MakeStrongPasswords"
 
   sql:
+    url: "jdbc:mysql://example.com/factions"
+    password: "MakeStrongPassword"
+    user: "Username"
+    timeout: 45000
+
     table:
       factions: unity_factions
       members: unity_members
       homes: unity_homes
-
+    hikari:
+      minimum-pools: 5
+      maximum-pools: 200
+      testQuery: IGNORE
 faction:
   name:
     regex: "[a-zA-Z0-9_]*"
     max: 10
     min: 3
   prefix:
-    regex: "[*+-]*"
+    regex: "[!~-+*]*"
     max: 3
     min: 1
 

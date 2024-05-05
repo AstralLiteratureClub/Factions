@@ -13,25 +13,18 @@ public class UnityLoader implements PluginLoader {
 	public void classloader(@NotNull PluginClasspathBuilder pluginClasspathBuilder) {
 
 		MavenLibraryResolver resolver = new MavenLibraryResolver();
-
-		// Sonatype
-		resolver.addRepository(new RemoteRepository.Builder("sonatype", "default", "https://oss.sonatype.org/content/repositories/snapshots/").build());
+		// Maven Central
+		resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://repo1.maven.org/maven2/").build());
 
 		// Cloud
-		String cloudFramework = "2.0.0-SNAPSHOT";
+		String cloudFramework = "2.0.0-beta.4";
 		resolver.addDependency(new Dependency(new DefaultArtifact("org.incendo:cloud-core:"+cloudFramework), null));
 		resolver.addDependency(new Dependency(new DefaultArtifact("org.incendo:cloud-paper:"+cloudFramework), null));
 		resolver.addDependency(new Dependency(new DefaultArtifact("org.incendo:cloud-brigadier:"+cloudFramework), null));
 		resolver.addDependency(new Dependency(new DefaultArtifact("org.incendo:cloud-minecraft-extras:"+cloudFramework), null));
+		resolver.addDependency(new Dependency(new DefaultArtifact("org.incendo:cloud-services:"+cloudFramework), null));
 		pluginClasspathBuilder.addLibrary(resolver);
 
-		resolver = new MavenLibraryResolver();
-
-
-
-
-		// Maven Central
-		resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://repo1.maven.org/maven2/").build());
 
 		// Classgraph for reflections
 		resolver.addDependency(new Dependency(new DefaultArtifact("io.github.classgraph:classgraph:4.8.165"), null));

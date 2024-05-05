@@ -1,6 +1,7 @@
 package bet.astral.unity.managers;
 
 import bet.astral.unity.Factions;
+import bet.astral.unity.commands.faction.create.CreateFactionSC;
 import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.event.ban.ASyncFactionBanEvent;
 import bet.astral.unity.event.ASyncFactionDeleteEvent;
@@ -10,6 +11,7 @@ import bet.astral.unity.event.player.change.ASyncPlayerChangeFactionDisplaynameE
 import bet.astral.unity.event.player.change.ASyncPlayerChangeFactionNameEvent;
 import bet.astral.unity.event.player.ASyncPlayerCreateFactionEvent;
 import bet.astral.unity.event.player.ASyncPlayerDeleteFactionEvent;
+import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
@@ -24,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FactionManager {
 	private final Field nameField;
@@ -97,6 +100,13 @@ public class FactionManager {
 	public boolean exists(Component displayname){
 		return byCustomName.containsKey(PlainTextComponentSerializer.plainText().serialize(displayname).toLowerCase());
 	}
+	public boolean existsDisplayname(String displayname){
+		return byCustomName.containsKey(displayname.toLowerCase());
+	}
+
+	public <T> boolean exists(T name) throws ClassCastException {
+		return name instanceof Component component ? exists(component) : exists((String) name);
+	}
 
 	@Nullable
 	public Faction create(@NotNull String name, @NotNull Player player){
@@ -115,18 +125,7 @@ public class FactionManager {
 				byCustomName.put(PlainTextComponentSerializer.plainText().serialize(faction.getDisplayname()).toLowerCase(), faction);
 				requestSave(faction);
 
-				// This shouldn't be done by other plugins, but adding a player this way doesn't call the async player join event.
-				try {
-					//noinspection unchecked
-					List<UUID> members = (List<UUID>) membersField.get(faction);
-					members.add(player.getUniqueId());
-					//noinspection unchecked
-					Map<UUID, FRole> roles = (Map<UUID, FRole>) rolesField.get(faction);
-					roles.put(player.getUniqueId(), FRole.OWNER);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-				faction.setSuperOwner(OfflinePlayerReference.of(player));
+				faction.joinAsOwner(player);
 				break;
 			}
 		}
@@ -310,5 +309,9 @@ public class FactionManager {
 		byId.clear();
 		byName.clear();
 		byCustomName.clear();
+	}
+
+	public List<FInvite> getInvites(FPlayer player) {
+		return created().stream().filter(faction->faction.isInvited(player)).map(faction->faction.getInvite(player)).collect(Collectors.toList());
 	}
 }

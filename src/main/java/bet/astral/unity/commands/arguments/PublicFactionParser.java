@@ -2,7 +2,7 @@ package bet.astral.unity.commands.arguments;
 
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -76,7 +76,7 @@ public class PublicFactionParser<C> extends FactionParser<C>{
 		private final String input;
 
 		public PublicFactionParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_PRIVATE_FACTION, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_PRIVATE_FACTION, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

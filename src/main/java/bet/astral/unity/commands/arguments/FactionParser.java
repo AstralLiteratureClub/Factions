@@ -3,7 +3,7 @@ package bet.astral.unity.commands.arguments;
 import bet.astral.unity.Factions;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -16,7 +16,6 @@ import org.incendo.cloud.exception.parsing.ParserException;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
-import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 import org.incendo.cloud.suggestion.Suggestion;
 import org.incendo.cloud.suggestion.SuggestionProvider;
 
@@ -82,7 +81,7 @@ public class FactionParser<C> implements ArgumentParser<C, Faction>, SuggestionP
 		private final String input;
 
 		public FactionParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_UNKNOWN_FACTION, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_UNKNOWN_FACTION, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +31,7 @@ public class FRole implements Placeholderable, ComponentLike, UniqueId {
 	public static final FRole MODERATOR = new FRole("moderator", UUID.fromString("9156227b-c4bd-4f07-9923-30038e58ca0e"), 4, FRole.MEMBER, FRole.ADMIN);
 	public static final FRole MEMBER = new FRole("default", UUID.fromString("fab81c4c-c13d-48c6-b79c-31ba8e6c6a5d"), 2, FRole.GUEST, FRole.MODERATOR);
 	public static final FRole GUEST = new FRole("guest", UUID.fromString("7830a078-48d8-4052-92c7-8e66003085e4"), 0, null, FRole.MEMBER);
+	public static final FRole UNKNOWN = new FRole("unknown", null, 0, null, null);
 	private static final FRole[] roles = new FRole[]{
 			OWNER,
 			CO_OWNER,
@@ -104,5 +106,9 @@ public class FRole implements Placeholderable, ComponentLike, UniqueId {
 	@Override
 	public @NotNull Component asComponent() {
 		return Component.text(name);
+	}
+
+	public boolean isOwner() {
+		return this.equals(FRole.OWNER);
 	}
 }

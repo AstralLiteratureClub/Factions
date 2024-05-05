@@ -4,12 +4,14 @@ import bet.astral.cloudplusplus.CommandRegisterer;
 import bet.astral.messenger.Messenger;
 import bet.astral.messenger.message.MessageType;
 import bet.astral.messenger.message.adventure.AdventureMessage;
+import bet.astral.messenger.message.adventure.part.AdventureMessagePart;
 import bet.astral.messenger.message.adventure.serializer.ComponentTypeSerializer;
 import bet.astral.messenger.message.message.IMessage;
 import bet.astral.messenger.message.part.DefaultMessagePart;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
-import bet.astral.unity.commands.root.FactionRootCommands;
+import bet.astral.messenger.translation.TranslationKey;
+import bet.astral.unity.commands.core.FactionRootCommands;
 import bet.astral.unity.configuration.Config;
 import bet.astral.unity.configuration.FactionConfig;
 import bet.astral.unity.database.Database;
@@ -23,7 +25,7 @@ import bet.astral.unity.handlers.ChatHandler;
 import bet.astral.unity.managers.FactionManager;
 import bet.astral.unity.managers.PlayerManager;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import net.kyori.adventure.text.Component;
@@ -155,7 +157,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         }
 
         try {
-            database.connect(loginMaster);
+//            database.connect(loginMaster);
         } catch (IllegalArgumentException e){
             getComponentLogger().error("Couldn't enable UNITY as database login master is not correct!", e);
             getServer().getPluginManager().disablePlugin(this);
@@ -171,15 +173,15 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         FileConfiguration messengerConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
 //        messenger = new Messenger<>(this, new HashMap<>(), new IMessageTypeSerializer<CommandSender>(), messengerConfig);
 //        debugMessenger = new Messenger<>(this, messengerConfig, new HashMap<>());
-        dateFormat = new SimpleDateFormat(messengerConfig.getString(TranslationKey.DATE_FORMAT, "mm:HH dd/MM/yyyy"));
+        dateFormat = new SimpleDateFormat(messengerConfig.getString(TranslationKeys.DATE_FORMAT, "mm:HH dd/MM/yyyy"));
         messenger = new Messenger<>(this, commandManager, new HashMap<>(), new ComponentTypeSerializer(), messengerConfig);
         FactionPlaceholderManager placeholderManager = new FactionPlaceholderManager();
         placeholderManager.setDefaults(placeholderManager.loadPlaceholders("placeholders", messengerConfig));
         messenger.setPlaceholderManager(placeholderManager);
 
-        for (Field field : TranslationKey.class.getFields()) {
+        for (Field field : TranslationKeys.class.getFields()) {
             try {
-                if (field.isAnnotationPresent(TranslationKey.IsCaption.class) && field.getAnnotation(TranslationKey.IsCaption.class).value()) {
+                if (field.isAnnotationPresent(TranslationKeys.IsCaption.class) && field.getAnnotation(TranslationKeys.IsCaption.class).value()) {
                     Caption caption = (Caption) field.get(null);
                     IMessage<?, Component> message = messenger.loadMessage(caption.key());
                     if (message == null || message.parts().get(MessageType.CHAT) == null) {
@@ -233,10 +235,10 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             IMessage<?, Component> iMessage = null;
             switch (type) {
                 case FACTION -> {
-                    iMessage = messenger.getMessage(TranslationKey.FORMAT_CHAT);
+                    iMessage = messenger.getMessage(TranslationKeys.FORMAT_CHAT);
                 }
                 case ALLY -> {
-                    iMessage = messenger.getMessage(TranslationKey.FORMAT_ALLY_CHAT);
+                    iMessage = messenger.getMessage(TranslationKeys.FORMAT_ALLY_CHAT);
                 }
             }
             if (iMessage == null || iMessage.parts().get(MessageType.CHAT) == null) {
@@ -248,7 +250,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             PlaceholderAPIPlugin.getInstance().getLocalExpansionManager()
-                    .createExpansionInstance(UnityPlaceholderExpansion.class);
+                    .register(new UnityPlaceholderExpansion(this));
         }
 
         getLogger().info("Factions has enabled!");
@@ -270,6 +272,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         if (database != null){
             if (database.isConnected()){
                 // TODO
+                database.disconnect();
                 getLogger().info("Disabling the database..!");
             }
         }
@@ -393,6 +396,21 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
     }
 
 
+    public RichDescription loadDescription(@NotNull TranslationKey translationKey, String command, Placeholder... placeholders){
+        PlaceholderList placeholderList = new PlaceholderList();
+        placeholderList.add("command", command);
+        placeholderList.addAll(placeholders);
+        IMessage<?, Component> message = messenger.getMessage(translationKey); // getMessage(Caption)
+        if (message == null){
+            message = new AdventureMessage(translationKey.key(), new AdventureMessagePart(MessageType.CHAT, translationKey.asComponent()));
+        }
+        Component component = messenger.parse(message, MessageType.CHAT, placeholderList);
+        if (component == null){
+            return null;
+        }
+        return RichDescription.of(component);
+    }
+    @Deprecated(forRemoval = true)
     public RichDescription loadDescription(String name, String command, Placeholder... placeholders){
         PlaceholderList placeholderList = new PlaceholderList();
         placeholderList.add("command", command);

@@ -1,5 +1,6 @@
 package bet.astral.unity.utils.collections;
 
+import bet.astral.unity.model.interactions.FRelationshipStatus;
 import bet.astral.unity.utils.UniqueId;
 
 import java.util.HashMap;
@@ -20,5 +21,8 @@ public class UniqueMap<V extends UniqueId> extends HashMap<UUID, V> {
 
 	public UniqueMap(Map<? extends UUID, ? extends V> m) {
 		super(m);
+	}
+
+	public FRelationshipStatus containsKey() {
 	}
 }

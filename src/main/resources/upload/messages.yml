@@ -74,6 +74,7 @@ invite:
   description--all-arg: "Forwards the invite to every player in the server."
   description-who-arg: "Who to sends the invite to."
   description-invites: "Allows faction admins to see all the players who are invited to the faction."
+  description-invites--own-arg: "Allows player to see their own invites from other factions."
   description-accept: "Allows players with no faction to accept a faction invite."
   description-accept-faction-arg: "The faction invite to accept."
   description-deny: "Allows players with no faction to deny a faction invite."
@@ -89,15 +90,12 @@ invite:
   description-force-invite--all-arg: "<red>Selects all the players in the server."
 
   broadcast-faction-of-invitation: "%prefix% <green>%sender% <white>has invited <yellow>%to% <white>to the faction."
-  message-receiver-of-invitation: "%prefix% <green>%sender% <white>has invited you to join <yellow>%faction%<white>."
+  message-receiver-of-invitation: "%prefix% <green>%sender% <white>has invited you to join <yellow>%faction%<white>. <white>factions. <green><bold><click:run_command:/factions accept-invite %faction%><hover:show_text:'<gray><!italic>Click here to accept this faction invitation.>ACCEPT <red><bold><click:run_command:'/factions deny-invite %faction%><hover:show_text:'<gray><!italic>Click here to reject this invitation.'>DENY"
   broadcast-faction-of-invitation-expiring: "%prefix% <white>Your invitation from <green>%player% <white> to <yellow>%faction% <white>has expired."
   message-receiver-of-invitation-expiring: "%prefix% <white>Your invitation from <green>%player% <white> to <yellow>%faction% <white>has expired."
 
   message-receiver-accepted: "%prefix% <green>Accepted the invitation to join <white>%faction%<green>."
-  broadcast-faction-of-receiver-accepting:
-    - ""
-    - "%prefix% <white>%to% <green>has accepted the invitation to your faction."
-    - ""
+  broadcast-faction-of-receiver-accepting: "%prefix% <white>%to% <green>has accepted the invitation to your faction."
 
   message-receiver-denied: "%prefix% <green>Denied the invitation of <white>%faction%<green>."
   message-receiver-denied-all: "%prefix% <green>Denied all invitations from factions who had invited you. <gray>(<white>%faction%<gray>)<green>."
@@ -108,8 +106,12 @@ invite:
   message-player-of-cancel: "%prefix% <red>Your invitation to <white>%faction%<red> was denied by <white>%sender%<red>."
   broadcast-faction-of-cancel: "%prefix% <white>Invitation sent to <green>%to% <white>was canceled by <green>%sender%<white>."
 
-  message-invites-header: "%prefix% Your faction has <green>%invites%"
-  message-invites-value: "<gray> - <yellow>%to%<white> - <red><click:run_command:/factions cancel-invite %to%><hover:show_text:'<gray><!italic>Click here to cancel this invitation.'>CANCEL"
+  message-invites-empty-faction: "%prefix% <white>Your faction has not sent invites to players."
+  message-invites-header-faction: "%prefix% <white>Your faction has <green>%invites%"
+  message-invites-value-faction: "<gray> - <yellow>%to%<white> - <red><bold><click:run_command:/factions cancel-invite %to%><hover:show_text:'<gray><!italic>Click here to cancel this invitation.'>CANCEL"
+  message-invites-empty-player: "%prefix% <white>No faction has invited you to join their faction."
+  message-invites-header-player: "%prefix% <white>You have been invited to join <green>%invites%."
+  message-invites-value-player: "<gray> - <yellow>%from%<white> - <green><bold><click:run_command:/factions accept-invite %from%><hover:show_text:'<gray><!italic>Click here to accept this faction invitation.'>ACCEPT<reset> <red><bold><click:run_command:/factions reject-invite %from%><hover:show_text:'<gray><!italic>Click here to reject this invitation.'>DENY"
 
   broadcast-force-faction-of-invite: "%prefix_force% <white>%sender% <red>has force invited <white>%to% <red>to your faction."
   message-force-invite-receive: "%prefix_force% <white>%sender% <red>has force invited you to join <white>%faction%<red>."

@@ -1,5 +1,6 @@
 package bet.astral.unity.model;
 
+import bet.astral.annotations.Heavy;
 import bet.astral.messenger.Messenger;
 import bet.astral.messenger.adventure.MessengerAudience;
 import bet.astral.messenger.placeholder.Placeholder;
@@ -10,6 +11,7 @@ import bet.astral.unity.annotations.DoNotSave;
 import bet.astral.unity.database.model.DBFactionMember;
 import bet.astral.unity.event.ASyncPlayerKickedFromFactionEvent;
 import bet.astral.unity.event.FactionEvent;
+import bet.astral.unity.event.interactions.RelationshipStatusChangeEvent;
 import bet.astral.unity.event.invite.ASyncInviteExpireEvent;
 import bet.astral.unity.event.player.ASyncPlayerKickedFromFactionByPlayerEvent;
 import bet.astral.unity.event.player.ASyncPlayerLeaveFactionEvent;
@@ -22,14 +24,15 @@ import bet.astral.unity.event.player.invite.ASyncPlayerSendInviteEvent;
 import bet.astral.unity.event.teams.FactionDisableEvent;
 import bet.astral.unity.event.teams.FactionEnableEvent;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
+import bet.astral.unity.messenger.TranslationKeys;
 import bet.astral.unity.model.interactions.FAlliable;
 import bet.astral.unity.model.interactions.FAntagonist;
 import bet.astral.unity.model.interactions.FRelationship;
 import bet.astral.unity.model.interactions.FRelationshipInfo;
 import bet.astral.unity.model.interactions.FRelationshipStatus;
+import bet.astral.unity.model.interactions.FTruce;
 import bet.astral.unity.model.location.FHome;
 import bet.astral.unity.model.minecraft.MinecraftTeam;
-import bet.astral.unity.utils.TranslationKey;
 import bet.astral.unity.utils.UniqueId;
 import bet.astral.unity.utils.collections.OfflinePlayerList;
 import bet.astral.unity.utils.collections.PlayerMap;
@@ -48,6 +51,7 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.translation.Translatable;
 import org.bukkit.Bukkit;
@@ -62,29 +66,31 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @Getter
 @Setter
-public class Faction extends MinecraftTeam
+public final class Faction extends MinecraftTeam
 		implements Identity, ForwardingAudience, Translatable,
 		Flaggable, Placeholderable, UniqueId,
 		FactionReference, MessengerAudience<Factions>,
-		FRelationship, FAlliable, FAntagonist {
+		FRelationship<Faction>, FAlliable<Faction>, FAntagonist<Faction>, FTruce<Faction> {
 	private static final Map<FRole, FPrefix> DEFAULT_PRIVATE_PREFIXES = new HashMap<>();
 	private static final Map<FRole, FPrefix> DEFAULT_PUBLIC_PREFIXES = new HashMap<>();
+
 	static {
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.OWNER, new FPrefix(null, "**", NamedTextColor.GRAY));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, "*", NamedTextColor.GRAY));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.ADMIN, new FPrefix(null, "++", NamedTextColor.GRAY));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, "+", NamedTextColor.GRAY));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.MEMBER, new FPrefix(null, "-", NamedTextColor.GRAY));
-		DEFAULT_PUBLIC_PREFIXES.put(FRole.GUEST, new FPrefix(null, "", NamedTextColor.GRAY));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.OWNER, new FPrefix(null, Component.text("*")));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, Component.text("*")));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.ADMIN, new FPrefix(null, Component.text("+")));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, Component.text("~")));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.MEMBER, new FPrefix(null, Component.text("-")));
+		DEFAULT_PUBLIC_PREFIXES.put(FRole.GUEST, new FPrefix(null, Component.text("")));
 
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.OWNER, new FPrefix(null, Component.text("Owner ", NamedTextColor.RED, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.CO_OWNER, new FPrefix(null, Component.text("Co-Owner ", NamedTextColor.RED, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.ADMIN, new FPrefix(null, Component.text("Admin ", NamedTextColor.GOLD, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.MODERATOR, new FPrefix(null, Component.text("Mod ", NamedTextColor.YELLOW, TextDecoration.BOLD).append(Component.text().decoration(TextDecoration.BOLD, false))));
 		DEFAULT_PRIVATE_PREFIXES.put(FRole.MEMBER, new FPrefix(null, Component.text("Member ", NamedTextColor.GREEN).append(Component.text().decoration(TextDecoration.BOLD, false))));
-		DEFAULT_PRIVATE_PREFIXES.put(FRole.GUEST, new FPrefix(null, Component.text("Guest ", NamedTextColor.GRAY).append(Component.text().decoration(TextDecoration.BOLD, false))));
+		DEFAULT_PRIVATE_PREFIXES.put(FRole.GUEST, new FPrefix(null, Component.text("", NamedTextColor.GRAY).append(Component.text().decoration(TextDecoration.BOLD, false))));
 	}
 	@Deprecated(forRemoval = true)
 	public static PlaceholderList factionPlaceholders(@Nullable String prefix, @NotNull Faction faction){
@@ -110,17 +116,19 @@ public class Faction extends MinecraftTeam
 	private final PlayerMap<FPrefix> playerPrefixes = new PlayerMap<>();
 
 	// Relationships
-	private final UniqueMap<FAlliable> alliances = new UniqueMap<>();
-	private final UniqueMap<FAntagonist> enemies = new UniqueMap<>();
+	private final UniqueMap<FAlliable<?>> alliances = new UniqueMap<>();
+	private final UniqueMap<FAntagonist<?>> enemies = new UniqueMap<>();
+	private final UniqueMap<FTruce<?>> truces = new UniqueMap<>();
+
+	// Tag Color
+	private final TextColor tagColor = NamedTextColor.GRAY;
+	private final PlayerMap<TextColor> playerTagColors = new PlayerMap<>();
 
 	// Flags
 	@Setter(AccessLevel.NONE)
 	@DoNotSave
 	private final Map<NamespacedKey, Flag<?>> flags = new HashMap<>();
 	private final OfflinePlayerList banned = new OfflinePlayerList();
-	@Deprecated(forRemoval = true)
-	@DoNotSave
-	private OfflinePlayerReference superOwner;
 	private final UUID uniqueId;
 	private final long firstCreated;
 	@Setter(AccessLevel.NONE)
@@ -130,8 +138,8 @@ public class Faction extends MinecraftTeam
 	private Component description;
 	private Component joinInfo;
 	// Store homes in their own database
-	private Map<String, FHome> homesByName = null;
-	private Map<UUID, FHome> homesById = null;
+	private Map<String, FHome> homesByName;
+	private Map<UUID, FHome> homesById;
 	private boolean isPublic = false;
 	{
 		publicRolePrefixes.put(FRole.OWNER, new FPrefix(this, DEFAULT_PUBLIC_PREFIXES.get(FRole.OWNER)));
@@ -147,20 +155,11 @@ public class Faction extends MinecraftTeam
 
 	public Faction(Factions factions, UUID uniqueId, String name, long firstCreated){
 		this.factions = factions;
-		this.name = name.toLowerCase();
-//		this.displayname = Component.text("["+name+"]", NamedTextColor.GOLD);
-		this.displayname = Component.text(name, NamedTextColor.GOLD);
+		this.name = name;
+		this.name = this.name.toLowerCase();
+		this.displayname = Component.text(name);
 		this.uniqueId = uniqueId;
 		this.firstCreated = firstCreated;
-//		Message defaultDescription = factions.messenger().getMessage(TranslationKey.DEFAULT_FACTION_DESCRIPTION);
-//		Message defaultJoin = factions.messenger().getMessage(TranslationKey.DEFAULT_FACTION_JOIN_INFO);
-		PlaceholderList placeholders = new PlaceholderList();
-		placeholders.add("name", name);
-		placeholders.add("displayname", name);
-		placeholders.add("faction", name);
-		placeholders.add("id", uniqueId.toString());
-//		this.description = factions.messenger().parse(defaultDescription, Message.Type.CHAT, placeholders);
-//		this.joinInfo = factions.messenger().parse(defaultJoin, Message.Type.CHAT, placeholders);
 		this.description = Component.text("Default description to factions");
 		this.joinInfo = Component.text("Message the owner to join this faction!");
 		homesByName = new HashMap<>();
@@ -304,9 +303,9 @@ public class Faction extends MinecraftTeam
 					placeholders.add("displayname", name);
 					placeholders.add("to", inv.getTo().offlinePlayer().getName());
 					placeholders.add("from", inv.getFrom().offlinePlayer().getName());
-					factions.messenger().message(this, TranslationKey.MESSAGE_INVITE_EXPIRED_FACTION, placeholders);
+					factions.messenger().message(this, TranslationKeys.MESSAGE_INVITE_EXPIRED_FACTION, placeholders);
 					if (inv.getTo().player() != null){
-						factions.messenger().message(inv.getTo().player(), TranslationKey.MESSAGE_INVITE_EXPIRED, placeholders);
+						factions.messenger().message(inv.getTo().player(), TranslationKeys.MESSAGE_INVITE_EXPIRED, placeholders);
 					}
 				}, 30, TimeUnit.SECONDS));
 		ASyncPlayerSendInviteEvent sendInviteEvent = new ASyncPlayerSendInviteEvent(this, from, to, invite, forceInvite ? FactionEvent.Cause.FORCE : FactionEvent.Cause.PLAYER);
@@ -374,17 +373,28 @@ public class Faction extends MinecraftTeam
 		}
 	}
 
+	@ApiStatus.Internal
+	public void joinAsOwner(@NotNull Player player){
+		members.add(player);
+		roles.put(player.getUniqueId(), FRole.OWNER);
+	}
+
 	public boolean join(@NotNull Player player, FactionEvent.Cause cause){
 		ASyncPlayerJoinFactionEvent event = new ASyncPlayerJoinFactionEvent(this, player, cause);
 		if (!event.callEvent() && cause != FactionEvent.Cause.FORCE){
 			return false;
 		}
 		members.add(player);
-		roles.put(player.getUniqueId(), FRole.MEMBER);
+		roles.put(player.getUniqueId(), FRole.GUEST);
+
+		FPlayer fPlayer = factions.getPlayerManager().convert(player);
+		fPlayer.setFaction(this);
+
 		requestSave();
 		return true;
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public boolean isBanned(@NotNull OfflinePlayerReference player) {
 		return isBanned(player.uuid());
 	}
@@ -392,7 +402,7 @@ public class Faction extends MinecraftTeam
 		return isBanned(player.getUniqueId());
 	}
 	public boolean isBanned(@NotNull UUID uuid) {
-		return false;
+		return banned.contains(uuid);
 	}
 
 
@@ -421,11 +431,11 @@ public class Faction extends MinecraftTeam
 		ASyncPlayerLeaveFactionEvent event = new ASyncPlayerLeaveFactionEvent(this, sender);
 		event.callEvent();
 
+		if (isOwner(getFactionId())){
+			factions.getLogger().severe("Faction " + getFactionIdString() + " ("+ getName() + ") does not have a owner as they have left the faction! This should not be happening unless the player has used force commands!");
+		}
 		members.remove(sender.getUniqueId());
 		roles.remove(sender.getUniqueId());
-		if (sender.getUniqueId().equals(superOwner.getUniqueId())){
-			setSuperOwner(null);
-		}
 		factions.getDatabase().getMemberDatabase().delete(sender);
 	}
 
@@ -443,9 +453,6 @@ public class Faction extends MinecraftTeam
 
 		members.remove(member.getUniqueId());
 		roles.remove(member.getUniqueId());
-		if (member.getUniqueId().equals(superOwner.getUniqueId())){
-			setSuperOwner(null);
-		}
 	}
 
 	public void kick(@NotNull Player whoKicked, @NotNull OfflinePlayer member, @NotNull String reason, boolean force){
@@ -462,9 +469,6 @@ public class Faction extends MinecraftTeam
 
 		members.remove(member.getUniqueId());
 		roles.remove(member.getUniqueId());
-		if (member.getUniqueId().equals(superOwner.getUniqueId())){
-			setSuperOwner(null);
-		}
 	}
 
 	public void setPublicPrefix(@NotNull FRole role, @Nullable Component prefix){
@@ -579,6 +583,20 @@ public class Faction extends MinecraftTeam
 				.stream().filter(ref->roles.get(ref)==role).collect(Collectors.toList()));
 	}
 
+	public boolean isOwner(OfflinePlayer player) {
+		return isOwner(player.getUniqueId());
+	}
+	public boolean isOwner(OfflinePlayerReference reference) {
+		return isOwner(reference.getUniqueId());
+	}
+	public boolean isOwner(UUID id) {
+		FRole role = getRole(id);
+		if (role == null){
+			return false;
+		}
+		return role.isOwner();
+	}
+
 	@Override
 	@NotNull
 	public Collection<Placeholder> asPlaceholder(String prefix) {
@@ -589,7 +607,7 @@ public class Faction extends MinecraftTeam
 		if (members.size()>10){
 			return true;
 		}
-		return superOwner != null;
+		return members.stream().anyMatch(member -> getRole(member).isOwner());
 	}
 
 	@Override
@@ -632,82 +650,173 @@ public class Faction extends MinecraftTeam
 
 
 	@Override
+	public FEntityType.FactionType getEntityType() {
+		return FEntityType.FACTION;
+	}
+
+	private void clearRelationshipStatus(UniqueId uniqueId){
+		alliances.remove(uniqueId.getUniqueId());
+		enemies.remove(uniqueId.getUniqueId());
+		truces.remove(uniqueId.getUniqueId());
+	}
+	private void setRelationship(FRelationship<?> relationship, FRelationshipStatus status){
+		clearRelationshipStatus(relationship);
+		if (status.equals(FRelationshipStatus.ALLY)){
+			alliances.put(relationship.getUniqueId(), (FAlliable<?>) relationship);
+		} else if (status.equals(FRelationshipStatus.TRUCE)){
+			truces.put(relationship.getUniqueId(), (FTruce<?>) relationship);
+		} else if (status.equals(FRelationshipStatus.ENEMY)){
+			enemies.put(relationship.getUniqueId(), (FAntagonist<?>) relationship);
+		}
+	}
+
+	private void handleRelationshipChange(FRelationship<?> who, FRelationshipStatus oldStatus, FRelationshipStatus newStatus){
+		FRelationshipInfo info = getRelationshipInfo(who);
+
+		RelationshipStatusChangeEvent event = new RelationshipStatusChangeEvent(this, who, oldStatus, newStatus, info);
+		if (!event.callEvent()){
+			setRelationship(who, oldStatus);
+		}
+	}
+
+	@Override
+	@Heavy
 	public @NotNull Set<@NotNull FRelationshipInfo> getAllies() {
-		return null;
+		return alliances.values().stream().map(this::getRelationshipInfo).collect(Collectors.toSet());
 	}
 
 	@Override
-	public @NotNull Set<@NotNull FRelationshipInfo> getAlliesShared(@NotNull FAlliable uniqueId) {
-		return null;
-	}
-
-	@Override
-	public boolean isAllied(@NotNull FAlliable alliable) {
-		return false;
+	public boolean isAllied(@NotNull FAlliable<?> alliable) {
+		return alliances.get(alliable.getUniqueId()) != null;
 	}
 
 	@Override
 	public boolean isAllied(@NotNull OfflinePlayerReference reference) {
-		return false;
+		return alliances.get(reference.getUniqueId()) != null;
 	}
 
 	@Override
-	public @NotNull FRelationshipInfo markAlly(@NotNull FAlliable alliable) {
-		return null;
+	@Heavy
+	public @NotNull FRelationshipInfo markAlly(@NotNull FAlliable<?> alliable) {
+		FRelationshipStatus statusCurrently = getRelationshipStatus(alliable);
+		setRelationship(alliable, FRelationshipStatus.ALLY);
+		handleRelationshipChange(alliable, statusCurrently, FRelationshipStatus.ALLY);
+		return getRelationshipInfo(alliable);
 	}
 
 	@Override
-	public @NotNull Set<@NotNull FRelationshipInfo> getEnemies() {
-		return null;
-	}
-
-	@Override
-	public @NotNull Set<@NotNull FRelationshipInfo> getEnemiesShared(@NotNull FAntagonist antagonist) {
-		return null;
-	}
-
-	@Override
-	public boolean isEnemy(@NotNull FAntagonist antagonist) {
-		return false;
+	public boolean isEnemy(@NotNull FAntagonist<?> antagonist) {
+		return enemies.containsKey(antagonist.getUniqueId());
 	}
 
 	@Override
 	public boolean isEnemy(@NotNull OfflinePlayerReference reference) {
-		return false;
+		return enemies.containsKey(reference.getUniqueId());
 	}
 
 	@Override
-	public @NotNull FRelationshipInfo markEnemy(@NotNull FAntagonist antagonist) {
-		return null;
+	@Heavy
+	public @NotNull FRelationshipInfo markEnemy(@NotNull FAntagonist<?> antagonist) {
+		FRelationshipStatus statusCurrently = getRelationshipStatus(antagonist);
+		setRelationship(antagonist, FRelationshipStatus.ENEMY);
+		handleRelationshipChange(antagonist, statusCurrently, FRelationshipStatus.ENEMY);
+		return getRelationshipInfo(antagonist);
 	}
 
 	@Override
-	public @NotNull FRelationshipStatus getRelationshipStatus(@NotNull FRelationship relationShip) {
-		return null;
+	public @NotNull FRelationshipStatus getRelationshipStatus(@NotNull UniqueId entity) {
+		java.util.UUID id = entity.getUniqueId();
+		return alliances.containsKey(id)
+				? FRelationshipStatus.ALLY : enemies.containsKey(id)
+				? FRelationshipStatus.ENEMY : truces.containsKey(id)
+				? FRelationshipStatus.TRUCE : FRelationshipStatus.NEUTRAL;
 	}
 
 	@Override
-	public @NotNull FRelationshipInfo getRelationshipInfo(@NotNull FRelationship relationship) {
-		return null;
+	public @NotNull FRelationshipStatus getRelationshipStatus(@NotNull FRelationship<?> relationShip) {
+		return getRelationshipStatus((UniqueId) relationShip);
+	}
+
+	@SafeVarargs
+	private <T> Collection<T> combine(Collection<? extends T>... collections){
+		List<T> list = new ArrayList<>();
+		for (Collection<? extends T> collection : collections){
+			list.addAll(collection);
+		}
+		return list;
 	}
 
 	@Override
-	public boolean isNeutral(@NotNull FRelationship relationship) {
-		return false;
+	@Heavy
+	public @NotNull FRelationshipInfo getRelationshipInfo(@NotNull FRelationship<?> relationship) {
+		FRelationshipStatus status = getRelationshipStatus(relationship);
+		UniqueMap<FAlliable<?>> sharedAllies = new UniqueMap<>();
+		UniqueMap<FAntagonist<?>> sharedEnemies = new UniqueMap<>();
+		UniqueMap<FTruce<?>> sharedTruces = new UniqueMap<>();
+
+		Collection<FRelationship<?>> relationships = combine(this.alliances.values(), this.enemies.values(), this.truces.values());
+		relationships.forEach(otherRelationship -> {
+			FRelationshipStatus relationshipStatus = relationship.getRelationshipStatus(otherRelationship);
+			if (relationshipStatus.equals(FRelationshipStatus.ALLY) && getRelationshipStatus(otherRelationship).equals(FRelationshipStatus.ALLY)){
+				sharedAllies.put(otherRelationship.getUniqueId(), (FAlliable<?>) otherRelationship);
+			} else if (relationshipStatus.equals(FRelationshipStatus.ENEMY) && getRelationshipStatus(otherRelationship).equals(FRelationshipStatus.ENEMY)){
+				sharedEnemies.put(otherRelationship.getUniqueId(), (FAntagonist<?>) otherRelationship);
+			} else if (relationshipStatus.equals(FRelationshipStatus.TRUCE) && getRelationshipStatus(otherRelationship).equals(FRelationshipStatus.TRUCE)){
+				sharedTruces.put(otherRelationship.getUniqueId(), (FTruce<?>) otherRelationship);
+			}
+		});
+
+		return new FRelationshipInfo(
+				status,
+				sharedAllies,
+				sharedEnemies,
+				sharedTruces,
+				this,
+				relationship);
+	}
+
+	@Override
+	public boolean isNeutral(@NotNull FRelationship<?> relationship) {
+		return getRelationshipStatus(relationship).equals(FRelationshipStatus.NEUTRAL);
 	}
 
 	@Override
 	public boolean isNeutral(@NotNull OfflinePlayerReference reference) {
-		return false;
+		return getRelationshipStatus(reference).equals(FRelationshipStatus.NEUTRAL);
 	}
 
 	@Override
 	public boolean isNeutral(@NotNull FactionReference factionReference) {
-		return false;
+		if (factionReference.getFactionId() == null){
+			return true;
+		}
+		return getRelationshipStatus(Objects.requireNonNull(factionReference.getFaction())).equals(FRelationshipStatus.NEUTRAL);
 	}
 
 	@Override
-	public FRelationshipInfo markNeutral(@NotNull FRelationship relationship) {
-		return null;
+	@Heavy
+	public FRelationshipInfo markNeutral(@NotNull FRelationship<?> relationship) {
+		FRelationshipStatus statusCurrently = getRelationshipStatus(relationship);
+		setRelationship(relationship, FRelationshipStatus.NEUTRAL);
+		handleRelationshipChange(relationship, statusCurrently, FRelationshipStatus.NEUTRAL);
+		return getRelationshipInfo(relationship);
+	}
+	@Override
+	public boolean isTruced(@NotNull FTruce<?> truce) {
+		return truces.containsKey(truce.getUniqueId());
+	}
+
+	@Override
+	public boolean isTruced(@NotNull OfflinePlayerReference reference) {
+		return truces.containsKey(reference.getUniqueId());
+	}
+
+	@Override
+	@Heavy
+	public @NotNull FRelationshipInfo markTruced(@NotNull FTruce<?> truce) {
+		FRelationshipStatus statusCurrently = getRelationshipStatus(truce);
+		setRelationship(truce, FRelationshipStatus.TRUCE);
+		handleRelationshipChange(truce, statusCurrently, FRelationshipStatus.TRUCE);
+		return getRelationshipInfo(truce);
 	}
 }

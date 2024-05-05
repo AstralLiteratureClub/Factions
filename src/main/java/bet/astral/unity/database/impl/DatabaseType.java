@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public enum DatabaseType {
-	MYSQL(HikariDatabaseSource.class, "com.mysql.jdbc.Driver"),
+	MYSQL(HikariDatabaseSource.class, "com.mysql.cj.jdbc.MysqlDataSource"),
 	SQLITE(SQLDatabaseSource.class, "org.sqlite.JDBC"),
 	MONGODB(null)
 	;

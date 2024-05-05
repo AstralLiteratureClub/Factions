@@ -4,7 +4,7 @@ import bet.astral.unity.Factions;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import bet.astral.unity.utils.refrence.PlayerReferenceImpl;
 import net.kyori.adventure.text.Component;
@@ -24,7 +24,6 @@ import org.incendo.cloud.exception.parsing.ParserException;
 import org.incendo.cloud.parser.ArgumentParseResult;
 import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
-import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 import org.incendo.cloud.suggestion.Suggestion;
 
 import java.text.DateFormat;
@@ -139,7 +138,7 @@ public class MemberParser<C> implements ArgumentParser<C, OfflinePlayer> {
 		private final String input;
 
 		public MemberParserException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_UNKNOWN_MEMBER, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_UNKNOWN_MEMBER, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

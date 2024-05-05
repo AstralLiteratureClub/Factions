@@ -60,6 +60,10 @@ public class FPlayer implements Flaggable,
 		return uniqueId;
 	}
 
+	public void setFaction(@NotNull FactionReference reference){
+		this.factionId = reference.getFactionId();
+	}
+
 	@Override
 	public <V> void addFlag(@NotNull Flag<V> flag) {
 		flags.put(flag.getKey(), flag);

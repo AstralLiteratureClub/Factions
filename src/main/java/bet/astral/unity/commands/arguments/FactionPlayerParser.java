@@ -5,7 +5,7 @@ import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.nms.TooltipSuggestion;
 import bet.astral.unity.utils.PermissionUtils;
-import bet.astral.unity.utils.TranslationKey;
+import bet.astral.unity.messenger.TranslationKeys;
 import bet.astral.unity.utils.refrence.PlayerFactionReferenceImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -92,7 +92,7 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 		private final String input;
 
 		public FactionPlayerParseException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_HAS_NO_FACTION, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_HAS_NO_FACTION, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 
@@ -105,7 +105,7 @@ public class FactionPlayerParser<C> implements ArgumentParser<C, OfflinePlayer>,
 		private final String input;
 
 		public CannotCheckOfflinePlayerException(final @NonNull String input, final @NonNull CommandContext<?> context) {
-			super(PlayerParser.class, context, TranslationKey.CAPTION_CANNOT_CHECK_OFFLINE_PLAYER, CaptionVariable.of("input", input));
+			super(PlayerParser.class, context, TranslationKeys.CAPTION_CANNOT_CHECK_OFFLINE_PLAYER, CaptionVariable.of("input", input));
 			this.input = input;
 		}
 

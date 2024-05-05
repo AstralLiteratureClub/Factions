@@ -7,7 +7,7 @@ plugins {
 
     id 'io.freefair.lombok' version '5.1.0'
 
-    id("io.papermc.paperweight.userdev") version "1.5.10"
+    id("io.papermc.paperweight.userdev") version "1.6.2"
 
     id("xyz.jpenilla.run-paper") version "2.2.2"
 }
@@ -72,7 +72,7 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.11.5'
 
     compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
-    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
 }
 
 
@@ -83,7 +83,7 @@ configurations.compileOnly {
     exclude group: 'org.bukkit', module: 'bukkit'
 }
 
-def targetJavaVersion = 17
+def targetJavaVersion = 21
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion

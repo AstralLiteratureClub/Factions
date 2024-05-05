@@ -2,7 +2,7 @@ package bet.astral.unity.commands.alliance;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.AllyCloudCommand;
+import bet.astral.unity.commands.core.AllyCloudCommand;
 import org.bukkit.command.CommandSender;
 import org.incendo.cloud.paper.PaperCommandManager;
 

@@ -1,6 +1,7 @@
 package bet.astral.guiman;
 
 import net.kyori.adventure.text.Component;
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
