@@ -3,7 +3,7 @@ package bet.astral.unity.commands.faction.delete;
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudConfirmableCommand;
+import bet.astral.unity.commands.core.FactionConfirmableSubCommand;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.FRole;
@@ -21,12 +21,12 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Cloud
-public class DeleteFactionSC extends FactionCloudConfirmableCommand {
-	static DeleteFactionSC instance;
+public class DeleteSC extends FactionConfirmableSubCommand {
+	static DeleteSC instance;
 	final Consumer<CommandSender> acceptConsumer;
 	final Consumer<CommandSender> timeRanOutConsumer;
 
-	public DeleteFactionSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+	public DeleteSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		instance = this;
 		acceptConsumer = (sender) -> {

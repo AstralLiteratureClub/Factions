@@ -4,7 +4,7 @@ import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.commands.arguments.FactionInviteParser;
 import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FPlayer;
@@ -20,7 +20,7 @@ import org.incendo.cloud.permission.PredicatePermission;
 import java.util.function.Predicate;
 
 @Cloud
-public class DenyInvitationSC extends FactionCloudCommand {
+public class DenyInvitationSC extends FactionSubCommand {
 	public DenyInvitationSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		Command.Builder<Player> builder =

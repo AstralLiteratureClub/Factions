@@ -5,7 +5,7 @@ import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.commands.arguments.MemberParser;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.messenger.TranslationKeys;
 import bet.astral.unity.model.Faction;
 import org.bukkit.OfflinePlayer;
@@ -16,7 +16,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
 @Cloud
-public class ForceKickMemberSC extends FactionCloudCommand {
+public class ForceKickMemberSC extends FactionSubCommand {
 	public ForceKickMemberSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		commandPlayer(

@@ -3,7 +3,7 @@ package bet.astral.unity.commands.faction.invite;
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.commands.arguments.FactionInviteParser;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FInvite;
@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Cloud
-public class InvitesSC extends FactionCloudCommand {
+public class InvitesSC extends FactionSubCommand {
 	public InvitesSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		Command.Builder<Player> builder =

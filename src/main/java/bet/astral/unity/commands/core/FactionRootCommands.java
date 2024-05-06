@@ -12,6 +12,8 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
+import java.util.Objects;
+
 public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender> {
 	// Factions
 	public final Command.Builder<CommandSender> root;
@@ -48,7 +50,7 @@ public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender>
 				"faction", "f",
 				"clans", "clan", "c",
 				"guilds", "guild", "g")
-				.commandDescription(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT, "/factions"))
+				.commandDescription(Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT, "/factions")))
 				.permission(PermissionUtils.of("factions"))
 				.handler(context -> {
 					help.queryCommands("", context.sender());
@@ -56,17 +58,16 @@ public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender>
 		command(root);
 
 		rootForceFaction = root.literal("force",
-						plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_FORCE, "/factions force"),
+						Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_FORCE, "/factions force")),
 						"f"
 				)
-				.commandDescription(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_FORCE, "/factions force"))
+				.commandDescription(Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_FORCE, "/factions force")))
 				.permission(PermissionUtils.of("force"))
 				.handler(context -> help.queryCommands("factions force", context.sender()));
 		command(rootForceFaction);
 
-		command(root.literal("help",
-				TranslationKeys.DESCRIPTION_HELP)
-				.commandDescription(plugin.loadDescription(TranslationKeys.DESCRIPTION_HELP, "/factions help"))
+		command(root.literal("help")
+				.commandDescription(Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_HELP, "/factions help")))
 				.optional("query", StringParser.greedyStringParser(), DefaultValue.constant(""), plugin.loadDescription(TranslationKeys.DESCRIPTION_HELP_QUERY, "/factions help <query>"))
 				.handler(context -> {
 					help.queryCommands(context.get("query"), context.sender());
@@ -75,37 +76,34 @@ public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender>
 		rootAlly = commandBuilder("alliance",
 				plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY, "/alliance"),
 				"ally", "allies")
-				.commandDescription(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY, "/alliance"))
+				.commandDescription(Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY, "/alliance")))
 				.handler(context -> {
 					help.queryCommands("alliance", context.sender());
 				});
 		command(
-				rootAlly.literal("help",
-								TranslationKeys.DESCRIPTION_HELP)
+				rootAlly.literal("help")
 						.optional("query", StringParser.greedyStringParser(), DefaultValue.constant(""), plugin.loadDescription(TranslationKeys.DESCRIPTION_HELP_QUERY, "/factions help <query>"))
 						.handler(context -> {
 							help.queryCommands(context.get("query"), context.sender());
 						}));
 
 		rootFactionAlly = root.literal("alliance",
-						plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY, "/factions alliance"),
+						Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY, "/factions alliance")),
 						"ally", "allies")
-				.commandDescription(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY, "/factions alliance"))
+				.commandDescription(Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY, "/factions alliance")))
 				.permission(PermissionUtils.of("ally", true))
 				.handler(context -> {
 					helpAlly.queryCommands("", context.sender());
 				});
 		rootForceAlly = rootAlly.literal("force",
-						plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY_FORCE, "/alliance force"),
 						"f"
 				)
-				.commandDescription(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY_FORCE, "/alliance force"))
+				.commandDescription(Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY_FORCE, "/alliance force")))
 				.permission(PermissionUtils.of("force"))
 				.handler(context -> help.queryCommands("alliance force", context.sender()));
 		rootForceFactionAlly = rootForceFaction.literal("alliance",
-						plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY_FORCE, "/factions force alliance"),
 						"ally", "allies")
-				.commandDescription(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY_FORCE, "/factions force alliance"))
+				.commandDescription(Objects.requireNonNull(plugin.loadDescription(TranslationKeys.DESCRIPTION_ROOT_ALLY_FORCE, "/factions force alliance")))
 				.permission(PermissionUtils.of("force"))
 				.handler(context -> help.queryCommands("factions force alliance", context.sender()));
 

@@ -16,8 +16,8 @@ import org.incendo.cloud.parser.flag.CommandFlag;
 import org.incendo.cloud.parser.standard.StringParser;
 
 @Cloud
-public class ForceBanFactionNameSC extends AbstractBanSC {
-	public ForceBanFactionNameSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+public class ForceBanNameSC extends AbstractBanSC {
+	public ForceBanNameSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		command(
 				banRoot

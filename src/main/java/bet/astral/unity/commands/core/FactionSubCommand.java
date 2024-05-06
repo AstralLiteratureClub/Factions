@@ -5,7 +5,6 @@ import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.translation.TranslationKey;
 import bet.astral.unity.Factions;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
-import me.clip.placeholderapi.commands.PlaceholderCommandRouter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.Command;
@@ -14,12 +13,12 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.minecraft.extras.RichDescription;
 import org.incendo.cloud.paper.PaperCommandManager;
 
-public class FactionCloudCommand extends CloudPPCommand<Factions, CommandSender> {
+public class FactionSubCommand extends CloudPPCommand<Factions, CommandSender> {
 	protected final Command.Builder<CommandSender> root;
 	protected final Command.Builder<CommandSender> forceRoot;
 	protected final MinecraftHelp<CommandSender> rootHelp;
 	protected FactionPlaceholderManager placeholderManager;
-	public FactionCloudCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+	public FactionSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		this.root = plugin.getRootFactionCommand();
 		this.forceRoot = plugin.getRootForceFactionCommand();

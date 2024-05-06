@@ -7,7 +7,7 @@ import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.translation.TranslationKey;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.commands.arguments.FactionPlayerParser;
 import bet.astral.unity.model.FPlayer;
@@ -33,8 +33,8 @@ import java.util.List;
 
 
 @Cloud
-public class FactionInfoSC extends FactionCloudCommand {
-	public FactionInfoSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+public class InfoSC extends FactionSubCommand {
+	public InfoSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		Command.Builder<Player> builder = root
 				.literal("info",

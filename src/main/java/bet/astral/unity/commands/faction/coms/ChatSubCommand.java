@@ -2,8 +2,8 @@ package bet.astral.unity.commands.faction.coms;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
-import bet.astral.unity.model.FChat;
+import bet.astral.unity.commands.core.FactionSubCommand;
+import bet.astral.unity.model.FCommunicationChannel;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
@@ -17,7 +17,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
 @Cloud
-public class ChatSubCommand extends FactionCloudCommand {
+public class ChatSubCommand extends FactionSubCommand {
 	public ChatSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		commandManager.command(
@@ -45,16 +45,16 @@ public class ChatSubCommand extends FactionCloudCommand {
 							Player sender = context.sender();
 							FPlayer player = plugin.getPlayerManager().convert(sender);
 							Faction faction = plugin.getFactionManager().get(player.getFactionId());
-							FChat.Toggleable chat = FChat.Toggleable.FACTION;
+							FCommunicationChannel.Toggleable chat = FCommunicationChannel.Toggleable.FACTION;
 
 							if (context.optional("message").isEmpty()) {
 								switch (player.getChatType()) {
 									case ALLY, GLOBAL, CUSTOM -> {
-										player.setChatType(FChat.FACTION);
+										player.setChatType(FCommunicationChannel.FACTION);
 										player.message(TranslationKeys.MESSAGE_CHAT_SWITCH_FACTION);
 									}
 									default -> {
-										player.setChatType(FChat.GLOBAL);
+										player.setChatType(FCommunicationChannel.GLOBAL);
 										player.message(TranslationKeys.MESSAGE_CHAT_SWITCH_GLOBAL);
 									}
 								}
@@ -96,16 +96,16 @@ public class ChatSubCommand extends FactionCloudCommand {
 							Player sender = context.sender();
 							FPlayer player = plugin.getPlayerManager().convert(sender);
 							Faction faction = plugin.getFactionManager().get(player.getFactionId());
-							FChat.Toggleable chat = FChat.Toggleable.FACTION;
+							FCommunicationChannel.Toggleable chat = FCommunicationChannel.Toggleable.FACTION;
 
 							if (context.optional("message").isEmpty()) {
 								switch (player.getChatType()) {
 									case ALLY, GLOBAL, CUSTOM -> {
-										player.setChatType(FChat.FACTION);
+										player.setChatType(FCommunicationChannel.FACTION);
 										player.message(TranslationKeys.MESSAGE_CHAT_SWITCH_FACTION);
 									}
 									default -> {
-										player.setChatType(FChat.GLOBAL);
+										player.setChatType(FCommunicationChannel.GLOBAL);
 										player.message(TranslationKeys.MESSAGE_CHAT_SWITCH_GLOBAL);
 									}
 								}

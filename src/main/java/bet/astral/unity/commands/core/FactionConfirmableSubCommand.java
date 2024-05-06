@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class FactionCloudConfirmableCommand extends FactionCloudCommand implements Confirmable<CommandSender> {
+public class FactionConfirmableSubCommand extends FactionSubCommand implements Confirmable<CommandSender> {
 	private final Map<CommandSender, Triple<BukkitTask, Consumer<CommandSender>, Consumer<CommandSender>>> confirmable = new HashMap<>();
-	public FactionCloudConfirmableCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+	public FactionConfirmableSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 	}
 

@@ -1,7 +1,7 @@
 package bet.astral.unity.commands.faction.meta.name;
 
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.utils.PermissionUtils;
 import bet.astral.unity.messenger.TranslationKeys;
@@ -11,7 +11,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
 
-public class ChangeNameSC extends FactionCloudCommand {
+public class ChangeNameSC extends FactionSubCommand {
 	public ChangeNameSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		commandPlayer(

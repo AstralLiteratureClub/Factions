@@ -3,8 +3,7 @@ package bet.astral.unity.commands.faction.invite;
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
-import bet.astral.unity.commands.arguments.FactionParser;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.commands.arguments.InvitableParser;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FPermission;
@@ -12,18 +11,16 @@ import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
 import bet.astral.unity.messenger.TranslationKeys;
-import bet.astral.unity.utils.refrence.PlayerReference;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.incendo.cloud.Command;
-import org.incendo.cloud.bukkit.parser.PlayerParser;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 import java.util.List;
 
 @Cloud
-public class InvitePlayerSC extends FactionCloudCommand {
+public class InvitePlayerSC extends FactionSubCommand {
 	public InvitePlayerSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		Command.Builder<Player> builder =

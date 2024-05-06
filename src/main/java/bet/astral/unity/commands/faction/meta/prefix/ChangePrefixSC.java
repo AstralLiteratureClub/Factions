@@ -5,7 +5,7 @@ import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.PlaceholderValue;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.commands.arguments.MemberParser;
 import bet.astral.unity.commands.arguments.RoleParser;
 import bet.astral.unity.configuration.FactionConfig;
@@ -26,7 +26,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
 @Cloud
-public class ChangePrefixSC extends FactionCloudCommand {
+public class ChangePrefixSC extends FactionSubCommand {
 	public ChangePrefixSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		PlaceholderList publicAllowed = new PlaceholderList();

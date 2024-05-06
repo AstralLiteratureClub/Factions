@@ -3,7 +3,7 @@ package bet.astral.unity.commands.faction.kick;
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.commands.arguments.MemberParser;
 import bet.astral.unity.model.FPermission;
 import bet.astral.unity.model.FRole;
@@ -18,7 +18,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.parser.standard.StringParser;
 
 @Cloud
-public class KickMemberSC extends FactionCloudCommand {
+public class KickMemberSC extends FactionSubCommand {
 	public KickMemberSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		commandPlayer(

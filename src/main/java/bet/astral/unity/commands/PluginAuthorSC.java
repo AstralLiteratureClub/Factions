@@ -2,13 +2,13 @@ package bet.astral.unity.commands;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import org.bukkit.command.CommandSender;
 import org.incendo.cloud.description.Description;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 @Cloud
-public class PluginAuthorSC extends FactionCloudCommand {
+public class PluginAuthorSC extends FactionSubCommand {
 	public PluginAuthorSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		command(

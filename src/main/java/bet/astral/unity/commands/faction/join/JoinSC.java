@@ -7,8 +7,8 @@ import bet.astral.messenger.placeholder.PlaceholderValue;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.arguments.FactionParser;
 import bet.astral.unity.commands.arguments.RoleParser;
-import bet.astral.unity.commands.core.FactionCloudCommand;
-import bet.astral.unity.commands.faction.delete.ForceDeleteFactionSC;
+import bet.astral.unity.commands.core.FactionSubCommand;
+import bet.astral.unity.commands.faction.delete.ForceDeleteSC;
 import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.model.FInvite;
@@ -22,8 +22,8 @@ import org.incendo.cloud.component.DefaultValue;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 @Cloud
-public class JoinFactionSC extends FactionCloudCommand {
-	public JoinFactionSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+public class JoinSC extends FactionSubCommand {
+	public JoinSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		commandPlayer(
 				root.literal("join")
@@ -96,9 +96,9 @@ public class JoinFactionSC extends FactionCloudCommand {
 										current.leave(sender);
 
 										if (current.getMembers().isEmpty()){
-											ForceDeleteFactionSC.handleForced(sender);
+											ForceDeleteSC.handleForced(sender);
 										} else if (isLeading) {
-											ForceDeleteFactionSC.handleForce(sender, current, "Force joined another faction", true, messenger);
+											ForceDeleteSC.handleForce(sender, current, "Force joined another faction", true, messenger);
 										}
 									}
 

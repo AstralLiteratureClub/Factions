@@ -11,7 +11,7 @@ import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.minecraft.extras.RichDescription;
 import org.incendo.cloud.paper.PaperCommandManager;
 
-public class AllyCloudCommand extends CloudPPCommand<Factions, CommandSender> {
+public class AllySubCommand extends CloudPPCommand<Factions, CommandSender> {
 	// faction ally
 	protected final Command.Builder<CommandSender> factionAlly;
 	// faction force ally
@@ -23,7 +23,7 @@ public class AllyCloudCommand extends CloudPPCommand<Factions, CommandSender> {
 	protected final MinecraftHelp<CommandSender> rootHelp;
 	protected final MinecraftHelp<CommandSender> factionHelp;
 	protected FactionPlaceholderManager placeholderManager;
-	public AllyCloudCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+	public AllySubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		this.root = plugin.getRootAllyCommand();
 		this.rootForce = plugin.getRootAllyForceCommand();

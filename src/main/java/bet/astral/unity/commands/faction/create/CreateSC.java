@@ -5,7 +5,7 @@ import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.arguments.FactionNameParser;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.PermissionUtils;
 import bet.astral.unity.messenger.TranslationKeys;
@@ -14,8 +14,8 @@ import org.bukkit.entity.Player;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 @Cloud
-public class CreateFactionSC extends FactionCloudCommand {
-	public CreateFactionSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+public class CreateSC extends FactionSubCommand {
+	public CreateSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		commandPlayer(
 				root

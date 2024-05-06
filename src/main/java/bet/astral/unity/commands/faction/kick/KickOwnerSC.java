@@ -2,7 +2,7 @@ package bet.astral.unity.commands.faction.kick;
 
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.commands.arguments.KickableOwnerParser;
 import bet.astral.unity.commands.arguments.MemberParser;
 import bet.astral.unity.messenger.TranslationKeys;
@@ -11,7 +11,7 @@ import org.incendo.cloud.paper.PaperCommandManager;
 
 // TODO - Think of how the takeover stuff should work
 @Cloud
-public class KickOwnerSC extends FactionCloudCommand {
+public class KickOwnerSC extends FactionSubCommand {
 	public KickOwnerSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		command(

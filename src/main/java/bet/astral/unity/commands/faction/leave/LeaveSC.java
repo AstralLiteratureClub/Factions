@@ -3,7 +3,7 @@ package bet.astral.unity.commands.faction.leave;
 import bet.astral.cloudplusplus.annotations.Cloud;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
@@ -15,8 +15,8 @@ import org.incendo.cloud.paper.PaperCommandManager;
 import org.incendo.cloud.permission.PredicatePermission;
 
 @Cloud
-public class LeaveFactionSC extends FactionCloudCommand {
-	public LeaveFactionSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+public class LeaveSC extends FactionSubCommand {
+	public LeaveSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		commandPlayer(
 				root.literal("leave", "quit")

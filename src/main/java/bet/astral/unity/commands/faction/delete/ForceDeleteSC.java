@@ -5,7 +5,7 @@ import bet.astral.messenger.Messenger;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.unity.Factions;
 import bet.astral.unity.commands.arguments.FactionParser;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.messenger.FactionPlaceholderManager;
 import bet.astral.unity.messenger.TranslationKeys;
 import bet.astral.unity.model.Faction;
@@ -17,11 +17,11 @@ import org.incendo.cloud.parser.flag.CommandFlag;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.permission.PredicatePermission;
 
-import static bet.astral.unity.commands.faction.delete.DeleteFactionSC.instance;
+import static bet.astral.unity.commands.faction.delete.DeleteSC.instance;
 
 @Cloud
-public class ForceDeleteFactionSC extends FactionCloudCommand {
-	public ForceDeleteFactionSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+public class ForceDeleteSC extends FactionSubCommand {
+	public ForceDeleteSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		command(
 				forceRoot

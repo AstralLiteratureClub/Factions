@@ -1,13 +1,13 @@
 package bet.astral.unity.commands.faction.ban;
 
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.core.FactionCloudCommand;
+import bet.astral.unity.commands.core.FactionSubCommand;
 import bet.astral.unity.messenger.TranslationKeys;
 import org.bukkit.command.CommandSender;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.paper.PaperCommandManager;
 
-public class AbstractBanSC extends FactionCloudCommand {
+public class AbstractBanSC extends FactionSubCommand {
 	protected final Command.Builder<CommandSender> banRoot;
 	public AbstractBanSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
