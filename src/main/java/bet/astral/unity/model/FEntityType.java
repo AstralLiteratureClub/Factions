@@ -2,6 +2,7 @@ package bet.astral.unity.model;
 
 import bet.astral.unity.Factions;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,17 @@ public interface FEntityType<D> {
 	UnityPlayerType PLAYER_UNITY = new UnityPlayerType();
 	BukkitPlayerType PLAYER_BUKKIT = new BukkitPlayerType();
 	FactionType FACTION = new FactionType();
+
+	static <D> FEntityType<D> getEntityType(Object object) throws IllegalStateException{
+		if (object instanceof FEntity<?>){
+			//noinspection unchecked
+			return ((FEntity<D>) object).getEntityType();
+		} else if (object instanceof Player){
+			//noinspection unchecked
+			return (FEntityType<D>) PLAYER_UNITY;
+		}
+		throw new IllegalStateException("Couldn't get (UNITY) entity type for "+ object.toString());
+	}
 
 	@NotNull
 	String getTypeName();

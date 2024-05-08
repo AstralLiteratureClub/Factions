@@ -1,7 +1,10 @@
 package bet.astral.unity.model;
 
+import bet.astral.guiman.GUIViewer;
 import bet.astral.messenger.Messenger;
 import bet.astral.messenger.placeholder.Placeholder;
+import bet.astral.shine.ShineHandler;
+import bet.astral.shine.model.ShineReceiver;
 import bet.astral.unity.Factions;
 import bet.astral.unity.model.interactions.*;
 import bet.astral.unity.utils.UniqueId;
@@ -28,14 +31,16 @@ import java.util.*;
 public class FPlayer implements Flaggable,
 		ForwardingAudience, PlayerReference,
 		FactionReference, UniqueId,
-		FRelationship, FAntagonist, FAlliable {
+		FRelationship, FAntagonist, FAlliable, FTruce<FPlayer>,
+		ShineReceiver, GUIViewer, FEntity<FPlayer>
+{
 	private final Factions factions;
 	@Getter(AccessLevel.NONE)
 	private final Map<NamespacedKey, Flag<?>> flags = new HashMap<>();
 	private final UUID uniqueId;
 	private final String name;
 	private UUID factionId;
-	private FChat chatType = FChat.GLOBAL;
+	private FCommunicationChannel chatType = FCommunicationChannel.GLOBAL;
 
 	public FPlayer(Factions factions, Player player){
 		this.factions = factions;
@@ -148,83 +153,28 @@ public class FPlayer implements Flaggable,
 		return PlayerReference.super.audiences();
 	}
 
+
 	@Override
-	public @NotNull Set<@NotNull FRelationshipInfo> getAllies() {
-		return null;
+	public List<Player> getShineReceivers() {
+		Player player = player();
+		if (player == null || !player.isOnline()){
+			return Collections.emptyList();
+		}
+		return List.of(player);
 	}
 
 	@Override
-	public @NotNull Set<@NotNull FRelationshipInfo> getAlliesShared(@NotNull FAlliable uniqueId) {
-		return null;
+	public ShineHandler getShineHandler() {
+		return getFactions().getShineHandler();
 	}
 
 	@Override
-	public boolean isAllied(@NotNull FAlliable alliable) {
-		return false;
+	public @Nullable Player getPlayer() {
+		return player();
 	}
 
 	@Override
-	public boolean isAllied(@NotNull OfflinePlayerReference reference) {
-		return false;
-	}
-
-	@Override
-	public @NotNull FRelationshipInfo markAlly(@NotNull FAlliable alliable) {
-		return null;
-	}
-
-	@Override
-	public @NotNull Set<@NotNull FRelationshipInfo> getEnemies() {
-		return null;
-	}
-
-	@Override
-	public @NotNull Set<@NotNull FRelationshipInfo> getEnemiesShared(@NotNull FAntagonist antagonist) {
-		return null;
-	}
-
-	@Override
-	public boolean isEnemy(@NotNull FAntagonist antagonist) {
-		return false;
-	}
-
-	@Override
-	public boolean isEnemy(@NotNull OfflinePlayerReference reference) {
-		return false;
-	}
-
-	@Override
-	public @NotNull FRelationshipInfo markEnemy(@NotNull FAntagonist antagonist) {
-		return null;
-	}
-
-	@Override
-	public @NotNull FRelationshipStatus getRelationshipStatus(@NotNull FRelationship relationShip) {
-		return null;
-	}
-
-	@Override
-	public @NotNull FRelationshipInfo getRelationshipInfo(@NotNull FRelationship relationship) {
-		return null;
-	}
-
-	@Override
-	public boolean isNeutral(@NotNull FRelationship relationship) {
-		return false;
-	}
-
-	@Override
-	public boolean isNeutral(@NotNull OfflinePlayerReference reference) {
-		return false;
-	}
-
-	@Override
-	public boolean isNeutral(@NotNull FactionReference factionReference) {
-		return false;
-	}
-
-	@Override
-	public FRelationshipInfo markNeutral(@NotNull FRelationship relationship) {
-		return null;
+	public FEntityType<FPlayer> getEntityType() {
+		return FEntityType.PLAYER_UNITY;
 	}
 }

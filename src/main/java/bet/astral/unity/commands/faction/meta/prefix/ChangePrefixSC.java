@@ -109,6 +109,7 @@ public class ChangePrefixSC extends FactionSubCommand {
 					Component prefix = Component.text(plain);
 					faction.setPublicPrefix(role, prefix);
 					messenger.message(sender, TranslationKeys.MESSAGE_PREFIX_SET_PUBLIC_CHANGED, placeholders);
+					faction.requestSave();
 				});
 		commandPlayer(publicPrefix);
 
@@ -153,6 +154,7 @@ public class ChangePrefixSC extends FactionSubCommand {
 							placeholders.add("new_prefix", prefix);
 							faction.setPrivatePrefix(role, prefix);
 							messenger.message(sender, TranslationKeys.MESSAGE_PREFIX_SET_PRIVATE_ROLE_CHANGED, placeholders);
+							faction.requestSave();
 						})
 		);
 
@@ -188,6 +190,7 @@ public class ChangePrefixSC extends FactionSubCommand {
 
 							faction.setPrivatePrefix(player, prefix, FactionEvent.Cause.PLAYER);
 							messenger.message(sender, TranslationKeys.MESSAGE_PREFIX_SET_PRIVATE_MEMBER_CHANGED, placeholders);
+							faction.requestSave();
 						})
 		);
 		commandPlayer(
@@ -215,6 +218,7 @@ public class ChangePrefixSC extends FactionSubCommand {
 							placeholders.add("role", role);
 							placeholders.add("new_prefix", (PlaceholderValue) prefix);
 							messenger.message(sender, TranslationKeys.MESSAGE_PREFIX_RESET_PUBLIC_ROLE, placeholders);
+							faction.requestSave();
 						}));
 		Command.Builder<Player> privateReset = reset.literal("private")
 				.commandDescription(loadDescription(
@@ -252,6 +256,7 @@ public class ChangePrefixSC extends FactionSubCommand {
 							placeholders.add("role", role);
 							placeholders.add("new_prefix", (PlaceholderValue) prefix);
 							messenger.message(sender, TranslationKeys.MESSAGE_PREFIX_RESET_PRIVATE_ROLE, placeholders);
+							faction.requestSave();
 						}));
 		commandPlayer(
 				privateReset
@@ -280,6 +285,7 @@ public class ChangePrefixSC extends FactionSubCommand {
 							placeholders.add("member", member.getName());
 							placeholders.add("new_prefix", (PlaceholderValue) prefix);
 							messenger.message(sender, TranslationKeys.MESSAGE_PREFIX_RESET_PRIVATE_PLAYER, placeholders);
+							faction.requestSave();
 						}));
 	}
 }

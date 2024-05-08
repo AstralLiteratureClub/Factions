@@ -57,6 +57,7 @@ public class AcceptInvitationSC extends FactionSubCommand {
 							if (faction.acceptInvite(sender)) {
 								messenger.message(sender, TranslationKeys.MESSAGE_INVITE_ACCEPT, placeholders);
 								faction.message(TranslationKeys.BROADCAST_INVITE_ACCEPT, placeholders);
+								faction.requestSave();
 							}
 						})
 		);

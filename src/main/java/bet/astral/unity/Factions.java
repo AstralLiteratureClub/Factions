@@ -11,7 +11,8 @@ import bet.astral.messenger.message.part.DefaultMessagePart;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.translation.TranslationKey;
-import bet.astral.unity.commands.core.FactionRootCommands;
+import bet.astral.shine.ShineHandler;
+import bet.astral.unity.commands.core.Init;
 import bet.astral.unity.configuration.Config;
 import bet.astral.unity.configuration.FactionConfig;
 import bet.astral.unity.database.Database;
@@ -72,6 +73,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             return false;
         }
     }
+    private final ShineHandler shineHandler = new ShineHandler(this);
 
     private PaperCommandManager<CommandSender> commandManager;
     // faction
@@ -106,6 +108,8 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         reloadConfig();
         Config config = new Config(super.getConfig());
         isDebug = super.getConfig().getBoolean("isDebug", false);
+
+        shineHandler.onEnable();
 
         factionConfig = new FactionConfig(getConfig(new File(getDataFolder(), "config.yml")));
 
@@ -173,7 +177,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
         FileConfiguration messengerConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
 //        messenger = new Messenger<>(this, new HashMap<>(), new IMessageTypeSerializer<CommandSender>(), messengerConfig);
 //        debugMessenger = new Messenger<>(this, messengerConfig, new HashMap<>());
-        dateFormat = new SimpleDateFormat(messengerConfig.getString(TranslationKeys.DATE_FORMAT, "mm:HH dd/MM/yyyy"));
+        dateFormat = new SimpleDateFormat(messengerConfig.getString(TranslationKeys.DATE_FORMAT.key(), "mm:HH dd/MM/yyyy"));
         messenger = new Messenger<>(this, commandManager, new HashMap<>(), new ComponentTypeSerializer(), messengerConfig);
         FactionPlaceholderManager placeholderManager = new FactionPlaceholderManager();
         placeholderManager.setDefaults(placeholderManager.loadPlaceholders("placeholders", messengerConfig));
@@ -205,7 +209,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
             throw new RuntimeException(e);
         }
 
-        FactionRootCommands rootCommand = new FactionRootCommands(this, commandManager);
+        Init rootCommand = new Init(this, commandManager);
 
 
         // /faction
@@ -269,6 +273,7 @@ public final class Factions extends JavaPlugin implements CommandRegisterer<Fact
 
     @Override
     public void onDisable() {
+        shineHandler.onDisable();
         if (database != null){
             if (database.isConnected()){
                 // TODO

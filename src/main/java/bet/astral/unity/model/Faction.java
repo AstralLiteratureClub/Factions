@@ -6,6 +6,8 @@ import bet.astral.messenger.adventure.MessengerAudience;
 import bet.astral.messenger.placeholder.Placeholder;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.placeholder.Placeholderable;
+import bet.astral.shine.ShineHandler;
+import bet.astral.shine.model.ShineReceiver;
 import bet.astral.unity.Factions;
 import bet.astral.unity.annotations.DoNotSave;
 import bet.astral.unity.database.model.DBFactionMember;
@@ -32,7 +34,7 @@ import bet.astral.unity.model.interactions.FRelationshipInfo;
 import bet.astral.unity.model.interactions.FRelationshipStatus;
 import bet.astral.unity.model.interactions.FTruce;
 import bet.astral.unity.model.location.FHome;
-import bet.astral.unity.model.minecraft.MinecraftTeam;
+import bet.astral.unity.model.minecraft.Team;
 import bet.astral.unity.utils.UniqueId;
 import bet.astral.unity.utils.collections.OfflinePlayerList;
 import bet.astral.unity.utils.collections.PlayerMap;
@@ -58,6 +60,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.permission.Permission;
+import org.incendo.cloud.permission.PredicatePermission;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,11 +73,13 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 @Getter
 @Setter
-public final class Faction extends MinecraftTeam
+public final class Faction extends Team
 		implements Identity, ForwardingAudience, Translatable,
 		Flaggable, Placeholderable, UniqueId,
 		FactionReference, MessengerAudience<Factions>,
-		FRelationship<Faction>, FAlliable<Faction>, FAntagonist<Faction>, FTruce<Faction> {
+		FRelationship<Faction>, FAlliable<Faction>, FAntagonist<Faction>, FTruce<Faction>,
+		ShineReceiver
+{
 	private static final Map<FRole, FPrefix> DEFAULT_PRIVATE_PREFIXES = new HashMap<>();
 	private static final Map<FRole, FPrefix> DEFAULT_PUBLIC_PREFIXES = new HashMap<>();
 
@@ -198,10 +204,28 @@ public final class Faction extends MinecraftTeam
 		event.callEvent();
 	}
 
-	private void requestSave(){
+	public void requestSave(){
 		factions.getFactionManager().requestSave(this);
 	}
 
+	public Permission notInThisPermission(){
+		return PredicatePermission.of((sender)->{
+			if (!(sender instanceof Player player)){
+				return true;
+			}
+			FPlayer fPlayer = factions.getPlayerManager().convert(player);
+			return fPlayer.getFaction() == null || !fPlayer.getFaction().equals(this);
+		});
+	}
+	public Permission inThisPermission(){
+		return PredicatePermission.of((sender)->{
+			if (!(sender instanceof Player player)){
+				return false;
+			}
+			FPlayer fPlayer = factions.getPlayerManager().convert(player);
+			return fPlayer.getFaction() != null && fPlayer.getFaction().equals(this);
+		});
+	}
 
 	@Override
 	public @NotNull String translationKey() {
@@ -818,5 +842,15 @@ public final class Faction extends MinecraftTeam
 		setRelationship(truce, FRelationshipStatus.TRUCE);
 		handleRelationshipChange(truce, statusCurrently, FRelationshipStatus.TRUCE);
 		return getRelationshipInfo(truce);
+	}
+
+	@Override
+	public List<Player> getShineReceivers() {
+		return getMembers().getAllOnline();
+	}
+
+	@Override
+	public ShineHandler getShineHandler() {
+		return getFactions().getShineHandler();
 	}
 }

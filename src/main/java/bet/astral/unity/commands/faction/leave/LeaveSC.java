@@ -48,6 +48,7 @@ public class LeaveSC extends FactionSubCommand {
 							placeholders.addAll(placeholderManager.factionPlaceholders("faction", faction));
 							messenger.message(sender, TranslationKeys.MESSAGE_LEAVE, placeholders);
 							messenger.message(faction, TranslationKeys.BROADCAST_LEAVE, placeholders);
+							faction.requestSave();
 						})
 		);
 	}

@@ -3,18 +3,20 @@ package bet.astral.unity.messenger;
 import bet.astral.messenger.adventure.AdventurePlaceholderManager;
 import bet.astral.messenger.placeholder.PlaceholderList;
 import bet.astral.messenger.utils.PlaceholderUtils;
+import bet.astral.shine.model.ShineColor;
 import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.refrence.FactionReference;
+import net.kyori.adventure.text.Component;
 
 public class FactionPlaceholderManager extends AdventurePlaceholderManager {
-	public PlaceholderList factionPlaceholders(String prefix, FactionReference factionReference){
+	public PlaceholderList factionPlaceholders(String prefix, FactionReference factionReference) {
 		Faction faction = factionReference.getFaction();
-		if (faction == null){
+		if (faction == null) {
 			return new PlaceholderList();
 		}
 		PlaceholderList placeholders = new PlaceholderList();
-		if (prefix != null){
+		if (prefix != null) {
 			placeholders.add(PlaceholderUtils.createPlaceholder(null, prefix, faction.getName()));
 		}
 		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "name", faction.getName()));
@@ -37,5 +39,32 @@ public class FactionPlaceholderManager extends AdventurePlaceholderManager {
 		 */
 
 		return placeholders;
+	}
+
+	public PlaceholderList shineColor(String prefix, ShineColor shineColor) {
+		if (shineColor == null) {
+			return new PlaceholderList();
+		}
+		PlaceholderList placeholders = new PlaceholderList();
+		if (prefix != null) {
+			placeholders.add(PlaceholderUtils.createPlaceholder(null, prefix, properCase(shineColor)));
+		}
+		placeholders.add(PlaceholderUtils.createPlaceholder(prefix, "formatted", Component.text(properCase(shineColor), shineColor.getAdventureColor())));
+		return placeholders;
+	}
+
+	public <T extends Enum<T>> String properCase(T enumm) {
+		// Convert constant name to proper case with spaces
+		String[] words = enumm.name().split("_");
+		StringBuilder properCaseName = new StringBuilder();
+		for (String word : words) {
+			properCaseName.append(word.substring(0, 1).toUpperCase())
+					.append(word.substring(1).toLowerCase())
+					.append(" ");
+		}
+		// Remove the trailing space
+		properCaseName.setLength(properCaseName.length() - 1);
+
+		return properCaseName.toString();
 	}
 }

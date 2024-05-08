@@ -53,6 +53,7 @@ public class ForceKickMemberSC extends FactionSubCommand {
 							}
 							messenger.message(faction, TranslationKeys.BROADCAST_FORCE_KICK, placeholders);
 							messenger.message(sender, TranslationKeys.MESSAGE_FORCE_KICK_SENDER, placeholders);
+							faction.requestSave();
 						})
 		);
 	}

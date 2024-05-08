@@ -1,12 +1,12 @@
 package bet.astral.guiman;
 
+import bet.astral.guiman.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -74,7 +74,7 @@ public class InteractableGUI implements InventoryHolder {
 				Collections.sort(clickableList);
 				Collections.reverse(clickableList);
 				for(Clickable clickable : clickableList){
-					if (hasPermission(player, clickable.getPermission()) || !hasPermission(player, clickable.getPermission())&&clickable.isDisplayIfNoPermissions()){
+					if (hasPermission(player, clickable.getPermission()) || !hasPermission(player, clickable.getPermission()) && clickable.isDisplayIfNoPermissions()){
 						inventory.setItem(i, fixPlaceholders(player, clickable.getItemStack()));
 						break;
 					}
@@ -96,7 +96,7 @@ public class InteractableGUI implements InventoryHolder {
 		if (player == null){
 			return true;
 		}
-		return player.hasPermission(permission);
+		return permission.hasPermission(player);
 	}
 
 

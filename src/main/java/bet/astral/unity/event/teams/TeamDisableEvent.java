@@ -1,6 +1,6 @@
 package bet.astral.unity.event.teams;
 
-import bet.astral.unity.model.minecraft.MinecraftTeam;
+import bet.astral.unity.model.minecraft.Team;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -9,13 +9,13 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 public class TeamDisableEvent extends Event {
 	private final static HandlerList HANDLER_LIST = new HandlerList();
-	private final MinecraftTeam team;
+	private final Team team;
 
-	public TeamDisableEvent(MinecraftTeam team) {
+	public TeamDisableEvent(Team team) {
 		this.team = team;
 	}
 
-	public TeamDisableEvent(boolean isAsync, MinecraftTeam team) {
+	public TeamDisableEvent(boolean isAsync, Team team) {
 		super(isAsync);
 		this.team = team;
 	}

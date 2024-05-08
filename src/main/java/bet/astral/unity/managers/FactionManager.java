@@ -1,7 +1,6 @@
 package bet.astral.unity.managers;
 
 import bet.astral.unity.Factions;
-import bet.astral.unity.commands.faction.create.CreateFactionSC;
 import bet.astral.unity.event.FactionEvent;
 import bet.astral.unity.event.ban.ASyncFactionBanEvent;
 import bet.astral.unity.event.ASyncFactionDeleteEvent;
@@ -13,7 +12,6 @@ import bet.astral.unity.event.player.ASyncPlayerCreateFactionEvent;
 import bet.astral.unity.event.player.ASyncPlayerDeleteFactionEvent;
 import bet.astral.unity.model.FInvite;
 import bet.astral.unity.model.FPlayer;
-import bet.astral.unity.model.FRole;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import net.kyori.adventure.text.Component;
@@ -218,13 +216,13 @@ public class FactionManager {
 		}
 	}
 
-	public void changeCustomName(Component oldName, Component newName) {
+	public boolean changeCustomName(Faction faction, Component newName) {
+		final Component oldName = faction.getDisplayname();
 		String oldNameStr = PlainTextComponentSerializer.plainText().serialize(oldName).toLowerCase();
-		Faction faction = byCustomName.get(oldNameStr);
 
 		ASyncFactionDisplaynameChangeEvent event = new ASyncFactionDisplaynameChangeEvent(faction, oldName, newName);
 		if (!event.callEvent()){
-			return;
+			return false;
 		}
 		newName = event.getTo();
 		String newNameStr = PlainTextComponentSerializer.plainText().serialize(newName).toLowerCase();
@@ -233,14 +231,15 @@ public class FactionManager {
 		byCustomName.remove(oldNameStr);
 		byCustomName.put(newNameStr, faction);
 		requestSave(faction);
+		return true;
 	}
-	public void changeCustomName(Player player, Component oldName, Component newName) {
+	public boolean changeCustomName(Player player, Faction faction, Component newName) {
+		final Component oldName = faction.getDisplayname();
 		final String oldNameStr = PlainTextComponentSerializer.plainText().serialize(oldName).toLowerCase();
-		Faction faction = byCustomName.get(oldNameStr);
 
 		ASyncPlayerChangeFactionDisplaynameEvent event = new ASyncPlayerChangeFactionDisplaynameEvent(faction, oldName, newName, player);
 		if (!event.callEvent()){
-			return;
+			return false;
 		}
 		newName = event.getTo();
 		final String newNameStr = PlainTextComponentSerializer.plainText().serialize(newName).toLowerCase();
@@ -250,14 +249,15 @@ public class FactionManager {
 		byCustomName.remove(oldNameStr);
 		byCustomName.put(newNameStr, faction);
 		requestSave(faction);
+		return true;
 	}
 
-	public void changeName(String oldName, String newName) {
-		Faction faction = byCustomName.get(oldName.toLowerCase());
+	public boolean changeName(Faction faction, String newName) {
+		final String oldName = faction.getName().toLowerCase();
 
 		ASyncFactionNameChangeEvent event = new ASyncFactionNameChangeEvent(faction, oldName, newName);
 		if (!event.callEvent()){
-			return;
+			return false;
 		}
 		newName = event.getTo();
 
@@ -265,13 +265,14 @@ public class FactionManager {
 		byName.remove(oldName.toLowerCase());
 		byName.put(newName.toLowerCase(), faction);
 		requestSave(faction);
+		return true;
 	}
-	public void changeName(Player player, String oldName, String newName) {
-		Faction faction = byCustomName.get(oldName.toLowerCase());
+	public boolean changeName(Player player, Faction faction, String newName) {
+		final String oldName = faction.getName().toLowerCase();
 
 		ASyncPlayerChangeFactionNameEvent event = new ASyncPlayerChangeFactionNameEvent(faction, oldName, newName, player);
 		if (!event.callEvent()){
-			return;
+			return false;
 		}
 		newName = event.getTo();
 
@@ -279,6 +280,7 @@ public class FactionManager {
 		byName.remove(oldName.toLowerCase());
 		byName.put(newName.toLowerCase(), faction);
 		requestSave(faction);
+		return true;
 	}
 
 	public Set<Faction> created() {

@@ -1,5 +1,6 @@
 package bet.astral.guiman;
 
+import bet.astral.guiman.permission.Permission;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,7 +13,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.permissions.Permission;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
@@ -25,9 +25,10 @@ import java.util.Random;
 
 @Getter
 public final class Clickable implements Comparable<Clickable>{
-	static final NamespacedKey item_key = new NamespacedKey("bet/astral/guiman", "guiman_inventory_item");
+	static final NamespacedKey item_key = new NamespacedKey("guiman", "guiman_inventory_item");
 	public static final Random random = new Random(System.nanoTime());
-	public static final Permission none = new Permission("");
+	@Deprecated(forRemoval = true)
+	public static final Permission none = Permission.none;
 	public static final Clickable empty_air = new ClickableBuilder(Material.AIR).setPriority(0).setPermission(none).setDisplayIfNoPermissions(true).createClickable();
 	public static final Component permissionMessage = Component.text("Sorry, but you do not have permissions to use this", NamedTextColor.RED);
 	private final int priority;
@@ -49,7 +50,7 @@ public final class Clickable implements Comparable<Clickable>{
 		for (ClickType type : allowedClickTypes) {
 			consumerMap.put(type, consumer);
 		}
-		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).createClickable();
+		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).build();
 	}
 	@Contract("_, _, _, _, _ -> new")
 	public static @NotNull Clickable closeInventoryClickable(int priority, @NotNull ItemStack itemStack, @NotNull Permission permission, boolean displayIfNoPermissions, @NotNull List<@NotNull ClickType> allowedClickTypes){
@@ -58,7 +59,7 @@ public final class Clickable implements Comparable<Clickable>{
 		for (ClickType type : allowedClickTypes) {
 			consumerMap.put(type, consumer);
 		}
-		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).createClickable();
+		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).build();
 	}
 	@Contract("_, _, _, _, _, _ -> new")
 	public static @NotNull Clickable sendMessageAndCloseInventoryClickable(int priority, @NotNull ItemStack itemStack, @NotNull Permission permission, boolean displayIfNoPermissions, Component message, @NotNull List<@NotNull ClickType> allowedClickTypes){
@@ -70,7 +71,7 @@ public final class Clickable implements Comparable<Clickable>{
 		for (ClickType type : allowedClickTypes) {
 			consumerMap.put(type, consumer);
 		}
-		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).createClickable();
+		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).build();
 	}
 	@Contract("_, _, _, _, _, _ -> new")
 	public static @NotNull Clickable runCommandClickable(int priority, @NotNull ItemStack itemStack, @NotNull Permission permission, boolean displayIfNoPermissions, String command, @NotNull List<@NotNull ClickType> allowedClickTypes){
@@ -79,7 +80,7 @@ public final class Clickable implements Comparable<Clickable>{
 		for (ClickType type : allowedClickTypes) {
 			consumerMap.put(type, consumer);
 		}
-		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).createClickable();
+		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).build();
 	}
 	@Contract("_, _, _, _, _, _ -> new")
 	public static @NotNull Clickable runCommandAndCloseInventoryClickable(int priority, @NotNull ItemStack itemStack, @NotNull Permission permission, boolean displayIfNoPermissions, String command, @NotNull List<@NotNull ClickType> allowedClickTypes){
@@ -91,11 +92,11 @@ public final class Clickable implements Comparable<Clickable>{
 		for (ClickType type : allowedClickTypes) {
 			consumerMap.put(type, consumer);
 		}
-		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).createClickable();
+		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(consumerMap).build();
 	}
 
 	public static Clickable empty(ItemStack itemstack) {
-		return new ClickableBuilder(itemstack).setPermission(none).setDisplayIfNoPermissions(true).createClickable();
+		return new ClickableBuilder(itemstack).setPermission(none).setDisplayIfNoPermissions(true).build();
 	}
 
 	public static Clickable general(ItemStack itemStack, TriConsumer<Clickable, ItemStack, Player> action){

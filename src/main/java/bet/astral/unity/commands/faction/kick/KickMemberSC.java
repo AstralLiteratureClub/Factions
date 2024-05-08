@@ -64,6 +64,7 @@ public class KickMemberSC extends FactionSubCommand {
 								messenger.message(player, TranslationKeys.MESSAGE_KICK, placeholders);
 							}
 							messenger.message(faction, TranslationKeys.BROADCAST_KICK, placeholders);
+							faction.requestSave();
 						})
 		);
 	}

@@ -1,7 +1,7 @@
 package bet.astral.unity.managers;
 
 import bet.astral.unity.Factions;
-import bet.astral.unity.model.FChat;
+import bet.astral.unity.model.FCommunicationChannel;
 import bet.astral.unity.model.FPlayer;
 import bet.astral.unity.model.Faction;
 import bet.astral.unity.utils.collections.PlayerMap;
@@ -62,7 +62,7 @@ public class PlayerManager implements Listener {
 		} else {
 			fPlayer.setFactionId(null);
 		}
-		fPlayer.setChatType(FChat.GLOBAL);
+		fPlayer.setChatType(FCommunicationChannel.GLOBAL);
 
 		return fPlayer;
 	}

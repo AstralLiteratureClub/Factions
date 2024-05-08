@@ -1,6 +1,7 @@
 package bet.astral.guiman;
 
 
+import bet.astral.guiman.permission.Permission;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -10,10 +11,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.Permission;
 import org.jetbrains.annotations.Nullable;
 
-public class GUIManListener implements Listener {
+public class InventoryListener implements Listener {
 	@EventHandler
 	private void onClick(InventoryClickEvent event){
 		if (!(event.getWhoClicked() instanceof Player player)){
@@ -78,7 +78,7 @@ public class GUIManListener implements Listener {
 		if (player == null){
 			return true;
 		}
-		return player.hasPermission(permission);
+		return permission.hasPermission(player);
 	}
 
 }

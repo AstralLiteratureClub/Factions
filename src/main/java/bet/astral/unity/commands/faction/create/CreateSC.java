@@ -72,6 +72,8 @@ public class CreateSC extends FactionSubCommand {
 							placeholders.addAll(placeholderManager.playerPlaceholders("player", sender));
 							messenger.message(sender, TranslationKeys.MESSAGE_CREATE_FACTION, placeholders);
 							messenger.broadcast(TranslationKeys.BROADCAST_CREATE_FACTION, placeholders);
+
+							faction.requestSave();
 						})
 		);
 	}

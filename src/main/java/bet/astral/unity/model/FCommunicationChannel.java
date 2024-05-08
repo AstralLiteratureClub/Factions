@@ -2,7 +2,7 @@ package bet.astral.unity.model;
 
 import lombok.Getter;
 
-public enum FChat {
+public enum FCommunicationChannel {
 	/**
 	 * This is only used by other plugins. When this is used, the faction plugin will not try to use the messaging features.
 	 */
@@ -19,20 +19,24 @@ public enum FChat {
 	 * This means that the plugin should try to find a new formatting for the chat for all allies.
 	 */
 	ALLY,
+	/**
+	 * This means that the plugin should try to find a new formatting for the TRUCE factions
+	 */
+	TRUCE
 
 	;
 
 
 	@Getter
 	public enum Toggleable {
-		GLOBAL(FChat.GLOBAL),
-		FACTION(FChat.FACTION),
-		ALLY(FChat.ALLY)
+		GLOBAL(FCommunicationChannel.GLOBAL),
+		FACTION(FCommunicationChannel.FACTION),
+		ALLY(FCommunicationChannel.ALLY)
 
 		;
-		private final FChat chat;
+		private final FCommunicationChannel chat;
 
-		Toggleable(FChat chat) {
+		Toggleable(FCommunicationChannel chat) {
 			this.chat = chat;
 		}
 

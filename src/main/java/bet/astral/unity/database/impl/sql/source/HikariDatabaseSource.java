@@ -12,9 +12,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.SQLException;
 
 public class HikariDatabaseSource extends Database {

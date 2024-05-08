@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.incendo.cloud.paper.PaperCommandManager;
 
 @Cloud
-public class ForceBanMemberSC extends AbstractBanSC{
-	public ForceBanMemberSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+public class ForceBanPlayerSC extends AbstractBanSC{
+	public ForceBanPlayerSC(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 	}
 }

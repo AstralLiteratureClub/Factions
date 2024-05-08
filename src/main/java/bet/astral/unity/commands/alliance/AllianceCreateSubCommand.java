@@ -4,7 +4,7 @@ import bet.astral.unity.Factions;
 import org.bukkit.command.CommandSender;
 import org.incendo.cloud.paper.PaperCommandManager;
 
-public class AllianceCreateSubCommand extends AllianceSubCommand {
+public class AllianceCreateSubCommand extends AllianceTestSubCommand {
 	public AllianceCreateSubCommand(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		/*

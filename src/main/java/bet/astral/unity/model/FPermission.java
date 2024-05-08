@@ -4,8 +4,6 @@ import lombok.Getter;
 import net.kyori.adventure.util.TriState;
 
 public class FPermission {
-	public static final FPermission RENAME_DISPLAYNAME = new FPermission("rename.displayname", TriState.FALSE);
-	public static final FPermission RENAME_NAME = new FPermission("rename.name", TriState.FALSE);
 	public static final FPermission INVITE = new FPermission("invite", TriState.FALSE);
 	public static final FPermission CANCEL_INVITE = new FPermission("cancel_invite", TriState.FALSE);
 	public static final FPermission INVITES = new FPermission("invites", TriState.FALSE);
@@ -14,6 +12,9 @@ public class FPermission {
 	public static final FPermission EDIT_ROLE_PREFIX_PUBLIC = new FPermission("meta.prefix.public.role", TriState.FALSE);
 	public static final FPermission EDIT_ROLE_PREFIX_PRIVATE = new FPermission("meta.prefix.private.role,", TriState.FALSE);
 	public static final FPermission EDIT_MEMBER_PREFIX_PRIVATE = new FPermission("meta.prefix.private.member", TriState.FALSE);
+	public static final FPermission EDIT_FACTION_NAME = new FPermission("meta.name", TriState.FALSE);
+	public static final FPermission EDIT_FACTION_DISPLAYNAME = new FPermission("meta.displayname", TriState.FALSE);
+	public static final FPermission EDIT_COLOR = new FPermission("meta.color", TriState.FALSE);
 
 	@Getter
 	private final String name;

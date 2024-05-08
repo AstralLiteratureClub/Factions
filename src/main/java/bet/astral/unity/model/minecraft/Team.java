@@ -1,5 +1,6 @@
 package bet.astral.unity.model.minecraft;
 
+import bet.astral.shine.model.ShineColor;
 import bet.astral.unity.event.teams.TeamDisableEvent;
 import bet.astral.unity.event.teams.TeamEnableEvent;
 import bet.astral.unity.utils.UniqueId;
@@ -7,31 +8,30 @@ import bet.astral.unity.utils.refrence.OfflinePlayerReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.scoreboard.Team;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-public class MinecraftTeam implements UniqueId {
+public class Team implements UniqueId {
 	@Setter(AccessLevel.NONE)
 	@Getter(AccessLevel.NONE)
-	private Team team;
+	private org.bukkit.scoreboard.Team team;
 	private UUID uniqueId;
-	private Team.OptionStatus nameTagVisibility;
-	private Team.OptionStatus deathMessageVisibility;
-	private Team.OptionStatus collisionRule;
+	private org.bukkit.scoreboard.Team.OptionStatus nameTagVisibility;
+	private org.bukkit.scoreboard.Team.OptionStatus deathMessageVisibility;
+	private org.bukkit.scoreboard.Team.OptionStatus collisionRule;
 	private boolean allowFriendlyFire;
 	private boolean canSeeFriendlyInvisibles;
-	private NamedTextColor color = NamedTextColor.WHITE;
+	@Setter(AccessLevel.NONE)
+	private ShineColor color = ShineColor.WHITE;
 
-	public MinecraftTeam() {
+	public Team() {
 	}
 
 	public void enable(){
@@ -52,10 +52,15 @@ public class MinecraftTeam implements UniqueId {
 	public void updateTeam(){
 		team.setAllowFriendlyFire(allowFriendlyFire);
 		team.setCanSeeFriendlyInvisibles(canSeeFriendlyInvisibles);
-		team.color(color);
-		team.setOption(Team.Option.COLLISION_RULE, collisionRule);
-		team.setOption(Team.Option.NAME_TAG_VISIBILITY, nameTagVisibility);
-		team.setOption(Team.Option.DEATH_MESSAGE_VISIBILITY, deathMessageVisibility);
+		team.color(color.getAdventureColor());
+		team.setOption(org.bukkit.scoreboard.Team.Option.COLLISION_RULE, collisionRule);
+		team.setOption(org.bukkit.scoreboard.Team.Option.NAME_TAG_VISIBILITY, nameTagVisibility);
+		team.setOption(org.bukkit.scoreboard.Team.Option.DEATH_MESSAGE_VISIBILITY, deathMessageVisibility);
+	}
+
+	public void setColor(ShineColor color){
+		this.color = color;
+		updateTeam();
 	}
 
 	protected void addPlayer(OfflinePlayer player){

@@ -14,7 +14,7 @@ import org.incendo.cloud.parser.standard.StringParser;
 
 import java.util.Objects;
 
-public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender> {
+public class Init extends CloudPPCommand<Factions, CommandSender> {
 	// Factions
 	public final Command.Builder<CommandSender> root;
 	// Factions force
@@ -32,7 +32,7 @@ public class FactionRootCommands extends CloudPPCommand<Factions, CommandSender>
 	// Alliance
 	public final MinecraftHelp<CommandSender> helpAlly;
 
-	public FactionRootCommands(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
+	public Init(Factions plugin, PaperCommandManager<CommandSender> commandManager) {
 		super(plugin, commandManager);
 		help = MinecraftHelp.<CommandSender>builder().commandManager(commandManager)
 				.audienceProvider(AudienceProvider.nativeAudience())

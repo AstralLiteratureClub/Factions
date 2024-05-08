@@ -9,6 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Deprecated(forRemoval = true)
 public class FWarPoints extends FactionReferenceImpl {
 	private int raidPoints;
 	private int combatPoints;

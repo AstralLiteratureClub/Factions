@@ -2,6 +2,7 @@ package bet.astral.guiman;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -35,6 +36,9 @@ public final class GUI {
 	private final Consumer<Player> closeConsumer;
 	private final Consumer<Player> openConsumer;
 	private final boolean regenerateItems;
+	@NotNull
+	@Setter(AccessLevel.NONE)
+	private final Map<String, Object> data = new HashMap<>();
 	@Getter(AccessLevel.NONE)
 	public boolean shared = false;
 	public boolean papi = false;

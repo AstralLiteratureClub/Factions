@@ -3,6 +3,7 @@ package bet.astral.unity.model;
 import bet.astral.unity.utils.tuples.Pairable;
 
 
+@Deprecated(forRemoval = true)
 public class FWar implements Pairable<FWarPoints, FWarPoints> {
 	private final FWarPoints one;
 	private final FWarPoints two;

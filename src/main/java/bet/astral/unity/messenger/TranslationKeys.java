@@ -48,19 +48,6 @@ public final class TranslationKeys {
 	public final static TranslationKey MESSAGE_FORCE_DELETE_PUBLIC = TranslationKey.of("delete.broadcast-public-about-force-disband");
 	public final static TranslationKey MESSAGE_FORCE_DELETE_SENDER = TranslationKey.of("delete.message-inform-sender-about-force-disband");
 
-	// Rename
-	public final static TranslationKey DESCRIPTION_RENAME_NAME = TranslationKey.of("change-name.description");
-	public final static TranslationKey DESCRIPTION_RENAME_NAME_NAME_ARG = TranslationKey.of("change-name.description-name-arg");
-	public final static TranslationKey DESCRIPTION_RENAME_DISPLAYNAME = TranslationKey.of("change-displayname.description");
-	public final static TranslationKey DESCRIPTION_RENAME_DISPLAYNAME_ARG = TranslationKey.of("change-displayname.description-name-arg");
-	public final static TranslationKey MESSAGE_RENAME_ALREADY_EXISTS = MESSAGE_CREATE_ALREADY_EXISTS;
-	public final static TranslationKey MESSAGE_RENAME_BANNED = MESSAGE_CREATE_BANNED;
-	public final static TranslationKey MESSAGE_RENAME_NAME_TOO_SHORT = MESSAGE_CREATE_TOO_SHORT;
-	public final static TranslationKey MESSAGE_RENAME_NAME_TOO_LONG = MESSAGE_CREATE_TOO_LONG;
-	public final static TranslationKey MESSAGE_RENAME_DISPLAYNAME_TOO_SHORT = MESSAGE_CREATE_TOO_SHORT;
-	public final static TranslationKey MESSAGE_RENAME_DISPLAYNAME_TOO_LONG = MESSAGE_CREATE_TOO_LONG;
-	// Rename - Force
-
 	// Invite
 	public final static TranslationKey DESCRIPTION_INVITE = TranslationKey.of("invite.description");
 	public static final TranslationKey DESCRIPTION_INVITE_ALL = TranslationKey.of("invite.description--all-arg");
@@ -259,6 +246,34 @@ public final class TranslationKeys {
 
 	public static final TranslationKey DESCRIPTION_TAKEOVER = TranslationKey.of(" takeover.description");
 	public static final TranslationKey DESCRIPTION_TAKEOVER_OWNER = TranslationKey.of(" takeover.description-owner-arg");
+
+	public static final TranslationKey DESCRIPTION_COLOR = TranslationKey.of("color.description");
+	public static final TranslationKey DESCRIPTION_COLOR_ARG = TranslationKey.of("color.description-color-arg");
+	public static final TranslationKey BROADCAST_COLOR_CHANGED = TranslationKey.of("color.broadcast-faction-of-color-change");
+	public static final TranslationKey DESCRIPTION_FORCE_COLOR = TranslationKey.of("color.description-force");
+	public static final TranslationKey DESCRIPTION_FORCE_COLOR_FACTION_ARG = TranslationKey.of("color.description-force-faction-arg");
+	public static final TranslationKey DESCRIPTION_FORCE_COLOR_COLOR_ARG = TranslationKey.of("color.description-force-color-arg");
+	public static final TranslationKey BROADCAST_FORCE_COLOR_CHANGED_ADMIN = TranslationKey.of("color.broadcast-admins-of-color-changing");
+	public static final TranslationKey BROADCAST_FORCE_COLOR_CHANGED_FACTION = TranslationKey.of("color.broadcast-faction-of-color-changing");
+
+	// Rename
+	public final static TranslationKey DESCRIPTION_RENAME_NAME = TranslationKey.of("change-name.description");
+	public final static TranslationKey DESCRIPTION_RENAME_NAME_NAME_ARG = TranslationKey.of("change-name.description-name-arg");
+	public final static TranslationKey DESCRIPTION_RENAME_DISPLAYNAME = TranslationKey.of("change-displayname.description");
+	public final static TranslationKey DESCRIPTION_RENAME_DISPLAYNAME_ARG = TranslationKey.of("change-displayname.description-name-arg");
+	public final static TranslationKey MESSAGE_RENAME_ALREADY_EXISTS = MESSAGE_CREATE_ALREADY_EXISTS;
+	public final static TranslationKey MESSAGE_RENAME_BANNED = MESSAGE_CREATE_BANNED;
+	public final static TranslationKey MESSAGE_RENAME_NAME_TOO_SHORT = MESSAGE_CREATE_TOO_SHORT;
+	public final static TranslationKey MESSAGE_RENAME_NAME_TOO_LONG = MESSAGE_CREATE_TOO_LONG;
+	public final static TranslationKey MESSAGE_RENAME_DISPLAYNAME_TOO_SHORT = MESSAGE_CREATE_TOO_SHORT;
+	public final static TranslationKey MESSAGE_RENAME_DISPLAYNAME_TOO_LONG = MESSAGE_CREATE_TOO_LONG;
+	public static final TranslationKey MESSAGE_RENAME_NAME_CANNOT = TranslationKey.of("change-name.message-cannot-change-name");
+	public static final TranslationKey MESSAGE_RENAME_DISPLAYNAME_CANNOT = TranslationKey.of("change-name.message-cannot-change-name");
+	public static final TranslationKey BROADCAST_RENAME_NAME_FACTION = ;
+	public static final TranslationKey BROADCAST_RENAME_NAME_PUBLIC = ;
+	public static final TranslationKey BROADCAST_RENAME_DISPLAYNAME_FACTION = ;
+	public static final TranslationKey BROADCAST_RENAME_DISPLAYNAME_PUBLIC = ;
+	// Rename - Force
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface IsCaption {

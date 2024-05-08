@@ -1,7 +1,7 @@
 package bet.astral.unity.event.teams;
 
 import bet.astral.unity.model.Faction;
-import bet.astral.unity.model.minecraft.MinecraftTeam;
+import bet.astral.unity.model.minecraft.Team;
 import lombok.Getter;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ public class FactionEnableEvent extends TeamEnableEvent{
 	}
 
 	@Override
-	public MinecraftTeam getTeam() {
+	public Team getTeam() {
 		return faction;
 	}
 

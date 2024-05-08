@@ -1,11 +1,12 @@
 package bet.astral.guiman;
 
+import bet.astral.guiman.permission.Permission;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.Permission;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class ClickableBuilder implements Cloneable {
 	private static final ClickType[] clickClickTypes = {
@@ -33,6 +36,12 @@ public class ClickableBuilder implements Cloneable {
 	}
 	public ClickableBuilder(@NotNull Material material) {
 		this.itemStack = new ItemStack(material);
+	}
+	public ClickableBuilder(@NotNull Material material, @NotNull Consumer<ItemMeta> itemMeta){
+		itemStack = new ItemStack(material);
+		ItemMeta meta = itemStack.getItemMeta();
+		itemMeta.accept(meta);
+		itemStack.setItemMeta(meta);
 	}
 	public ClickableBuilder setPriority(int priority) {
 		this.priority = priority;
@@ -66,11 +75,15 @@ public class ClickableBuilder implements Cloneable {
 	}
 
 	public ClickableBuilder setPermission(@Nullable Permission permission) {
-		this.permission = permission != null ? permission : Clickable.none;
+		this.permission = permission != null ? permission : Permission.none;
 		return this;
 	}
 	public ClickableBuilder setPermission(@Nullable String permission) {
-		this.permission = permission != null ? new Permission(permission) : Clickable.none;
+		this.permission = permission != null ? Permission.of(permission) : Permission.none;
+		return this;
+	}
+	public ClickableBuilder setPermission(@Nullable Predicate<Player> permission){
+		this.permission = permission != null ? Permission.of(permission) : Permission.none;
 		return this;
 	}
 
@@ -123,15 +136,18 @@ public class ClickableBuilder implements Cloneable {
 		return this;
 	}
 
+	@Deprecated
 	public Clickable createClickable() {
-		Clickable clickable =  new Clickable(priority, itemStack, permission != null ? permission : Clickable.none, displayIfNoPermissions, actions != null ? actions : Collections.emptyMap());
+		return build();
+	}
+
+	public Clickable build(){
+		Clickable clickable =  new Clickable(priority, itemStack, permission != null ? permission : Permission.none, displayIfNoPermissions, actions != null ? actions : Collections.emptyMap());
 		clickable.setData(data);
 		return clickable;
 	}
-	public Clickable build(){
-		return createClickable();
-	}
 
+	@Override
 	public ClickableBuilder clone(){
 		return new ClickableBuilder(itemStack).setPriority(priority).setPermission(permission).setDisplayIfNoPermissions(displayIfNoPermissions).setActions(actions).setData(data);
 	}
